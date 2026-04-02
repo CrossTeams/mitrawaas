@@ -318,8 +318,17 @@ tr:hover td { background: var(--light); }
 
 /* ── PHOTO GALLERY ── */
 .photo-gallery { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
-.photo-gallery img { width:80px; height:80px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid var(--border); transition:transform 0.15s; }
-.photo-gallery img:hover { transform:scale(1.05); }
+.photo-gallery .pg-thumb { position:relative; flex-shrink:0; }
+.photo-gallery .pg-thumb img { width:90px; height:72px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; transition:all 0.15s; display:block; }
+.photo-gallery .pg-thumb img:hover { border-color:var(--blue); transform:scale(1.04); }
+.photo-gallery .pg-thumb img.cover-thumb { border-color:#FFD700; }
+.pg-cover-badge { position:absolute; bottom:3px; left:3px; background:#FFD700; color:#0B3A63; font-size:0.6rem; font-weight:800; padding:1px 5px; border-radius:4px; pointer-events:none; }
+/* Fullscreen nav */
+.fs-nav { position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.18); border:none; color:#fff; font-size:1.8rem; width:44px; height:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.fs-nav:hover { background:rgba(255,255,255,0.35); }
+.fs-prev { left:12px; }
+.fs-next { right:12px; }
+.fs-counter { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.5); color:#fff; font-size:0.82rem; padding:3px 12px; border-radius:20px; }
 .photo-fullscreen { position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; display:flex; align-items:center; justify-content:center; cursor:pointer; }
 .photo-fullscreen img { max-width:95vw; max-height:90vh; border-radius:8px; object-fit:contain; }
 /* ── DETAIL MODAL ── */
@@ -1043,6 +1052,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           <input type="file" id="post-photos" multiple accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
           <div id="photo-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
           <div id="photo-count" style="font-size:0.78rem;color:var(--gray);margin-top:4px;"></div>
+          <div style="font-size:0.75rem;color:var(--gray);margin-top:4px;">★ <span class="en-text">Click any photo to set it as cover image (shown as thumbnail)</span><span class="hi-text">कोई फ़ोटो क्लिक करें उसे कवर इमेज बनाने के लिए</span></div>
         </div>
         <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;margin-top:8px;" onclick="submitListing()"><span class="en-text">Submit Listing →</span><span class="hi-text">लिस्टिंग जमा करें →</span></button>
       </div>
@@ -1861,6 +1871,7 @@ function showPage(id) {
     document.getElementById('post-date').disabled = false;
     document.getElementById('post-date').style.opacity = '1';
     _pendingPhotoFiles = [];
+    _coverPhotoIdx = 0;
     document.getElementById('post-parking').selectedIndex = 0;
     document.getElementById('post-parking-count').value = '';
     document.getElementById('parking-count-wrap').style.display = 'none';
@@ -2069,8 +2080,8 @@ function renderListings(filtered) {
     const card = document.createElement('div');
     card.className = 'listing-card';
     card.innerHTML = `
-      <div class="listing-img" style="background:linear-gradient(135deg,${['#0B3A63','#0F4C81','#1A6BB5','#0d3360','#1565a8'][i%5]},${['#0F4C81','#1A6BB5','#0B3A63','#1565a8','#0F4C81'][i%5]});position:relative;">
-        <span>${emojis[i%emojis.length]}</span>
+      <div class="listing-img" style="${l.coverUrl ? 'background:url('+JSON.stringify(l.coverUrl)+') center/cover no-repeat;' : 'background:linear-gradient(135deg,'+(['#0B3A63','#0F4C81','#1A6BB5','#0d3360','#1565a8'][i%5])+','+(['#0F4C81','#1A6BB5','#0B3A63','#1565a8','#0F4C81'][i%5])+')'};position:relative;" onclick="openDetailModal(${l.id})">
+        ${!l.coverUrl ? '<span>'+emojis[i%emojis.length]+'</span>' : ''}
         <span class="listing-badge">${l.bhk}</span>
         <button onclick="toggleWishlist(event,${l.id})" id="heart-${l.id}" style="position:absolute;top:10px;left:12px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;" title="Save to wishlist">${isWishlisted(l.id)?'❤️':'🤍'}</button>
       </div>
@@ -2181,7 +2192,13 @@ function openDetailModal(listingId) {
 
   // Image gradient
   const imgEl = document.getElementById('detail-img');
-  imgEl.style.background = `linear-gradient(135deg,${detailGradients[_detailIdx%5]},${detailGradients2[_detailIdx%5]})`;
+  if (l.coverUrl) {
+    imgEl.style.background = 'url(' + JSON.stringify(l.coverUrl) + ') center/cover no-repeat';
+    document.getElementById('detail-emoji').style.display = 'none';
+  } else {
+    imgEl.style.background = `linear-gradient(135deg,${detailGradients[_detailIdx%5]},${detailGradients2[_detailIdx%5]})`;
+    document.getElementById('detail-emoji').style.display = '';
+  }
   document.getElementById('detail-emoji').textContent = detailEmojis[_detailIdx%5];
   document.getElementById('detail-bhk-badge').textContent = l.bhk;
 
@@ -2235,21 +2252,63 @@ function openDetailModal(listingId) {
   // Photo gallery — fetch from separate doc or use inline
   const gallery = document.getElementById('detail-photo-gallery');
   gallery.innerHTML = '';
+  function openFullscreen(urls, startIdx) {
+    let cur = startIdx;
+    const fs = document.createElement('div');
+    fs.className = 'photo-fullscreen';
+    fs.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.93);z-index:9999;display:flex;align-items:center;justify-content:center;';
+
+    const fi = document.createElement('img');
+    fi.style.cssText = 'max-width:85vw;max-height:82vh;border-radius:8px;object-fit:contain;';
+
+    const counter = document.createElement('div');
+    counter.className = 'fs-counter';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '✕';
+    closeBtn.style.cssText = 'position:absolute;top:14px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:1.2rem;width:36px;height:36px;border-radius:50%;cursor:pointer;';
+    closeBtn.onclick = () => fs.remove();
+
+    const prev = document.createElement('button');
+    prev.className = 'fs-nav fs-prev'; prev.innerHTML = '‹';
+    const next = document.createElement('button');
+    next.className = 'fs-nav fs-next'; next.innerHTML = '›';
+
+    function show(idx) {
+      cur = idx;
+      fi.src = urls[cur];
+      counter.textContent = (cur+1) + ' / ' + urls.length;
+      prev.style.display = cur === 0 ? 'none' : 'flex';
+      next.style.display = cur === urls.length-1 ? 'none' : 'flex';
+    }
+    prev.onclick = e => { e.stopPropagation(); show(cur-1); };
+    next.onclick = e => { e.stopPropagation(); show(cur+1); };
+
+    fs.appendChild(fi); fs.appendChild(counter);
+    fs.appendChild(closeBtn);
+    if (urls.length > 1) { fs.appendChild(prev); fs.appendChild(next); }
+    fs.onclick = e => { if (e.target === fs) fs.remove(); };
+    document.body.appendChild(fs);
+    show(startIdx);
+  }
+
   function renderGallery(photoUrls) {
     gallery.innerHTML = '';
     if (!photoUrls || !photoUrls.length) return;
-    photoUrls.forEach(url => {
+    photoUrls.forEach((url, idx) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'pg-thumb';
       const img = document.createElement('img');
       img.src = url; img.alt = 'Property photo'; img.loading = 'lazy';
-      img.onclick = () => {
-        const fs = document.createElement('div');
-        fs.className = 'photo-fullscreen';
-        const fi = document.createElement('img');
-        fi.src = url; fi.style.cssText = 'max-width:95vw;max-height:90vh;border-radius:8px;object-fit:contain;';
-        fs.appendChild(fi); fs.onclick = () => fs.remove();
-        document.body.appendChild(fs);
-      };
-      gallery.appendChild(img);
+      if (idx === 0) img.classList.add('cover-thumb');
+      img.onclick = () => openFullscreen(photoUrls, idx);
+      if (idx === 0) {
+        const badge = document.createElement('div');
+        badge.className = 'pg-cover-badge'; badge.textContent = '★ Cover';
+        wrap.appendChild(badge);
+      }
+      wrap.appendChild(img);
+      gallery.appendChild(wrap);
     });
   }
   if (l.photoUrls && l.photoUrls.length > 0) {
@@ -2387,6 +2446,29 @@ function whatsappContact(mobile, city, bhk, rent) {
 // Store actual File objects for upload
 let _pendingPhotoFiles = [];
 
+let _coverPhotoIdx = 0; // index into _pendingPhotoFiles for cover image
+
+function setCoverPhoto(fileIdx) {
+  _coverPhotoIdx = fileIdx;
+  document.querySelectorAll('.photo-thumb').forEach(wrap => {
+    const badge = wrap.querySelector('.cover-badge');
+    const img   = wrap.querySelector('img');
+    if (parseInt(wrap.dataset.fileIdx) === fileIdx) {
+      if (!badge) {
+        const b = document.createElement('div');
+        b.className = 'cover-badge';
+        b.style.cssText = 'position:absolute;bottom:3px;left:3px;background:#FFD700;color:#0B3A63;font-size:0.6rem;font-weight:800;padding:1px 5px;border-radius:4px;pointer-events:none;';
+        b.textContent = '★ Cover';
+        wrap.appendChild(b);
+      }
+      img.style.border = '2px solid #FFD700';
+    } else {
+      if (badge) badge.remove();
+      img.style.border = '2px solid transparent';
+    }
+  });
+}
+
 function handlePhotoUpload(event) {
   const files = Array.from(event.target.files);
   const preview = document.getElementById('photo-preview');
@@ -2397,26 +2479,37 @@ function handlePhotoUpload(event) {
   }
   const toAdd = files.slice(0, canAdd);
   toAdd.forEach(file => {
+    const fileIdx = _pendingPhotoFiles.length;
     _pendingPhotoFiles.push(file);
     const reader = new FileReader();
     reader.onload = e => {
       const wrap = document.createElement('div');
       wrap.className = 'photo-thumb';
-      wrap.dataset.fileIdx = _pendingPhotoFiles.length - 1;
-      wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
+      wrap.dataset.fileIdx = fileIdx;
+      wrap.style.cssText = 'position:relative;width:90px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0;cursor:pointer;';
+      wrap.title = 'Click to set as cover photo';
       const img = document.createElement('img');
       img.src = e.target.result;
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border:2px solid transparent;border-radius:8px;';
       const del = document.createElement('button');
       del.innerHTML = '✕';
-      del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;';
-      del.onclick = () => {
-        const idx = parseInt(wrap.dataset.fileIdx);
-        _pendingPhotoFiles[idx] = null; // mark as removed
+      del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;z-index:2;';
+      del.onclick = (ev) => {
+        ev.stopPropagation();
+        _pendingPhotoFiles[fileIdx] = null;
+        if (_coverPhotoIdx === fileIdx) {
+          // reassign cover to first remaining
+          const remaining = Array.from(document.querySelectorAll('.photo-thumb'))
+            .filter(w => parseInt(w.dataset.fileIdx) !== fileIdx);
+          if (remaining.length > 0) setCoverPhoto(parseInt(remaining[0].dataset.fileIdx));
+        }
         wrap.remove(); updatePhotoCount();
       };
+      wrap.onclick = () => setCoverPhoto(fileIdx);
       wrap.appendChild(img); wrap.appendChild(del);
       preview.appendChild(wrap);
+      // Auto-set first uploaded as cover
+      if (_pendingPhotoFiles.filter(f=>f).length === 1) setCoverPhoto(fileIdx);
       updatePhotoCount();
     };
     reader.readAsDataURL(file);
@@ -2574,9 +2667,19 @@ function submitListing() {
     ? '📤 Uploading photos... please wait'
     : '✅ Saving listing...';
 
+  // Reorder files so cover photo is first
+  const orderedFiles = [..._pendingPhotoFiles.filter(f=>f)];
+  const coverFile = _pendingPhotoFiles[_coverPhotoIdx];
+  if (coverFile) {
+    const rest = orderedFiles.filter(f => f !== coverFile);
+    _pendingPhotoFiles = [coverFile, ...rest];
+  }
+  _coverPhotoIdx = 0;
+
   uploadPhotosToStorage(newListing.id).then(async photoUrls => {
     newListing.photoCount = photoUrls.length || photoCount;
     newListing.hasPhotos = photoUrls.length > 0;
+    newListing.coverUrl = photoUrls.length > 0 ? photoUrls[0] : '';
     // Store photos in separate Firestore doc to avoid 1MB listing limit
     if (photoUrls.length > 0 && _db && _fbOk) {
       try {
