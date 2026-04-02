@@ -1656,30 +1656,26 @@ async function initFirebase() {
     _flushQueue(); // flush any writes that happened before connection
     if (msg) msg.textContent = '✅ Ready!';
 
-    // ── Real-time listeners: auto-update when any device writes ──
-    FB_KEYS.forEach(key => {
+    // ── Real-time listeners: ONLY for listings and enquiries ──
+    // ma_users is NOT listened to in real-time — admin uses Refresh button
+    // This prevents the race condition that was wiping user data
+    const liveKeys = ['ma_listings', 'ma_wishlists', 'ma_enquiries'];
+    liveKeys.forEach(key => {
       _db.collection('mitrawaas').doc(key).onSnapshot(snap => {
         if (!snap.exists || snap.data().val === undefined) return;
-        // Skip if we just wrote this key — avoid overwriting our own write
-        if (_writeLock[key]) {
-          console.log('[MitrAwaas] Skipping onSnapshot for locked key:', key);
-          return;
-        }
+        if (_writeLock[key]) return; // skip echo of our own write
         const incoming = JSON.stringify(snap.data().val);
         const current  = localStorage.getItem(key) || '[]';
-        if (incoming === current) return; // no change, skip re-render
+        if (incoming === current) return;
         localStorage.setItem(key, incoming);
-        // Refresh whichever page is currently active
         const active = document.querySelector('.page.active');
         if (!active) return;
         if (key === 'ma_listings') {
-          if (active.id === 'page-listings')  renderListings();
-          if (active.id === 'page-wishlist')  renderWishlist();
+          if (active.id === 'page-listings')   renderListings();
+          if (active.id === 'page-wishlist')   renderWishlist();
           if (active.id === 'page-mylistings') renderMyListings();
         }
-        if (key === 'ma_users') { updateNavAuth(); if (active && active.id === 'page-admin') renderAdmin(); }
         if (key === 'ma_enquiries' && active.id === 'page-enquiries') renderEnquiries();
-        if (key === 'ma_suggestions') renderAdmin && typeof renderAdmin==='function' && active.id==='page-admin' && renderAdmin();
       }, err => console.warn('[MitrAwaas] Listener error:', key, err.message));
     });
 
@@ -2451,20 +2447,28 @@ function renderAdmin() {
   }
 }
 
-function approveUser(empId) {
-  console.log('[MitrAwaas] Approving user:', empId);
-  const users = getData('ma_users');
-  console.log('[MitrAwaas] Users in localStorage:', users.length);
+async function approveUser(empId) {
+  // Read FRESH from Firebase to avoid stale localStorage data
+  let users;
+  if (_db && _fbOk) {
+    try {
+      const snap = await _db.collection('mitrawaas').doc('ma_users').get();
+      users = (snap.exists && snap.data().val) ? snap.data().val : getData('ma_users');
+      localStorage.setItem('ma_users', JSON.stringify(users));
+    } catch(e) {
+      users = getData('ma_users');
+    }
+  } else {
+    users = getData('ma_users');
+  }
   const u = users.find(x => x.empId === empId);
   if (!u) {
-    console.error('[MitrAwaas] User not found for approval:', empId);
-    alert('Error: User not found. Please refresh the admin panel and try again.');
+    alert('User not found. Please click 🔄 Refresh and try again.');
     return;
   }
   if (u) {
     u.status = 'approved';
     setData('ma_users', users);
-    console.log('[MitrAwaas] User approved and saved:', empId);
     // Email to the USER at their registered email
     if (u.email) {
       sendEmailNotification(
@@ -2516,13 +2520,22 @@ function adminDeleteUser(empId, name) {
   renderAdmin();
 }
 
-function rejectUser(empId) {
-  console.log('[MitrAwaas] Rejecting user:', empId);
-  const users = getData('ma_users');
+async function rejectUser(empId) {
+  let users;
+  if (_db && _fbOk) {
+    try {
+      const snap = await _db.collection('mitrawaas').doc('ma_users').get();
+      users = (snap.exists && snap.data().val) ? snap.data().val : getData('ma_users');
+      localStorage.setItem('ma_users', JSON.stringify(users));
+    } catch(e) {
+      users = getData('ma_users');
+    }
+  } else {
+    users = getData('ma_users');
+  }
   const u = users.find(x => x.empId === empId);
   if (!u) {
-    console.error('[MitrAwaas] User not found for rejection:', empId);
-    alert('Error: User not found. Please refresh the admin panel and try again.');
+    alert('User not found. Please click 🔄 Refresh and try again.');
     return;
   }
   if (u) {
