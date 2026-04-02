@@ -1714,6 +1714,12 @@ function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   window.scrollTo(0, 0);
+  if (id === 'login') {
+    document.getElementById('login-empid').value = '';
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-alert').className = 'alert';
+    document.getElementById('login-alert').textContent = '';
+  }
   if (id === 'listings') renderListings();
   if (id === 'admin') renderAdmin();
   if (id === 'post') {
@@ -1721,6 +1727,12 @@ function showPage(id) {
     document.getElementById('post-form').style.display = 'block';
     document.getElementById('post-success').style.display = 'none';
     document.getElementById('post-alert').className = 'alert';
+    // Clear all post fields before prefilling
+    ['post-fname','post-mname','post-lname','post-empid','post-mobile',
+     'post-city','post-area','post-rent','post-desc','post-maintenance'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
     prefillPostForm();
   }
   if (id === 'register') {
@@ -2267,19 +2279,7 @@ function submitListing() {
   listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, status: 'approved', date: new Date().toISOString() });
   setData('ma_listings', listings);
 
-  sendEmailNotification(
-    '🏠 New Listing Submitted — MitrAwaas',
-    `A new property listing has been submitted:\n\n` +
-    `Employee ID  : ${empId}\n` +
-    `City / Area  : ${city}, ${area}\n` +
-    `BHK Type     : ${bhk}\n` +
-    `Furnishing   : ${furnish}\n` +
-    `Monthly Rent : ₹${parseInt(rent).toLocaleString('en-IN')}\n` +
-    `Maintenance  : ${maintenance ? '₹' + parseInt(maintenance).toLocaleString('en-IN') + ' (' + maintType + ')' : 'None'}\n` +
-    `Mobile       : ${mobile}\n` +
-    `Photos       : ${photoCount} uploaded\n\n` +
-    `This listing is now live on MitrAwaas.`
-  );
+  // Listing submission email removed per user preference
 
   document.getElementById('post-form').style.display = 'none';
   document.getElementById('post-success').style.display = 'block';
@@ -2424,18 +2424,7 @@ function approveUser(empId) {
         u.email
       );
     }
-    // Admin notification to crossteams@hotmail.com
-    sendEmailNotification(
-      `✅ Approved — ${u.name} (${u.empId})`,
-      `You approved the following user on MitrAwaas:\n\n` +
-      `Name        : ${u.name}\n` +
-      `Employee ID : ${u.empId}\n` +
-      `SOL ID      : ${u.branch}\n` +
-      `City        : ${u.city}\n` +
-      `Designation : ${u.designation}\n` +
-      `Mobile      : ${u.mobile}\n` +
-      `Email       : ${u.email || 'not provided'}`
-    );
+    // Admin approval log email removed per user preference
     renderAdmin();
     // Show approval notice modal — admin can copy & send from any number
     const msg = `✅ Dear ${u.name}, your MitrAwaas account (Emp ID: ${u.empId}) has been approved! You can now login and browse/post listings at MitrAwaas. - MitrAwaas Admin`;
@@ -2448,13 +2437,30 @@ function approveUser(empId) {
 }
 function adminDeleteUser(empId, name) {
   if (!confirm(`Delete user ${name} (${empId}) permanently? This cannot be undone.`)) return;
-  let users = getData('ma_users');
-  users = users.filter(u => u.empId !== empId);
-  setData('ma_users', users);
+  const users = getData('ma_users');
+  const u = users.find(x => x.empId === empId);
+  const deletedEmail = u ? u.email : '';
+  const updatedUsers = users.filter(u => u.empId !== empId);
+  setData('ma_users', updatedUsers);
   // Also remove their listings
   let listings = getData('ma_listings');
   listings = listings.filter(l => l.empId !== empId);
   setData('ma_listings', listings);
+  // Email notification to admin about deletion
+  sendEmailNotification(
+    `🗑️ User Deleted — ${name} (${empId})`,
+    `You have permanently deleted the following user from MitrAwaas:
+
+` +
+    `Name        : ${name}
+` +
+    `Employee ID : ${empId}
+` +
+    `Email       : ${deletedEmail || 'not provided'}
+
+` +
+    `Their listings have also been removed.`
+  );
   renderAdmin();
 }
 
@@ -2480,20 +2486,7 @@ If you believe this is an error, please contact the platform administrator.
         u.email
       );
     }
-    // Admin notification
-    sendEmailNotification(
-      `❌ Rejected — ${u.name} (${u.empId})`,
-      `You rejected the following user on MitrAwaas:
-
-` +
-      `Name        : ${u.name}
-` +
-      `Employee ID : ${u.empId}
-` +
-      `Mobile      : ${u.mobile}
-` +
-      `Email       : ${u.email || 'not provided'}`
-    );
+    // Admin rejection log email removed per user preference
     document.getElementById('approval-modal-title').textContent = '❌ User rejected';
     document.getElementById('approval-modal-note').innerHTML = 'Rejection email sent to <strong style="color:var(--navy);">' + (u.email || 'user (no email on file)') + '</strong>. You can also send a WhatsApp message below.';
     document.getElementById('approval-msg-text').value = msg;
@@ -2821,6 +2814,27 @@ function submitAdminReset() {
   user.pass = newPass;
   setData('ma_users', users);
   const resetMsg = `🔑 Dear ${user.name}, your MitrAwaas password has been reset by admin. Your temporary password is: ${newPass} — Please login and change it immediately. - MitrAwaas Admin`;
+  // Email to the USER with their new temporary password
+  if (user.email) {
+    sendEmailNotification(
+      `🔑 MitrAwaas — Your password has been reset`,
+      `Dear ${user.name},\n\nYour MitrAwaas account password has been reset by the admin.\n\n` +
+      `Your temporary password is: ${newPass}\n\n` +
+      `Please login at www.mitrawaas.co.in and change your password immediately from your profile settings.\n\n` +
+      `- MitrAwaas Admin`,
+      user.email
+    );
+  }
+  // Email admin confirmation of password reset
+  sendEmailNotification(
+    `🔑 Password Reset — ${user.name} (${user.empId})`,
+    `You have reset the password for the following user on MitrAwaas:\n\n` +
+    `Name        : ${user.name}\n` +
+    `Employee ID : ${user.empId}\n` +
+    `Mobile      : ${user.mobile}\n` +
+    `Email       : ${user.email || 'not provided'}\n\n` +
+    `A temporary password has been set. User has been notified.`
+  );
   document.getElementById('approval-modal-title').textContent = '🔑 Password reset';
   document.getElementById('approval-modal-note').innerHTML = 'Send the new credentials to: <strong style="color:var(--navy);">' + (user.email || user.mobile) + '</strong>';
   document.getElementById('approval-msg-text').value = resetMsg;
