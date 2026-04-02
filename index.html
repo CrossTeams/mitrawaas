@@ -924,12 +924,35 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
             </select>
           </div>
           <div class="form-group">
+            <label><span class="en-text">Property type</span><span class="hi-text">संपत्ति का प्रकार</span></label>
+            <select id="post-proptype">
+              <option value="Gated Society Flat">Gated Society Flat / गेटेड सोसायटी फ्लैट</option>
+              <option value="Builder Floor">Builder Floor / बिल्डर फ्लोर</option>
+              <option value="Independent House">Independent House / स्वतंत्र मकान</option>
+              <option value="Villa">Villa / विला</option>
+              <option value="Service Apartment">Service Apartment / सर्विस अपार्टमेंट</option>
+              <option value="PG / Shared Room">PG / Shared Room / पेइंग गेस्ट</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
             <label><span class="en-text">Furnishing</span><span class="hi-text">फर्निशिंग</span></label>
             <select id="post-furnish">
               <option value="Unfurnished">Unfurnished / बिना फर्नीचर</option>
               <option value="Semi-Furnished">Semi-Furnished / अर्ध-सज्जित</option>
               <option value="Fully Furnished">Fully Furnished / पूर्ण-सज्जित</option>
             </select>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Size</span><span class="hi-text">आकार</span> <span style="color:var(--gray);font-size:0.75rem;">(optional)</span></label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="number" id="post-size" placeholder="e.g. 900" min="0" style="flex:1;"/>
+              <select id="post-size-type" style="flex:1;">
+                <option value="sq ft carpet">sq ft — Carpet area</option>
+                <option value="sq ft super">sq ft — Super area</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-row">
@@ -953,16 +976,43 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           <label><span class="en-text">Maintenance / other charges (₹)</span><span class="hi-text">रखरखाव / अन्य शुल्क (₹)</span></label>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <input type="number" id="post-maintenance" placeholder="Amount e.g. 500" min="0" style="flex:1;min-width:120px;"/>
-            <select id="post-maint-type" style="flex:1;min-width:160px;">
+            <select id="post-maint-type" style="flex:1;min-width:200px;">
               <option value="included">Included in rent / किराये में शामिल</option>
-              <option value="extra">Extra / अलग से देय</option>
+              <option value="extra-monthly">Extra · Per month / अलग - प्रति माह</option>
+              <option value="extra-quarterly">Extra · Per quarter / अलग - प्रति तिमाही</option>
               <option value="none">No maintenance / नहीं</option>
             </select>
           </div>
         </div>
+        <!-- Parking -->
+        <div class="form-group">
+          <label><span class="en-text">Parking</span><span class="hi-text">पार्किंग</span></label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <select id="post-parking" onchange="toggleParkingDetails(this)" style="flex:1;min-width:160px;">
+              <option value="none">No parking / पार्किंग नहीं</option>
+              <option value="covered">Covered parking / कवर्ड पार्किंग</option>
+              <option value="open">Open parking / ओपन पार्किंग</option>
+              <option value="both">Both covered &amp; open / दोनों</option>
+            </select>
+            <div id="parking-count-wrap" style="display:none;flex:1;min-width:160px;">
+              <input type="number" id="post-parking-count" placeholder="No. of spaces e.g. 1" min="1" max="5"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Google Maps -->
+        <div class="form-group">
+          <label><span class="en-text">Location on Google Maps</span><span class="hi-text">Google Maps पर स्थान</span> <span style="color:var(--gray);font-size:0.75rem;">(optional)</span></label>
+          <input type="url" id="post-maplink" placeholder="Paste Google Maps link — e.g. https://maps.google.com/?q=..." autocomplete="off"/>
+          <small style="color:var(--gray);font-size:0.75rem;margin-top:4px;display:block;">
+            <span class="en-text">Open Google Maps → search your location → tap Share → Copy Link. Or enter coordinates like: https://www.google.com/maps?q=28.6139,77.2090</span>
+            <span class="hi-text">Google Maps खोलें → अपनी जगह ढूंढें → Share → Link Copy करें।</span>
+          </small>
+        </div>
+
         <div class="form-group">
           <label><span class="en-text">Description</span><span class="hi-text">विवरण</span></label>
-          <textarea id="post-desc" placeholder="Describe your property — nearby facilities, floor, parking, etc. / संपत्ति का विवरण दें"></textarea>
+          <textarea id="post-desc" placeholder="Describe your property — nearby facilities, floor, etc. / संपत्ति का विवरण दें"></textarea>
         </div>
         <div class="form-group">
           <label><span class="en-text">Preferred tenant</span><span class="hi-text">पसंदीदा किरायेदार</span></label>
@@ -1762,6 +1812,12 @@ function showPage(id) {
     document.getElementById('post-immediately').checked = false;
     document.getElementById('post-date').disabled = false;
     document.getElementById('post-date').style.opacity = '1';
+    document.getElementById('post-parking').selectedIndex = 0;
+    document.getElementById('post-parking-count').value = '';
+    document.getElementById('parking-count-wrap').style.display = 'none';
+    document.getElementById('post-maplink').value = '';
+    const pst = document.getElementById('post-proptype'); if(pst) pst.selectedIndex = 0;
+    const szt = document.getElementById('post-size'); if(szt) szt.value = '';
     ['post-fname','post-mname','post-lname','post-empid','post-mobile',
      'post-city','post-area','post-rent','post-desc','post-maintenance'].forEach(id => {
       const el = document.getElementById(id);
@@ -2076,19 +2132,43 @@ function openDetailModal(listingId) {
   document.getElementById('detail-rent').textContent = '₹' + Number(l.rent).toLocaleString('en-IN') + ' / month';
 
   const maint = document.getElementById('detail-maintenance');
+  const maintLabel = l.maintType === 'included' ? 'included in rent'
+    : l.maintType === 'extra-monthly' ? 'extra / per month'
+    : l.maintType === 'extra-quarterly' ? 'extra / per quarter'
+    : l.maintType === 'extra' ? 'extra' : '';
   maint.innerHTML = (l.maintenance && l.maintType !== 'none')
-    ? `+ ₹${Number(l.maintenance).toLocaleString('en-IN')} maintenance <span style="color:${l.maintType==='included'?'var(--blue)':'#e07b00'}">(${l.maintType==='included'?'included':'extra'})</span>`
+    ? `+ ₹${Number(l.maintenance).toLocaleString('en-IN')} maintenance <span style="color:${l.maintType==='included'?'var(--blue)':'#e07b00'}">(${maintLabel})</span>`
     : '';
 
   const availLabel = l.availFrom === 'Immediately' ? '✅ Immediately'
     : l.availFrom ? '🗓️ From ' + new Date(l.availFrom).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
     : '';
+  const parkingLabel = l.parking === 'covered' ? `🅿️ ${l.parkingCount || 1} Covered parking`
+    : l.parking === 'open' ? `🅿️ ${l.parkingCount || 1} Open parking`
+    : l.parking === 'both' ? `🅿️ ${l.parkingCount || 1} Parking (covered+open)`
+    : '🚫 No parking';
+
   document.getElementById('detail-tags').innerHTML =
-    `<span class="detail-tag">🛋️ ${l.furnish}</span><span class="detail-tag">👤 ${l.pref}</span>` +
+    (l.propType ? `<span class="detail-tag">🏘️ ${l.propType}</span>` : '') +
+    (l.propSize ? `<span class="detail-tag">📐 ${l.propSize} ${l.propSizeType||'sq ft'}</span>` : '') +
+    `<span class="detail-tag">🛋️ ${l.furnish}</span>` +
+    `<span class="detail-tag">${parkingLabel}</span>` +
+    `<span class="detail-tag">👤 ${l.pref}</span>` +
     (availLabel ? `<span class="detail-tag">${availLabel}</span>` : '') +
     (l.date ? `<span class="detail-tag">📅 Listed ${new Date(l.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>` : '');
 
-  document.getElementById('detail-desc').textContent = l.desc || 'No description provided.';
+  // Map link
+  const descEl = document.getElementById('detail-desc');
+  descEl.innerHTML = '';
+  if (l.mapLink) {
+    const mapDiv = document.createElement('div');
+    mapDiv.style.cssText = 'margin-bottom:12px;';
+    mapDiv.innerHTML = `<a href="${l.mapLink.startsWith('http')?l.mapLink:'https://'+l.mapLink}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;background:#E8F0F9;color:var(--blue);font-weight:700;font-size:0.88rem;padding:8px 16px;border-radius:10px;text-decoration:none;">📍 View location on Google Maps →</a>`;
+    descEl.appendChild(mapDiv);
+  }
+  const descText = document.createElement('div');
+  descText.textContent = l.desc || 'No description provided.';
+  descEl.appendChild(descText);
 
   // Buttons — show Edit if it's the logged-in user's listing
   const myEmpId = sessionStorage.getItem('ma_loggedIn');
@@ -2249,6 +2329,11 @@ function updatePhotoCount() {
 }
 
 // ── Toggle available date field based on "Immediately" checkbox ──
+function toggleParkingDetails(sel) {
+  const wrap = document.getElementById('parking-count-wrap');
+  wrap.style.display = sel.value === 'none' ? 'none' : 'block';
+}
+
 function toggleAvailDate(cb) {
   const dateEl = document.getElementById('post-date');
   if (cb.checked) {
@@ -2329,8 +2414,14 @@ function submitListing() {
   const listings = getData('ma_listings');
   const ownerName = [fname, mname, lname].filter(Boolean).join(' ');
   const immediately = document.getElementById('post-immediately').checked;
-  const availDate = immediately ? 'Immediately' : (document.getElementById('post-date').value || '');
-  listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, availFrom: availDate, status: 'approved', date: new Date().toISOString() });
+  const availDate   = immediately ? 'Immediately' : (document.getElementById('post-date').value || '');
+  const propType    = document.getElementById('post-proptype') ? document.getElementById('post-proptype').value : '';
+  const propSize    = document.getElementById('post-size') ? document.getElementById('post-size').value : '';
+  const propSizeType= document.getElementById('post-size-type') ? document.getElementById('post-size-type').value : '';
+  const parking     = document.getElementById('post-parking').value;
+  const parkingCount= parking !== 'none' ? (document.getElementById('post-parking-count').value || '1') : '0';
+  const mapLink     = document.getElementById('post-maplink').value.trim();
+  listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, propType, propSize: propSize ? parseInt(propSize) : 0, propSizeType, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, parking, parkingCount, mapLink, desc, pref, photoCount, availFrom: availDate, status: 'approved', date: new Date().toISOString() });
   setData('ma_listings', listings);
 
   // Listing submission email removed per user preference
