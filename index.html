@@ -1716,7 +1716,13 @@ function showPage(id) {
   window.scrollTo(0, 0);
   if (id === 'listings') renderListings();
   if (id === 'admin') renderAdmin();
-  if (id === 'post') prefillPostForm();
+  if (id === 'post') {
+    // Reset form to fresh state each visit
+    document.getElementById('post-form').style.display = 'block';
+    document.getElementById('post-success').style.display = 'none';
+    document.getElementById('post-alert').className = 'alert';
+    prefillPostForm();
+  }
   if (id === 'register') {
     initCaptcha();
     // Clear all fields to prevent browser prefill
@@ -1795,7 +1801,7 @@ function submitRegister() {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid email address.'; return;
   }
   const emailDomain = email.split('@')[1].toLowerCase();
-  const pnbDomains = ['pnb.co.in','pnbindia.in','punjabbank.com','pnb.in'];
+  const pnbDomains = ['pnb.co.in','pnbindia.in','punjabbank.com','pnb.in','pnb.bank.in'];
   if (pnbDomains.some(d => emailDomain.includes(d) || emailDomain === d)) {
     alertEl.className = 'alert alert-error';
     alertEl.textContent = getLang()==='hi'
@@ -2200,7 +2206,7 @@ function prefillPostForm() {
   if (!user) return;
   // Pre-fill empId and mobile
   const empEl = document.getElementById('post-empid');
-  if (empEl && !empEl.value) empEl.value = empId;
+  if (empEl) empEl.value = empId; // always fill — it's the logged-in user's own ID
   const mobEl = document.getElementById('post-mobile');
   if (mobEl && !mobEl.value) mobEl.value = user.mobile || '';
   // Pre-fill name from registered name
