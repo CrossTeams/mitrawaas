@@ -316,6 +316,12 @@ tr:hover td { background: var(--light); }
 .cp-box { background:#fff; border-radius:20px; padding:28px; max-width:380px; width:100%; box-shadow: 0 8px 40px rgba(15,76,129,0.18); animation: slideUp 0.22s ease; }
 .cp-box h3 { font-size:1.1rem; font-weight:700; margin-bottom:16px; color:var(--navy); }
 
+/* ── PHOTO GALLERY ── */
+.photo-gallery { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.photo-gallery img { width:80px; height:80px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid var(--border); transition:transform 0.15s; }
+.photo-gallery img:hover { transform:scale(1.05); }
+.photo-fullscreen { position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.photo-fullscreen img { max-width:95vw; max-height:90vh; border-radius:8px; object-fit:contain; }
 /* ── DETAIL MODAL ── */
 .detail-modal-overlay {
   display: none; position: fixed; inset: 0;
@@ -771,7 +777,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         </div>
         <div class="form-group">
           <label><span class="en-text">Your answer</span><span class="hi-text">आपका उत्तर</span> <span style="color:var(--red);font-weight:700;">*</span></label>
-          <input type="text" id="reg-sec-a" placeholder="Answer (case-insensitive)"/>
+          <input type="text" id="reg-sec-a" placeholder="Answer (case-insensitive)" onkeydown="if(event.key==='Enter')submitRegister()"/>
           <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Remember this — you'll need it to reset your password</span><span class="hi-text">यह याद रखें — पासवर्ड रीसेट में काम आएगा</span></small>
         </div>
         <div class="form-group" id="captcha-wrap" style="background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:4px;">
@@ -787,12 +793,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         <p style="text-align:center;margin-top:14px;font-size:0.85rem;color:var(--gray)"><span class="en-text">Already registered?</span><span class="hi-text">पहले से पंजीकृत?</span> <a href="#" onclick="showPage('login')" style="color:var(--blue);font-weight:600;"><span class="en-text">Login here</span><span class="hi-text">लॉगिन करें</span></a></p>
       </div>
 
-      <div class="form-success" id="reg-success">
-        <div class="success-icon">⏳</div>
-        <h3><span class="en-text">Registration Submitted!</span><span class="hi-text">पंजीकरण जमा हो गया!</span></h3>
-        <p><span class="en-text">Your registration is under review. Admin will verify your Employee ID and approve within <strong>24 hours</strong>.<br/><br/>Try logging in after 24 hours — your account will be active once approved.</span><span class="hi-text">आपका पंजीकरण समीक्षाधीन है। व्यवस्थापक 24 घंटे में सत्यापित करेगा।<br/><br/><strong id="reg-mobile-display2"></strong> पर WhatsApp संदेश आएगा।</span></p>
-        <button class="btn btn-navy" style="margin-top:20px;" onclick="showPage('home')"><span class="en-text">Back to home</span><span class="hi-text">होम पर जाएं</span></button>
-      </div>
+
     </div>
   </div>
 </div>
@@ -814,7 +815,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       </div>
       <div class="form-group">
         <label><span class="en-text">Password</span><span class="hi-text">पासवर्ड</span></label>
-        <input type="password" id="login-pass" placeholder="Your password"/>
+        <input type="password" id="login-pass" onkeydown="if(event.key==='Enter')submitLogin()" placeholder="Your password"/>
       </div>
       <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;" onclick="submitLogin()"><span class="en-text">Login →</span><span class="hi-text">लॉगिन →</span></button>
       <p style="text-align:center;margin-top:14px;font-size:0.85rem;color:var(--gray)">
@@ -1170,7 +1171,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         <div id="admin-login-alert"></div>
         <div class="form-group">
           <label>Admin Password</label>
-          <input type="password" id="admin-pass-input" placeholder="Admin password"/>
+          <input type="password" id="admin-pass-input" placeholder="Admin password" onkeydown="if(event.key==='Enter')adminLogin()"/>
         </div>
         <button class="btn btn-navy" style="width:100%;padding:12px;" onclick="adminLogin()"><span class="en-text">Login →</span><span class="hi-text">लॉगिन →</span></button>
       </div>
@@ -1253,6 +1254,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <div class="detail-rent" id="detail-rent"></div>
       <div id="detail-maintenance" style="font-size:0.82rem;color:var(--gray);margin-top:-10px;margin-bottom:14px;"></div>
       <div class="detail-tags" id="detail-tags"></div>
+      <div class="photo-gallery" id="detail-photo-gallery"></div>
       <div class="detail-desc" id="detail-desc"></div>
       <div class="detail-footer-btns" id="detail-btns"></div>
     </div>
@@ -1394,7 +1396,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
     </div>
     <div class="form-group">
       <label><span class="en-text">New Password</span><span class="hi-text">नया पासवर्ड</span></label>
-      <input type="password" id="cp-new" placeholder="Min 6 characters"/>
+      <input type="password" id="cp-new" placeholder="Min 6 characters" onkeydown="if(event.key==='Enter')submitChangePassword()"/>
     </div>
     <div class="form-group">
       <label><span class="en-text">Confirm New Password</span><span class="hi-text">नया पासवर्ड दोहराएं</span></label>
@@ -1422,7 +1424,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <div class="form-sub" style="margin-bottom:16px;"><span class="en-text">Enter your Employee ID to find your account.</span><span class="hi-text">अपनी कर्मचारी ID दर्ज करें।</span></div>
       <div class="form-group">
         <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
-        <input type="text" id="fp-empid" placeholder="Your Employee ID" inputmode="numeric" maxlength="7"/>
+        <input type="text" id="fp-empid" onkeydown="if(event.key==='Enter')fpStep1()" placeholder="Your Employee ID" inputmode="numeric" maxlength="7"/>
       </div>
       <div style="display:flex;gap:10px;margin-top:8px;">
         <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeForgotPassword()"><span class="en-text">Cancel</span><span class="hi-text">रद्द करें</span></button>
@@ -1521,7 +1523,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'Str0ng!@#'; // Change this!
+const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
@@ -1579,7 +1581,7 @@ const FB_CONFIG = {
 // These localStorage keys will be synced to Firebase
 const FB_KEYS = ['ma_users','ma_listings','ma_wishlists','ma_enquiries','ma_suggestions'];
 
-let _db  = null;   // Firestore instance
+let _db      = null; // Firestore instance
 let _fbOk = false; // true once data is loaded from Firebase
 let _writeLock = {}; // keys locked during pending Firebase writes
 
@@ -1858,6 +1860,7 @@ function showPage(id) {
     document.getElementById('post-immediately').checked = false;
     document.getElementById('post-date').disabled = false;
     document.getElementById('post-date').style.opacity = '1';
+    _pendingPhotoFiles = [];
     document.getElementById('post-parking').selectedIndex = 0;
     document.getElementById('post-parking-count').value = '';
     document.getElementById('parking-count-wrap').style.display = 'none';
@@ -1885,7 +1888,6 @@ function showPage(id) {
     if (des) des.selectedIndex = 0;
     document.getElementById('reg-alert').className = 'alert';
     document.getElementById('reg-form').style.display = 'block';
-    document.getElementById('reg-success').style.display = 'none';
   }
   if (id === 'mylistings') renderMyListings();
   if (id === 'profile') openProfilePage();
@@ -2020,7 +2022,6 @@ function submitRegister() {
     );
   }
   document.getElementById('reg-form').style.display = 'none';
-  document.getElementById('reg-success').style.display = 'block';
   document.getElementById('reg-success-modal').classList.add('open');
 }
 
@@ -2231,6 +2232,35 @@ function openDetailModal(listingId) {
   descText.textContent = l.desc || 'No description provided.';
   descEl.appendChild(descText);
 
+  // Photo gallery — fetch from separate doc or use inline
+  const gallery = document.getElementById('detail-photo-gallery');
+  gallery.innerHTML = '';
+  function renderGallery(photoUrls) {
+    gallery.innerHTML = '';
+    if (!photoUrls || !photoUrls.length) return;
+    photoUrls.forEach(url => {
+      const img = document.createElement('img');
+      img.src = url; img.alt = 'Property photo'; img.loading = 'lazy';
+      img.onclick = () => {
+        const fs = document.createElement('div');
+        fs.className = 'photo-fullscreen';
+        const fi = document.createElement('img');
+        fi.src = url; fi.style.cssText = 'max-width:95vw;max-height:90vh;border-radius:8px;object-fit:contain;';
+        fs.appendChild(fi); fs.onclick = () => fs.remove();
+        document.body.appendChild(fs);
+      };
+      gallery.appendChild(img);
+    });
+  }
+  if (l.photoUrls && l.photoUrls.length > 0) {
+    renderGallery(l.photoUrls); // inline fallback
+  } else if (l.hasPhotos && _db) {
+    gallery.innerHTML = '<div style="font-size:0.8rem;color:var(--gray);">Loading photos...</div>';
+    _db.collection('listing_photos').doc(String(l.id)).get()
+      .then(snap => { if (snap.exists) renderGallery(snap.data().photos); else gallery.innerHTML = ''; })
+      .catch(() => { gallery.innerHTML = ''; });
+  }
+
   // Buttons — show Edit if it's the logged-in user's listing
   const myEmpId = sessionStorage.getItem('ma_loggedIn');
   const isOwner = myEmpId === l.empId;
@@ -2354,21 +2384,25 @@ function whatsappContact(mobile, city, bhk, rent) {
 // ══════════════════════════════════════
 // POST LISTING
 // ══════════════════════════════════════
+// Store actual File objects for upload
+let _pendingPhotoFiles = [];
+
 function handlePhotoUpload(event) {
   const files = Array.from(event.target.files);
   const preview = document.getElementById('photo-preview');
-  const countEl = document.getElementById('photo-count');
   const existing = preview.querySelectorAll('.photo-thumb').length;
   const canAdd = Math.min(files.length, 10 - existing);
   if (files.length > canAdd) {
-    alert(getLang()==='hi' ? `अधिकतम 10 फ़ोटो ही अपलोड हो सकती हैं।` : `You can upload a maximum of 10 photos.`);
+    alert(getLang()==='hi' ? 'अधिकतम 10 फ़ोटो ही अपलोड हो सकती हैं।' : 'You can upload a maximum of 10 photos.');
   }
   const toAdd = files.slice(0, canAdd);
   toAdd.forEach(file => {
+    _pendingPhotoFiles.push(file);
     const reader = new FileReader();
     reader.onload = e => {
       const wrap = document.createElement('div');
       wrap.className = 'photo-thumb';
+      wrap.dataset.fileIdx = _pendingPhotoFiles.length - 1;
       wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
       const img = document.createElement('img');
       img.src = e.target.result;
@@ -2376,7 +2410,11 @@ function handlePhotoUpload(event) {
       const del = document.createElement('button');
       del.innerHTML = '✕';
       del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;';
-      del.onclick = () => { wrap.remove(); updatePhotoCount(); };
+      del.onclick = () => {
+        const idx = parseInt(wrap.dataset.fileIdx);
+        _pendingPhotoFiles[idx] = null; // mark as removed
+        wrap.remove(); updatePhotoCount();
+      };
       wrap.appendChild(img); wrap.appendChild(del);
       preview.appendChild(wrap);
       updatePhotoCount();
@@ -2384,6 +2422,50 @@ function handlePhotoUpload(event) {
     reader.readAsDataURL(file);
   });
   event.target.value = '';
+}
+
+// Compress image file to base64 using canvas — target ~30KB per image
+function compressImage(file, maxWidth, maxHeight, quality) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        // Scale down if larger than max dimensions
+        if (w > maxWidth || h > maxHeight) {
+          const ratio = Math.min(maxWidth / w, maxHeight / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Compress all pending photos and return base64 array
+async function uploadPhotosToStorage(listingId) {
+  const filesToUpload = _pendingPhotoFiles.filter(f => f !== null);
+  if (!filesToUpload.length) return [];
+  const urls = [];
+  for (const file of filesToUpload) {
+    try {
+      // Compress to max 800x600 at 60% quality — roughly 30-50KB per image
+      const compressed = await compressImage(file, 800, 600, 0.6);
+      urls.push(compressed);
+    } catch(e) {
+      console.warn('[MitrAwaas] Image compression failed:', e.message);
+    }
+  }
+  _pendingPhotoFiles = [];
+  return urls;
 }
 function updatePhotoCount() {
   const count = document.getElementById('photo-preview').querySelectorAll('.photo-thumb').length;
@@ -2485,12 +2567,32 @@ function submitListing() {
   const mapLink     = document.getElementById('post-maplink').value.trim();
   const newListing = { id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, propType, propSize: propSize ? parseInt(propSize) : 0, propSizeType, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, parking, parkingCount, mapLink, desc, pref, photoCount, availFrom: availDate, status: 'approved', date: new Date().toISOString() };
 
-  // Show success immediately — save in background
-  document.getElementById('post-form').style.display = 'none';
-  document.getElementById('post-success').style.display = 'block';
+  // Upload photos then save listing
+  const alertEl2 = document.getElementById('post-alert');
+  alertEl2.className = 'alert alert-success';
+  alertEl2.textContent = _pendingPhotoFiles.filter(f=>f).length > 0
+    ? '📤 Uploading photos... please wait'
+    : '✅ Saving listing...';
 
-  safeAppend('ma_listings', newListing).then(() => {
-    // Auto-navigate to My Listings after 2.5s
+  uploadPhotosToStorage(newListing.id).then(async photoUrls => {
+    newListing.photoCount = photoUrls.length || photoCount;
+    newListing.hasPhotos = photoUrls.length > 0;
+    // Store photos in separate Firestore doc to avoid 1MB listing limit
+    if (photoUrls.length > 0 && _db && _fbOk) {
+      try {
+        await _db.collection('listing_photos').doc(String(newListing.id)).set({ photos: photoUrls });
+      } catch(e) {
+        // If Firestore fails, store inline as fallback (may hit size limit with many photos)
+        newListing.photoUrls = photoUrls;
+        console.warn('[MitrAwaas] Stored photos inline as fallback:', e.message);
+      }
+    } else if (photoUrls.length > 0) {
+      newListing.photoUrls = photoUrls; // offline fallback
+    }
+    return safeAppend('ma_listings', newListing);
+  }).then(() => {
+    document.getElementById('post-form').style.display = 'none';
+    document.getElementById('post-success').style.display = 'block';
     setTimeout(() => { showPage('mylistings'); }, 2500);
   });
 }
