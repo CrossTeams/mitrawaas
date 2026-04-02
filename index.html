@@ -1258,6 +1258,32 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   </div>
 </div>
 
+<!-- ════ DELETE CONFIRM MODAL ════ -->
+<div class="cp-modal" id="delete-confirm-modal">
+  <div class="cp-box" style="max-width:380px;text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:10px;">🗑️</div>
+    <h3 style="font-size:1.1rem;color:var(--navy);margin-bottom:8px;">
+      <span class="en-text">Delete this listing?</span>
+      <span class="hi-text">यह लिस्टिंग हटाएं?</span>
+    </h3>
+    <p style="font-size:0.88rem;color:var(--gray);margin-bottom:20px;line-height:1.6;">
+      <span class="en-text">This cannot be undone. The listing will be permanently removed for all users.</span>
+      <span class="hi-text">यह पूर्ववत नहीं किया जा सकता। सभी उपयोगकर्ताओं के लिए लिस्टिंग स्थायी रूप से हटा दी जाएगी।</span>
+    </p>
+    <div id="delete-success-msg" style="display:none;background:#E8F0F9;border-radius:10px;padding:10px;margin-bottom:14px;font-weight:600;color:var(--navy);font-size:0.88rem;">
+      ✅ <span class="en-text">Listing deleted successfully!</span><span class="hi-text">लिस्टिंग सफलतापूर्वक हटा दी गई!</span>
+    </div>
+    <div id="delete-confirm-btns" style="display:flex;gap:10px;">
+      <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeDeleteConfirm()">
+        <span class="en-text">No, keep it</span><span class="hi-text">नहीं, रखें</span>
+      </button>
+      <button class="btn" style="flex:1;background:var(--red);color:#fff;font-weight:700;" onclick="confirmDeleteListing()">
+        <span class="en-text">Yes, delete</span><span class="hi-text">हाँ, हटाएं</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ════ CONTACT MODAL ════ -->
 <div class="modal-overlay" id="contact-modal">
   <div class="modal">
@@ -1410,14 +1436,14 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
+const ADMIN_PASSWORD = 'Str0ng!@#'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
 // Get your free access key at https://web3forms.com
 // Replace the key below with your own key
 // ══════════════════════════════════════
-const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY'; // ← Replace this
+const WEB3FORMS_KEY = '0c8fef8c-8099-4d68-8dd7-118a824014f6'; // ← Replace this
 
 async function sendEmailNotification(subject, body) {
   if (WEB3FORMS_KEY === '0c8fef8c-8099-4d68-8dd7-118a824014f6') return; // skip if not configured
@@ -1476,11 +1502,25 @@ function setData(key, val) {
   _showSyncDot();
 }
 
+// Write queue: stores pending writes when Firebase not ready
+const _writeQueue = {};
+
 function _fbSync(key, val) {
-  if (!_db || !_fbOk || !FB_KEYS.includes(key)) return;
-  _db.collection('mitrawaas').doc(key)
-     .set({ val })
-     .catch(e => console.warn('[MitrAwaas] Firebase write failed:', e));
+  if (!FB_KEYS.includes(key)) return;
+  // Always keep latest value in queue
+  _writeQueue[key] = val;
+  if (!_db || !_fbOk) return; // will flush when Firebase connects
+  _flushQueue();
+}
+
+function _flushQueue() {
+  Object.keys(_writeQueue).forEach(key => {
+    const val = _writeQueue[key];
+    _db.collection('mitrawaas').doc(key)
+       .set({ val })
+       .then(() => { delete _writeQueue[key]; })
+       .catch(e => console.warn('[MitrAwaas] Firebase write failed (will retry):', key, e));
+  });
 }
 
 function _showSyncDot() {
@@ -1575,6 +1615,7 @@ async function initFirebase() {
     });
 
     _fbOk = true;
+    _flushQueue(); // flush any writes that happened before connection
     if (msg) msg.textContent = '✅ Ready!';
 
     // ── Real-time listeners: auto-update when any device writes ──
@@ -1593,7 +1634,7 @@ async function initFirebase() {
           if (active.id === 'page-wishlist')  renderWishlist();
           if (active.id === 'page-mylistings') renderMyListings();
         }
-        if (key === 'ma_users')    updateNavAuth();
+        if (key === 'ma_users') { updateNavAuth(); if (active && active.id === 'page-admin') renderAdmin(); }
         if (key === 'ma_enquiries' && active.id === 'page-enquiries') renderEnquiries();
         if (key === 'ma_suggestions') renderAdmin && typeof renderAdmin==='function' && active.id==='page-admin' && renderAdmin();
       }, err => console.warn('[MitrAwaas] Listener error:', key, err.message));
@@ -1983,19 +2024,51 @@ function saveEditListing() {
   setData('ma_listings', listings);
   alertEl.className = 'alert alert-success';
   alertEl.textContent = '✅ Listing updated!';
-  setTimeout(() => { closeEditListing(); renderListings(); }, 1000);
+  setTimeout(() => {
+    closeEditListing();
+    const active = document.querySelector('.page.active');
+    if (active && active.id === 'page-mylistings') renderMyListings();
+    else renderListings();
+  }, 1000);
 }
 document.getElementById('edit-listing-modal').addEventListener('click', function(e) {
   if (e.target === this) closeEditListing();
 });
+document.getElementById('delete-confirm-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteConfirm();
+});
+
+let _deleteListingId = null;
 
 function deleteMyListing(id) {
-  if (!confirm('Are you sure you want to delete this listing?')) return;
+  _deleteListingId = id;
+  document.getElementById('delete-success-msg').style.display = 'none';
+  document.getElementById('delete-confirm-btns').style.display = 'flex';
+  document.getElementById('delete-confirm-modal').classList.add('open');
+}
+function closeDeleteConfirm() {
+  document.getElementById('delete-confirm-modal').classList.remove('open');
+  _deleteListingId = null;
+}
+function confirmDeleteListing() {
+  if (!_deleteListingId) return;
   let listings = getData('ma_listings');
-  listings = listings.filter(x => x.id !== id);
+  listings = listings.filter(x => x.id !== _deleteListingId);
   setData('ma_listings', listings);
-  closeDetailModal();
-  renderListings();
+  // Show success then close
+  document.getElementById('delete-confirm-btns').style.display = 'none';
+  document.getElementById('delete-success-msg').style.display = 'block';
+  setTimeout(() => {
+    closeDeleteConfirm();
+    closeDetailModal();
+    // Re-render whichever page is active
+    const active = document.querySelector('.page.active');
+    if (active) {
+      if (active.id === 'page-listings')   renderListings();
+      if (active.id === 'page-mylistings') renderMyListings();
+      if (active.id === 'page-wishlist')   renderWishlist();
+    }
+  }, 1200);
 }
 function whatsappContact(mobile, city, bhk, rent) {
   const msg = `Hello! I saw your listing on MitrAwaas for ${bhk ? bhk + ' in ' + city : city} at ₹${rent}/month. I am a PNB colleague. Is it still available?`;
@@ -2256,9 +2329,11 @@ function approveListing(id) {
   if (l) { l.status = 'approved'; setData('ma_listings', listings); renderAdmin(); }
 }
 function deleteListing(id) {
+  if (!confirm('Delete this listing from the platform?')) return;
   let listings = getData('ma_listings');
   listings = listings.filter(x => x.id !== id);
-  setData('ma_listings', listings); renderAdmin();
+  setData('ma_listings', listings);
+  renderAdmin();
 }
 
 function adminTab(tab, btn) {
