@@ -1608,12 +1608,12 @@ function _fbSync(key, val) {
 async function _flushQueue() {
   for (const key of Object.keys(_writeQueue)) {
     const val = _writeQueue[key];
-    // Safety check: never overwrite ma_users with empty array
-    if (key === 'ma_users' && Array.isArray(val) && val.length === 0) {
+    // Safety check: never overwrite ma_users or ma_listings with empty array
+    if ((key === 'ma_users' || key === 'ma_listings') && Array.isArray(val) && val.length === 0) {
       try {
-        const existing = await _db.collection('mitrawaas').doc('ma_users').get();
+        const existing = await _db.collection('mitrawaas').doc(key).get();
         if (existing.exists && existing.data().val && existing.data().val.length > 0) {
-          console.warn('[MitrAwaas] BLOCKED empty ma_users write');
+          console.warn('[MitrAwaas] BLOCKED empty ' + key + ' write');
           delete _writeQueue[key];
           continue;
         }
@@ -1805,12 +1805,16 @@ function initDemoData() {
     // Remove the 6 demo listing IDs (1-6) that were seeded before
     let listings = getData('ma_listings');
     listings = listings.filter(l => l.id > 6);
-    setData('ma_listings', listings);
+    // Write directly to localStorage only — do NOT push to Firebase via setData
+    // (Firebase may already have real user data from other devices)
+    localStorage.setItem('ma_listings', JSON.stringify(listings));
     localStorage.setItem('ma_initialized_v2', '1');
   }
   if (!localStorage.getItem('ma_initialized_v2')) {
-    setData('ma_listings', []);
-    setData('ma_users', []);
+    // Fresh device: set empty local storage only — never push empty arrays to Firebase
+    // Firebase may already have real data from other devices/sessions
+    if (!localStorage.getItem('ma_listings')) localStorage.setItem('ma_listings', JSON.stringify([]));
+    if (!localStorage.getItem('ma_users'))    localStorage.setItem('ma_users',    JSON.stringify([]));
     localStorage.setItem('ma_initialized_v2', '1');
   }
 }
@@ -2085,12 +2089,8 @@ function pullLatestListings() {
   _db.collection('mitrawaas').doc('ma_listings').get()
     .then(snap => {
       if (snap.exists && snap.data().val) {
-        // Only update if Firebase has more or equal listings than localStorage
-        const fbList = snap.data().val;
-        const local  = getData('ma_listings');
-        if (fbList.length >= local.length) {
-          localStorage.setItem('ma_listings', JSON.stringify(fbList));
-        }
+        // Always trust Firebase as the source of truth
+        localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
       }
       renderListings();
     }).catch(() => renderListings());
@@ -2742,9 +2742,11 @@ If you believe this is an error, please contact the platform administrator.
   }
 }
 function approveListing(id) {
-  const listings = getData('ma_listings');
-  const l = listings.find(x => x.id === id);
-  if (l) { l.status = 'approved'; setData('ma_listings', listings); renderAdmin(); }
+  safeUpdate('ma_listings', arr => {
+    const l = arr.find(x => x.id === id);
+    if (l) l.status = 'approved';
+    return arr;
+  }).then(() => renderAdmin());
 }
 function deleteListing(id) {
   if (!confirm('Delete this listing from the platform?')) return;
