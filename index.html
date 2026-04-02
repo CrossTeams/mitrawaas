@@ -1121,6 +1121,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <div class="admin-header">
         <h2>Admin Panel <span style="color:var(--gold)">व्यवस्थापक पैनल</span></h2>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-sm" style="background:#6b7280;color:#fff;font-size:0.8rem;" onclick="refreshAdminFromFirebase()">🔄 Refresh</button>
           <button class="btn btn-sm" id="sync-btn" style="background:var(--green);color:#fff;font-size:0.8rem;" onclick="forceSyncToFirebase()">☁️ Sync to Firebase</button>
           <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="adminLogout()">Logout</button>
         </div>
@@ -1517,6 +1518,7 @@ const FB_KEYS = ['ma_users','ma_listings','ma_wishlists','ma_enquiries','ma_sugg
 
 let _db  = null;   // Firestore instance
 let _fbOk = false; // true once data is loaded from Firebase
+let _writeLock = {}; // keys locked during pending Firebase writes
 
 // ── getData: reads from localStorage cache (always instant/sync) ──
 function getData(key) {
@@ -1535,19 +1537,27 @@ const _writeQueue = {};
 
 function _fbSync(key, val) {
   if (!FB_KEYS.includes(key)) return;
-  // Always keep latest value in queue
   _writeQueue[key] = val;
-  if (!_db || !_fbOk) return; // will flush when Firebase connects
+  if (!_db || !_fbOk) return;
   _flushQueue();
 }
 
 function _flushQueue() {
   Object.keys(_writeQueue).forEach(key => {
     const val = _writeQueue[key];
+    // Lock this key — prevent onSnapshot from overwriting during write
+    _writeLock[key] = Date.now();
     _db.collection('mitrawaas').doc(key)
        .set({ val })
-       .then(() => { delete _writeQueue[key]; })
-       .catch(e => console.warn('[MitrAwaas] Firebase write failed (will retry):', key, e));
+       .then(() => {
+         delete _writeQueue[key];
+         // Release lock after 2s (enough time for onSnapshot echo to pass)
+         setTimeout(() => { delete _writeLock[key]; }, 2000);
+       })
+       .catch(e => {
+         console.warn('[MitrAwaas] Firebase write failed:', key, e);
+         delete _writeLock[key]; // release on error too
+       });
   });
 }
 
@@ -1650,6 +1660,11 @@ async function initFirebase() {
     FB_KEYS.forEach(key => {
       _db.collection('mitrawaas').doc(key).onSnapshot(snap => {
         if (!snap.exists || snap.data().val === undefined) return;
+        // Skip if we just wrote this key — avoid overwriting our own write
+        if (_writeLock[key]) {
+          console.log('[MitrAwaas] Skipping onSnapshot for locked key:', key);
+          return;
+        }
         const incoming = JSON.stringify(snap.data().val);
         const current  = localStorage.getItem(key) || '[]';
         if (incoming === current) return; // no change, skip re-render
@@ -2306,6 +2321,35 @@ function adminLogout() {
 }
 
 // ── Force push ALL local data to Firebase (one-time fix) ──
+// Force-pull latest data from Firebase before rendering admin
+async function refreshAdminFromFirebase() {
+  const resultEl = document.getElementById('sync-result');
+  resultEl.style.display = 'block';
+  resultEl.style.background = '#E8F0F9';
+  resultEl.style.color = 'var(--navy)';
+  resultEl.innerHTML = '⏳ Refreshing from Firebase...';
+  if (!_db) {
+    resultEl.innerHTML = '⚠️ Firebase not connected — showing local data.';
+    renderAdmin();
+    return;
+  }
+  try {
+    const snaps = await Promise.all(
+      FB_KEYS.map(k => _db.collection('mitrawaas').doc(k).get())
+    );
+    snaps.forEach((snap, i) => {
+      if (snap.exists && snap.data().val !== undefined) {
+        localStorage.setItem(FB_KEYS[i], JSON.stringify(snap.data().val));
+      }
+    });
+    resultEl.innerHTML = '✅ Admin panel refreshed with latest data from Firebase.';
+    renderAdmin();
+    setTimeout(() => { resultEl.style.display = 'none'; }, 2500);
+  } catch(e) {
+    resultEl.innerHTML = '❌ Refresh failed: ' + e.message;
+  }
+}
+
 async function forceSyncToFirebase() {
   const btn = document.getElementById('sync-btn');
   const result = document.getElementById('sync-result');
@@ -2408,11 +2452,19 @@ function renderAdmin() {
 }
 
 function approveUser(empId) {
+  console.log('[MitrAwaas] Approving user:', empId);
   const users = getData('ma_users');
+  console.log('[MitrAwaas] Users in localStorage:', users.length);
   const u = users.find(x => x.empId === empId);
+  if (!u) {
+    console.error('[MitrAwaas] User not found for approval:', empId);
+    alert('Error: User not found. Please refresh the admin panel and try again.');
+    return;
+  }
   if (u) {
     u.status = 'approved';
     setData('ma_users', users);
+    console.log('[MitrAwaas] User approved and saved:', empId);
     // Email to the USER at their registered email
     if (u.email) {
       sendEmailNotification(
@@ -2465,8 +2517,14 @@ function adminDeleteUser(empId, name) {
 }
 
 function rejectUser(empId) {
+  console.log('[MitrAwaas] Rejecting user:', empId);
   const users = getData('ma_users');
   const u = users.find(x => x.empId === empId);
+  if (!u) {
+    console.error('[MitrAwaas] User not found for rejection:', empId);
+    alert('Error: User not found. Please refresh the admin panel and try again.');
+    return;
+  }
   if (u) {
     u.status = 'rejected';
     setData('ma_users', users);
