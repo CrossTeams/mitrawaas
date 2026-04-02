@@ -1605,32 +1605,21 @@ function _fbSync(key, val) {
 async function _flushQueue() {
   for (const key of Object.keys(_writeQueue)) {
     const val = _writeQueue[key];
-    // Safety check: never overwrite ma_users with empty or fewer entries
-    // than what Firebase already has — prevents accidental data wipe
-    if (key === 'ma_users' && Array.isArray(val)) {
+    // Safety check: never overwrite ma_users with empty array
+    if (key === 'ma_users' && Array.isArray(val) && val.length === 0) {
       try {
         const existing = await _db.collection('mitrawaas').doc('ma_users').get();
-        if (existing.exists && existing.data().val) {
-          const fbCount = existing.data().val.length;
-          if (val.length === 0 && fbCount > 0) {
-            console.warn('[MitrAwaas] BLOCKED empty ma_users write — Firebase has', fbCount, 'users');
-            delete _writeQueue[key];
-            continue;
-          }
+        if (existing.exists && existing.data().val && existing.data().val.length > 0) {
+          console.warn('[MitrAwaas] BLOCKED empty ma_users write');
+          delete _writeQueue[key];
+          continue;
         }
-      } catch(e) { /* proceed with write if check fails */ }
+      } catch(e) { /* proceed */ }
     }
-    _writeLock[key] = Date.now();
     _db.collection('mitrawaas').doc(key)
        .set({ val })
-       .then(() => {
-         delete _writeQueue[key];
-         setTimeout(() => { delete _writeLock[key]; }, 2000);
-       })
-       .catch(e => {
-         console.warn('[MitrAwaas] Firebase write failed:', key, e);
-         delete _writeLock[key];
-       });
+       .then(() => { delete _writeQueue[key]; })
+       .catch(e => { console.warn('[MitrAwaas] Write failed:', key, e.message); });
   }
 }
 
@@ -1750,28 +1739,21 @@ async function initFirebase() {
     _flushQueue(); // flush any writes that happened before connection
     if (msg) msg.textContent = '✅ Ready!';
 
-    // ── Real-time listeners: ONLY for listings and enquiries ──
-    // ma_users is NOT listened to in real-time — admin uses Refresh button
-    // This prevents the race condition that was wiping user data
-    const liveKeys = ['ma_listings', 'ma_wishlists', 'ma_enquiries'];
-    liveKeys.forEach(key => {
-      _db.collection('mitrawaas').doc(key).onSnapshot(snap => {
-        if (!snap.exists || snap.data().val === undefined) return;
-        if (_writeLock[key]) return; // skip echo of our own write
-        const incoming = JSON.stringify(snap.data().val);
-        const current  = localStorage.getItem(key) || '[]';
-        if (incoming === current) return;
-        localStorage.setItem(key, incoming);
+    // ── No real-time listeners — they caused data corruption ──
+    // Data is fetched fresh from Firebase on every page navigation
+    // Admin uses the 🔄 Refresh button
+    // Listings page does a quiet background refresh every 60 seconds
+    setInterval(async () => {
+      try {
         const active = document.querySelector('.page.active');
-        if (!active) return;
-        if (key === 'ma_listings') {
-          if (active.id === 'page-listings')   renderListings();
-          if (active.id === 'page-wishlist')   renderWishlist();
-          if (active.id === 'page-mylistings') renderMyListings();
+        if (!active || active.id !== 'page-listings') return;
+        const snap = await _db.collection('mitrawaas').doc('ma_listings').get();
+        if (snap.exists && snap.data().val) {
+          localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
+          renderListings();
         }
-        if (key === 'ma_enquiries' && active.id === 'page-enquiries') renderEnquiries();
-      }, err => console.warn('[MitrAwaas] Listener error:', key, err.message));
-    });
+      } catch(e) { /* silent fail */ }
+    }, 60000);
 
     // Refresh UI with freshly loaded data
     updateNavAuth();
@@ -1825,7 +1807,16 @@ function showPage(id) {
     document.getElementById('login-alert').className = 'alert';
     document.getElementById('login-alert').textContent = '';
   }
-  if (id === 'listings') renderListings();
+  if (id === 'listings') {
+    // Fetch fresh from Firebase then render
+    if (_db && _fbOk) {
+      _db.collection('mitrawaas').doc('ma_listings').get()
+        .then(snap => {
+          if (snap.exists && snap.data().val) localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
+          renderListings();
+        }).catch(() => renderListings());
+    } else { renderListings(); }
+  }
   if (id === 'admin') { renderAdmin(); }
   if (id === 'post') {
     // Reset form to fresh state each visit
@@ -1865,7 +1856,15 @@ function showPage(id) {
     document.getElementById('reg-form').style.display = 'block';
     document.getElementById('reg-success').style.display = 'none';
   }
-  if (id === 'mylistings') renderMyListings();
+  if (id === 'mylistings') {
+    if (_db && _fbOk) {
+      _db.collection('mitrawaas').doc('ma_listings').get()
+        .then(snap => {
+          if (snap.exists && snap.data().val) localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
+          renderMyListings();
+        }).catch(() => renderMyListings());
+    } else { renderMyListings(); }
+  }
   if (id === 'profile') openProfilePage();
   if (id === 'wishlist') renderWishlist();
   if (id === 'enquiries') renderEnquiries();
@@ -2647,10 +2646,7 @@ async function approveUser(empId) {
     if (u.email) {
       sendEmailNotification(
         `✅ MitrAwaas — Your account has been approved`,
-        `Dear ${u.name},\n\nGreat news! Your MitrAwaas account has been approved.\n\n` +
-        `Employee ID : ${u.empId}\n` +
-        `You can now login at www.mitrawaas.co.in and start browsing or posting listings.\n\n` +
-        `- MitrAwaas Admin`,
+        `✅ Dear ${u.name},\n\nYour MitrAwaas account (Emp ID: ${u.empId}) has been approved! You can now login and browse/post listings at MitrAwaas.\n\nwww.mitrawaas.co.in\n\nRegards,\nMitrAwaas Admin`,
         u.email
       );
     }
