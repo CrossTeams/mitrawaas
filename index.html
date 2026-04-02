@@ -832,6 +832,9 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
     <h2><span class="en-text">Available homes</span><span class="hi-text">उपलब्ध घर</span> 🏠</h2>
     <p><span class="en-text">Browse rental listings from PNB colleagues</span><span class="hi-text">PNB साथियों के किराये के घर</span></p>
   </div>
+  <div style="text-align:right;padding:0 16px 8px;">
+    <button onclick="pullLatestListings()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 14px;font-size:0.78rem;color:var(--gray);cursor:pointer;">🔄 <span class="en-text">Pull latest</span><span class="hi-text">ताज़ा करें</span></button>
+  </div>
   <div class="search-bar-wrap">
     <div class="search-bar">
       <input type="text" id="search-city" placeholder="🔍 Search / खोजें" oninput="filterListings()"/>
@@ -1707,10 +1710,7 @@ async function initFirebase() {
     // Force long polling — avoids WebChannel/WebSocket blocks on mobile networks
     _db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
 
-    // Enable offline cache (single-tab, avoids deprecated multi-tab warning)
-    try {
-      await _db.enablePersistence();
-    } catch(e) { /* persistence not critical — continue without it */ }
+    // Persistence disabled — avoids cache/server conflicts
 
     if (msg) msg.textContent = 'Loading data...';
 
@@ -1739,21 +1739,7 @@ async function initFirebase() {
     _flushQueue(); // flush any writes that happened before connection
     if (msg) msg.textContent = '✅ Ready!';
 
-    // ── No real-time listeners — they caused data corruption ──
-    // Data is fetched fresh from Firebase on every page navigation
-    // Admin uses the 🔄 Refresh button
-    // Listings page does a quiet background refresh every 60 seconds
-    setInterval(async () => {
-      try {
-        const active = document.querySelector('.page.active');
-        if (!active || active.id !== 'page-listings') return;
-        const snap = await _db.collection('mitrawaas').doc('ma_listings').get();
-        if (snap.exists && snap.data().val) {
-          localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
-          renderListings();
-        }
-      } catch(e) { /* silent fail */ }
-    }, 60000);
+    // No background refresh — data served from localStorage after safeAppend writes
 
     // Refresh UI with freshly loaded data
     updateNavAuth();
@@ -1807,16 +1793,7 @@ function showPage(id) {
     document.getElementById('login-alert').className = 'alert';
     document.getElementById('login-alert').textContent = '';
   }
-  if (id === 'listings') {
-    // Fetch fresh from Firebase then render
-    if (_db && _fbOk) {
-      _db.collection('mitrawaas').doc('ma_listings').get()
-        .then(snap => {
-          if (snap.exists && snap.data().val) localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
-          renderListings();
-        }).catch(() => renderListings());
-    } else { renderListings(); }
-  }
+  if (id === 'listings') renderListings();
   if (id === 'admin') { renderAdmin(); }
   if (id === 'post') {
     // Reset form to fresh state each visit
@@ -1856,15 +1833,7 @@ function showPage(id) {
     document.getElementById('reg-form').style.display = 'block';
     document.getElementById('reg-success').style.display = 'none';
   }
-  if (id === 'mylistings') {
-    if (_db && _fbOk) {
-      _db.collection('mitrawaas').doc('ma_listings').get()
-        .then(snap => {
-          if (snap.exists && snap.data().val) localStorage.setItem('ma_listings', JSON.stringify(snap.data().val));
-          renderMyListings();
-        }).catch(() => renderMyListings());
-    } else { renderMyListings(); }
-  }
+  if (id === 'mylistings') renderMyListings();
   if (id === 'profile') openProfilePage();
   if (id === 'wishlist') renderWishlist();
   if (id === 'enquiries') renderEnquiries();
@@ -2067,6 +2036,22 @@ function renderListings(filtered) {
       </div>`;
     grid.appendChild(card);
   });
+}
+
+function pullLatestListings() {
+  if (!_db || !_fbOk) { renderListings(); return; }
+  _db.collection('mitrawaas').doc('ma_listings').get()
+    .then(snap => {
+      if (snap.exists && snap.data().val) {
+        // Only update if Firebase has more or equal listings than localStorage
+        const fbList = snap.data().val;
+        const local  = getData('ma_listings');
+        if (fbList.length >= local.length) {
+          localStorage.setItem('ma_listings', JSON.stringify(fbList));
+        }
+      }
+      renderListings();
+    }).catch(() => renderListings());
 }
 
 function filterListings() {
