@@ -524,6 +524,10 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
             <span class="dropdown-icon">➕</span>
             <span class="en-text">Post a listing</span><span class="hi-text">अपना घर लिस्ट करें</span>
           </button>
+          <button class="dropdown-item" onclick="showPage('mylistings');closeUserMenu()">
+            <span class="dropdown-icon">📋</span>
+            <span class="en-text">My listings</span><span class="hi-text">मेरी लिस्टिंग</span>
+          </button>
           <button class="dropdown-item" onclick="showPage('wishlist');closeUserMenu()">
             <span class="dropdown-icon">❤️</span>
             <span class="en-text">My wishlist</span><span class="hi-text">मेरी विशलिस्ट</span>
@@ -1054,6 +1058,21 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   </div>
 </div>
 
+<!-- ════════════ MY LISTINGS PAGE ════════════ -->
+<div id="page-mylistings" class="page">
+  <div class="page-header">
+    <h2>📋 <span class="en-text">My listings</span><span class="hi-text">मेरी लिस्टिंग</span></h2>
+    <p><span class="en-text">Properties you have listed on MitrAwaas</span><span class="hi-text">आपके द्वारा सूचीबद्ध प्रॉपर्टी</span></p>
+  </div>
+  <div id="my-listings-grid" class="listings-grid"></div>
+  <div id="my-listings-empty" style="display:none;text-align:center;padding:60px 24px;">
+    <div style="font-size:3rem;margin-bottom:12px;">🏠</div>
+    <h3 style="color:var(--gray);"><span class="en-text">No listings yet</span><span class="hi-text">कोई लिस्टिंग नहीं</span></h3>
+    <p style="color:var(--gray);margin-top:8px;font-size:0.9rem;"><span class="en-text">Post your first property and it will appear here</span><span class="hi-text">अपनी पहली प्रॉपर्टी पोस्ट करें</span></p>
+    <button class="btn btn-gold" style="margin-top:20px;" onclick="showPage('post')"><span class="en-text">Post a listing</span><span class="hi-text">लिस्टिंग करें</span></button>
+  </div>
+</div>
+
 <div id="page-admin" class="page">
   <div class="page-header">
     <h2>🔐 Admin Panel</h2>
@@ -1217,6 +1236,25 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeEditListing()">Cancel</button>
       <button class="btn btn-gold" style="flex:2;" onclick="saveEditListing()">💾 Save changes</button>
     </div>
+  </div>
+</div>
+
+<!-- ════ REGISTRATION SUCCESS POPUP ════ -->
+<div class="cp-modal" id="reg-success-modal">
+  <div class="cp-box" style="max-width:400px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:12px;">⏳</div>
+    <h3 style="font-size:1.2rem;color:var(--navy);margin-bottom:10px;">
+      <span class="en-text">Request sent!</span>
+      <span class="hi-text">अनुरोध भेज दिया गया!</span>
+    </h3>
+    <p style="font-size:0.9rem;color:var(--gray);line-height:1.6;margin-bottom:20px;">
+      <span class="en-text">Your registration has been submitted for admin approval. You will be notified once your account is approved. This usually takes up to <strong>24 hours</strong>.</span>
+      <span class="hi-text">आपका पंजीकरण व्यवस्थापक की अनुमति के लिए भेज दिया गया है। खाता स्वीकृत होने पर आपको सूचित किया जाएगा। इसमें <strong>24 घंटे</strong> तक का समय लग सकता है।</span>
+    </p>
+    <button class="btn btn-gold" style="width:100%;padding:12px;" onclick="document.getElementById('reg-success-modal').classList.remove('open');showPage('home')">
+      <span class="en-text">Go to home →</span>
+      <span class="hi-text">होम पर जाएं →</span>
+    </button>
   </div>
 </div>
 
@@ -1516,6 +1554,7 @@ async function initFirebase() {
     if (msg) msg.textContent = 'Loading data...';
 
     // Fetch all collections with a 8-second timeout per request
+    // ── Initial load: get all docs once ──
     const snaps = await withTimeout(
       Promise.all(FB_KEYS.map(k => _db.collection('mitrawaas').doc(k).get())),
       8000
@@ -1524,10 +1563,9 @@ async function initFirebase() {
     snaps.forEach((snap, i) => {
       const key = FB_KEYS[i];
       if (snap.exists && snap.data().val !== undefined) {
-        // Firebase has data → overwrite local (Firebase is source of truth)
         localStorage.setItem(key, JSON.stringify(snap.data().val));
       } else {
-        // Firebase is empty for this key → push local data UP to Firebase
+        // Firebase empty → push local data up
         const localVal = (() => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } })();
         if (localVal && Array.isArray(localVal) && localVal.length > 0) {
           _db.collection('mitrawaas').doc(key).set({ val: localVal })
@@ -1538,6 +1576,28 @@ async function initFirebase() {
 
     _fbOk = true;
     if (msg) msg.textContent = '✅ Ready!';
+
+    // ── Real-time listeners: auto-update when any device writes ──
+    FB_KEYS.forEach(key => {
+      _db.collection('mitrawaas').doc(key).onSnapshot(snap => {
+        if (!snap.exists || snap.data().val === undefined) return;
+        const incoming = JSON.stringify(snap.data().val);
+        const current  = localStorage.getItem(key) || '[]';
+        if (incoming === current) return; // no change, skip re-render
+        localStorage.setItem(key, incoming);
+        // Refresh whichever page is currently active
+        const active = document.querySelector('.page.active');
+        if (!active) return;
+        if (key === 'ma_listings') {
+          if (active.id === 'page-listings')  renderListings();
+          if (active.id === 'page-wishlist')  renderWishlist();
+          if (active.id === 'page-mylistings') renderMyListings();
+        }
+        if (key === 'ma_users')    updateNavAuth();
+        if (key === 'ma_enquiries' && active.id === 'page-enquiries') renderEnquiries();
+        if (key === 'ma_suggestions') renderAdmin && typeof renderAdmin==='function' && active.id==='page-admin' && renderAdmin();
+      }, err => console.warn('[MitrAwaas] Listener error:', key, err.message));
+    });
 
     // Refresh UI with freshly loaded data
     updateNavAuth();
@@ -1588,6 +1648,7 @@ function showPage(id) {
   if (id === 'listings') renderListings();
   if (id === 'admin') renderAdmin();
   if (id === 'register') initCaptcha();
+  if (id === 'mylistings') renderMyListings();
   if (id === 'profile') openProfilePage();
   if (id === 'wishlist') renderWishlist();
   if (id === 'enquiries') renderEnquiries();
@@ -1697,9 +1758,9 @@ function submitRegister() {
     `This listing is now live on MitrAwaas.`
   );
 
-  document.getElementById('reg-mobile-display').textContent = mobile;
   document.getElementById('reg-form').style.display = 'none';
   document.getElementById('reg-success').style.display = 'block';
+  document.getElementById('reg-success-modal').classList.add('open');
 }
 
 // ══════════════════════════════════════
@@ -2600,6 +2661,45 @@ function saveProfile() {
 // ══════════════════════════════════════
 // WISHLIST
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// MY LISTINGS
+// ══════════════════════════════════════
+function renderMyListings() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  const listings = getData('ma_listings').filter(l => l.empId === empId);
+  const grid  = document.getElementById('my-listings-grid');
+  const empty = document.getElementById('my-listings-empty');
+  grid.innerHTML = '';
+  if (!listings.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  const emojis = ['🏠','🏡','🏢','🏣','🏤'];
+  const g1 = ['#0B3A63','#0F4C81','#1A6BB5','#0d3360','#1565a8'];
+  const g2 = ['#0F4C81','#1A6BB5','#0B3A63','#1565a8','#0F4C81'];
+  listings.forEach((l, i) => {
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    const statusColor = l.status === 'approved' ? 'var(--green)' : '#e07b00';
+    const statusLabel = l.status === 'approved' ? '✅ Live' : '⏳ Pending';
+    card.innerHTML = `
+      <div class="listing-img" style="background:linear-gradient(135deg,${g1[i%5]},${g2[i%5]});position:relative;" onclick="openDetailModal(${l.id})">
+        <span>${emojis[i%emojis.length]}</span>
+        <span class="listing-badge">${l.bhk}</span>
+        <span style="position:absolute;top:10px;left:12px;background:#fff;border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:700;color:${statusColor};">${statusLabel}</span>
+      </div>
+      <div class="listing-body" onclick="openDetailModal(${l.id})" style="cursor:pointer;">
+        <div class="listing-title">${l.bhk} in ${l.area}</div>
+        <div class="listing-location">📍 ${l.city}</div>
+        <div class="listing-details"><span class="tag">🛋️ ${l.furnish}</span><span class="tag">👤 ${l.pref}</span></div>
+        <div class="listing-rent">₹${Number(l.rent).toLocaleString('en-IN')} <span>/ month</span></div>
+        <div class="listing-footer" onclick="event.stopPropagation()">
+          <button class="btn btn-navy btn-sm" onclick="openEditListing(${l.id})">✏️ Edit</button>
+          <button class="btn btn-sm" style="background:var(--red);color:#fff;" onclick="deleteMyListing(${l.id})">🗑️ Delete</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
 function getWishlist() {
   const empId = sessionStorage.getItem('ma_loggedIn');
   if (!empId) return [];
