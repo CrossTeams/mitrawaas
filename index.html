@@ -1044,9 +1044,12 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       </div>
       <div class="form-success" id="post-success">
         <div class="success-icon">🎉</div>
-        <h3><span class="en-text">Listing Submitted!</span><span class="hi-text">लिस्टिंग जमा हो गई!</span></h3>
-        <p><span class="en-text">Your listing is now live! Other members can browse and contact you.</span><span class="hi-text">आपकी लिस्टिंग अभी लाइव है! अन्य सदस्य आपसे संपर्क कर सकते हैं।</span></p>
-        <button class="btn btn-navy" style="margin-top:20px;" onclick="showPage('listings')"><span class="en-text">Browse listings</span><span class="hi-text">घर देखें</span></button>
+        <h3><span class="en-text">Listing Live!</span><span class="hi-text">लिस्टिंग लाइव हो गई!</span></h3>
+        <p><span class="en-text">Your listing is now live. Taking you to your listings in a moment...</span><span class="hi-text">आपकी लिस्टिंग लाइव है। थोड़ी देर में आपकी लिस्टिंग दिखाई जाएगी...</span></p>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;">
+          <button class="btn btn-navy" onclick="showPage('mylistings')"><span class="en-text">📋 My listings</span><span class="hi-text">मेरी लिस्टिंग</span></button>
+          <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="showPage('listings')"><span class="en-text">Browse all</span><span class="hi-text">सभी देखें</span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -1639,6 +1642,27 @@ function _showSyncDot() {
   dot._t = setTimeout(() => { dot.style.opacity = '0'; }, 1400);
 }
 
+// ── safeAppend: read fresh from Firebase, append item, write back ──
+// Prevents stale localStorage from overwriting Firebase data
+async function safeAppend(key, newItem) {
+  let arr;
+  if (_db && _fbOk) {
+    try {
+      const snap = await _db.collection('mitrawaas').doc(key).get();
+      arr = (snap.exists && Array.isArray(snap.data().val)) ? snap.data().val : getData(key);
+      localStorage.setItem(key, JSON.stringify(arr));
+    } catch(e) {
+      console.warn('[MitrAwaas] safeAppend read failed, using localStorage:', e.message);
+      arr = getData(key);
+    }
+  } else {
+    arr = getData(key);
+  }
+  arr.push(newItem);
+  setData(key, arr);
+  return arr;
+}
+
 // ── dismissLoader: force-hide the splash (called by skip btn or timeout) ──
 function dismissLoader() {
   const loader = document.getElementById('fb-loader');
@@ -1944,8 +1968,9 @@ function submitRegister() {
     }
   }
 
-  users.push({ empId, name, mobile, email, branch, city, designation, pass, secQ, secA, status: 'pending', joinedAt: new Date().toISOString() });
-  setData('ma_users', users);
+  const newUser = { empId, name, mobile, email, branch, city, designation, pass, secQ, secA, status: 'pending', joinedAt: new Date().toISOString() };
+  // Use safeAppend to avoid overwriting existing users in Firebase
+  safeAppend('ma_users', newUser);
 
 
   // Admin notification
@@ -2088,8 +2113,7 @@ function showContact(mobile, empId, city, bhk) {
   const viewerEmpId = sessionStorage.getItem('ma_loggedIn');
   if (viewerEmpId && viewerEmpId !== empId) {
     const viewer = users.find(u => u.empId === viewerEmpId);
-    const enquiries = getData('ma_enquiries');
-    enquiries.push({
+    safeAppend('ma_enquiries', {
       ownerEmpId: empId,
       viewerEmpId,
       viewerName: viewer ? viewer.name : viewerEmpId,
@@ -2097,7 +2121,6 @@ function showContact(mobile, empId, city, bhk) {
       city, bhk,
       at: new Date().toISOString()
     });
-    setData('ma_enquiries', enquiries);
     updateEnquiryBadge();
   }
 }
@@ -2411,7 +2434,6 @@ function submitListing() {
     alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया शहर और क्षेत्र भरें।' : '⚠️ Please fill in city and locality.'; return;
   }
   const photoCount = document.getElementById('photo-preview').querySelectorAll('.photo-thumb').length;
-  const listings = getData('ma_listings');
   const ownerName = [fname, mname, lname].filter(Boolean).join(' ');
   const immediately = document.getElementById('post-immediately').checked;
   const availDate   = immediately ? 'Immediately' : (document.getElementById('post-date').value || '');
@@ -2421,13 +2443,16 @@ function submitListing() {
   const parking     = document.getElementById('post-parking').value;
   const parkingCount= parking !== 'none' ? (document.getElementById('post-parking-count').value || '1') : '0';
   const mapLink     = document.getElementById('post-maplink').value.trim();
-  listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, propType, propSize: propSize ? parseInt(propSize) : 0, propSizeType, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, parking, parkingCount, mapLink, desc, pref, photoCount, availFrom: availDate, status: 'approved', date: new Date().toISOString() });
-  setData('ma_listings', listings);
+  const newListing = { id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, propType, propSize: propSize ? parseInt(propSize) : 0, propSizeType, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, parking, parkingCount, mapLink, desc, pref, photoCount, availFrom: availDate, status: 'approved', date: new Date().toISOString() };
 
-  // Listing submission email removed per user preference
-
+  // Show success immediately — save in background
   document.getElementById('post-form').style.display = 'none';
   document.getElementById('post-success').style.display = 'block';
+
+  safeAppend('ma_listings', newListing).then(() => {
+    // Auto-navigate to My Listings after 2.5s
+    setTimeout(() => { showPage('mylistings'); }, 2500);
+  });
 }
 
 // ══════════════════════════════════════
@@ -3312,16 +3337,14 @@ function submitSuggestion() {
   const empId = sessionStorage.getItem('ma_loggedIn');
   const users = getData('ma_users');
   const user = empId ? users.find(u => u.empId === empId) : null;
-  const suggestions = getData('ma_suggestions');
-  suggestions.push({
+  const newSuggestion = {
     id: Date.now(),
     text,
     from: user ? user.name : 'Anonymous',
     empId: user ? user.empId : '',
     at: new Date().toISOString(),
     read: false
-  });
-  setData('ma_suggestions', suggestions);
+  };
   document.getElementById('suggestion-text').value = '';
   document.getElementById('suggestion-area').style.display = 'none';
   document.getElementById('suggestion-success').style.display = 'block';
@@ -3329,6 +3352,7 @@ function submitSuggestion() {
     document.getElementById('suggestion-success').style.display = 'none';
     document.getElementById('suggestion-area').style.display = 'block';
   }, 3000);
+  safeAppend('ma_suggestions', newSuggestion); // read fresh then append
 }
 
 function renderSuggestions() {
