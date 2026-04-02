@@ -1446,22 +1446,26 @@ const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
 // ══════════════════════════════════════
 const WEB3FORMS_KEY = '0c8fef8c-8099-4d68-8dd7-118a824014f6';
 
-async function sendEmailNotification(subject, body) {
+async function sendEmailNotification(subject, body, toEmail) {
   if (!WEB3FORMS_KEY || WEB3FORMS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') return;
   try {
+    const payload = {
+      access_key: WEB3FORMS_KEY,
+      subject: subject,
+      message: body,
+      from_name: 'MitrAwaas Platform',
+      botcheck: ''
+    };
+    // If a recipient email is provided, use replyto so they see it
+    if (toEmail) payload.replyto = toEmail;
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: subject,
-        message: body,
-        from_name: 'MitrAwaas Platform',
-        botcheck: ''
-      })
+      body: JSON.stringify(payload)
     });
     const data = await res.json();
     if (!data.success) console.warn('[MitrAwaas] Email failed:', data.message);
+    else console.log('[MitrAwaas] Email sent ✅', subject);
   } catch(e) { console.warn('[MitrAwaas] Email error:', e); }
 }
 
@@ -1799,6 +1803,8 @@ function submitRegister() {
   users.push({ empId, name, mobile, email, branch, city, designation, pass, secQ, secA, status: 'pending', joinedAt: new Date().toISOString() });
   setData('ma_users', users);
 
+
+  // Admin notification
   sendEmailNotification(
     '🆕 New Registration — MitrAwaas',
     `New registration request received:\n\n` +
@@ -1807,10 +1813,21 @@ function submitRegister() {
     `SOL ID      : ${branch}\n` +
     `City        : ${city}\n` +
     `Designation : ${designation}\n` +
-    `Mobile      : ${mobile}\n\n` +
-    `This listing is now live on MitrAwaas.`
+    `Mobile      : ${mobile}\n` +
+    `Email       : ${email}\n\n` +
+    `Please login to the admin panel to review and approve.`
   );
-
+  // Acknowledgement email to the user
+  if (email) {
+    sendEmailNotification(
+      'MitrAwaas — Registration received',
+      `Dear ${name},\n\nThank you for registering on MitrAwaas!\n\n` +
+      `Your registration (Employee ID: ${empId}) has been received and is under review.\n` +
+      `You will receive another email once your account is approved (usually within 24 hours).\n\n` +
+      `- MitrAwaas Admin`,
+      email
+    );
+  }
   document.getElementById('reg-form').style.display = 'none';
   document.getElementById('reg-success').style.display = 'block';
   document.getElementById('reg-success-modal').classList.add('open');
@@ -2303,15 +2320,28 @@ function approveUser(empId) {
   if (u) {
     u.status = 'approved';
     setData('ma_users', users);
+    // Email to the USER at their registered email
+    if (u.email) {
+      sendEmailNotification(
+        `✅ MitrAwaas — Your account has been approved`,
+        `Dear ${u.name},\n\nGreat news! Your MitrAwaas account has been approved.\n\n` +
+        `Employee ID : ${u.empId}\n` +
+        `You can now login at www.mitrawaas.co.in and start browsing or posting listings.\n\n` +
+        `- MitrAwaas Admin`,
+        u.email
+      );
+    }
+    // Admin notification to crossteams@hotmail.com
     sendEmailNotification(
-      `✅ User Approved — ${u.name} (${u.empId})`,
-      `You have approved the following user on MitrAwaas:\n\n` +
-      `Employee ID : ${u.empId}\n` +
+      `✅ Approved — ${u.name} (${u.empId})`,
+      `You approved the following user on MitrAwaas:\n\n` +
       `Name        : ${u.name}\n` +
+      `Employee ID : ${u.empId}\n` +
       `SOL ID      : ${u.branch}\n` +
       `City        : ${u.city}\n` +
       `Designation : ${u.designation}\n` +
-      `Mobile      : ${u.mobile}`
+      `Mobile      : ${u.mobile}\n` +
+      `Email       : ${u.email || 'not provided'}`
     );
     renderAdmin();
     // Show approval notice modal — admin can copy & send from any number
@@ -2330,9 +2360,37 @@ function rejectUser(empId) {
     u.status = 'rejected';
     setData('ma_users', users);
     renderAdmin();
-    const msg = `Dear ${u.name},\n\nWe regret to inform you that your MitrAwaas registration (Employee ID: ${u.empId}) could not be approved at this time.\n\nIf you believe this is an error, please contact the platform administrator.\n\n- MitrAwaas Admin`;
+    const msg = `Dear ${u.name},
+
+We regret to inform you that your MitrAwaas registration (Employee ID: ${u.empId}) could not be approved at this time.
+
+If you believe this is an error, please contact the platform administrator.
+
+- MitrAwaas Admin`;
+    // Email to the USER
+    if (u.email) {
+      sendEmailNotification(
+        `MitrAwaas — Registration update`,
+        msg,
+        u.email
+      );
+    }
+    // Admin notification
+    sendEmailNotification(
+      `❌ Rejected — ${u.name} (${u.empId})`,
+      `You rejected the following user on MitrAwaas:
+
+` +
+      `Name        : ${u.name}
+` +
+      `Employee ID : ${u.empId}
+` +
+      `Mobile      : ${u.mobile}
+` +
+      `Email       : ${u.email || 'not provided'}`
+    );
     document.getElementById('approval-modal-title').textContent = '❌ User rejected';
-    document.getElementById('approval-modal-note').innerHTML = 'The user has been rejected. You may notify them via email. Their email: <strong id="approval-user-mobile" style="color:var(--navy);">' + (u.email || 'not provided') + '</strong>';
+    document.getElementById('approval-modal-note').innerHTML = 'Rejection email sent to <strong style="color:var(--navy);">' + (u.email || 'user (no email on file)') + '</strong>. You can also send a WhatsApp message below.';
     document.getElementById('approval-msg-text').value = msg;
     window._approvalUserEmail = u.email || '';
     document.getElementById('approval-modal').classList.add('open');
