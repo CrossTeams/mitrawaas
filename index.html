@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MitrAwaas – Homes for PNB employees</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  /* Theme variables imported from index (2).html */
+  --navy: #1a2622;
+  --blue: #2db896;
+  --gold: #f5c800;
+  --gold-light: #ffe066;
+  --cream: #edf7f4;
+  --white: #ffffff;
+  --green: #2db896;
+  --red: #c0392b;
+  --gray: #6b7280;
+  --light: #f2f6f5;
+  --border: #b8ddd6;
+  --shadow: 0 4px 24px rgba(10,35,66,0.10);
+  --shadow-lg: 0 8px 40px rgba(10,35,66,0.16);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: #F8FAFC; color: var(--navy); min-height: 100vh; }
+h1,h2,h3,.hindi { font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif; }
+
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle {
+  display: flex; align-items: center;
+  background: #F8FAFC; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 3px; gap: 2px;
+}
+.lang-btn {
+  background: transparent; border: none; color: var(--navy);
+  padding: 5px 12px; border-radius: 6px; font-size: 0.8rem;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+  white-space: nowrap;
+}
+.lang-btn.active { background: var(--blue); color: #fff; }
+.lang-btn:hover:not(.active) { background: #E8F0F9; color: var(--navy); }
+
+/* Language visibility */
+[data-lang="en"] .hi-text { display: none !important; }
+[data-lang="en"] .en-text { display: inline !important; }
+[data-lang="hi"] .en-text { display: none !important; }
+[data-lang="hi"] .hi-text { display: inline !important; }
+.hi-text { display: none; }
+.en-text { display: inline; }
+
+/* ── NAVBAR ── */
+nav {
+  background: #ffffff;
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 62px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 0 #e0e7ff;
+  border-bottom: 1px solid #e0e7ff;
+}
+.nav-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.nav-logo-icon {
+  width: 36px; height: 36px; background: var(--gold);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.nav-logo-text { color: #0B3A63; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.25rem; line-height: 1; }
+.nav-logo-text span { color: var(--gold); }
+.nav-logo-sub { color: #0F4C81; font-size: 0.65rem; display: block; font-weight: 400; }
+.nav-actions { display: flex; gap: 10px; }
+.btn { padding: 8px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; font-size: 0.9rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif; }
+.btn-outline { background: transparent; border: 1.5px solid var(--blue); color: var(--blue); }
+.btn-hero-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.6); color: var(--white); padding: 8px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif; }
+.btn-hero-outline:hover { background: rgba(255,255,255,0.15); border-color: var(--white); }
+.btn-outline:hover { background: #E8F0F9; border-color: var(--blue); color: var(--blue); }
+.btn-gold { background: var(--gold); color: #ffffff; font-weight: 700; }
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); color: #ffffff; }
+.btn-navy { background: var(--navy); color: var(--white); }
+.btn-navy:hover { background: #0B3A63; }
+.btn-green { background: var(--green); color: var(--white); }
+.btn-green:hover { background: #155a9a; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(135deg, #0B3A63 0%, #0F4C81 55%, #1A6BB5 100%);
+  color: var(--white);
+  padding: 64px 24px 80px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.5);
+  color: #ffffff; padding: 4px 16px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;
+  letter-spacing: 0.5px;
+}
+.why-chip {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; padding: 6px 14px; border-radius: 20px;
+  font-size: 0.82rem; font-weight: 500;
+}
+.hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.hero h1 span { color: var(--gold); }
+.hero-hindi { font-family: 'Baloo 2','Noto Sans Devanagari',sans-serif; font-size: clamp(1rem, 3vw, 1.4rem); color: #ffffff; margin-bottom: 20px; }
+.hero p { font-size: 1.05rem; color: #ffffff; max-width: 540px; margin: 0 auto 32px; line-height: 1.6; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero-stats {
+  display: flex; justify-content: center; gap: 32px; flex-wrap: wrap;
+  margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1);
+}
+.stat { text-align: center; }
+.stat-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+.stat-label { font-size: 0.78rem; color: #ffffff; margin-top: 2px; }
+
+/* ── FEATURES ── */
+.features { padding: 56px 24px; max-width: 900px; margin: 0 auto; }
+.section-title { text-align: center; margin-bottom: 36px; }
+.section-title h2 { font-size: 1.7rem; font-weight: 800; }
+.section-title .sub { color: var(--gray); font-size: 0.95rem; margin-top: 6px; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.feature-card {
+  background: var(--white); border-radius: 20px; padding: 28px 20px;
+  text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.feature-icon { font-size: 2.4rem; margin-bottom: 14px; }
+.feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+.feature-card p { font-size: 0.85rem; color: var(--gray); line-height: 1.5; }
+
+/* ── LISTINGS PAGE ── */
+.page-header {
+  background: var(--navy); color: var(--white);
+  padding: 32px 24px 28px; text-align: center;
+}
+.page-header h2 { font-size: 1.6rem; font-weight: 800; }
+.page-header p { color: rgba(255,255,255,0.85); font-size: 0.9rem; margin-top: 4px; }
+
+.search-bar-wrap { background: var(--white); padding: 16px 24px; border-bottom: 1px solid var(--border); }
+.search-bar { display: flex; gap: 10px; max-width: 700px; margin: 0 auto; flex-wrap: wrap; }
+.search-bar input, .search-bar select {
+  flex: 1; min-width: 140px; padding: 10px 14px; border: 1.5px solid var(--border);
+  border-radius: 8px; font-size: 0.9rem; font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--cream); color: var(--navy);
+}
+.search-bar input:focus, .search-bar select:focus { outline: none; border-color: var(--blue); }
+
+.listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; padding: 28px 24px; max-width: 1100px; margin: 0 auto; }
+.listing-card {
+  background: var(--white); border-radius: 18px; overflow: hidden;
+  box-shadow: 0 2px 12px rgba(15,76,129,0.08); border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.listing-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.listing-img {
+  height: 160px; background: linear-gradient(135deg, #2db896, #0f3d2e);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; position: relative;
+}
+.listing-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: var(--gold); color: #ffffff;
+  padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+}
+.listing-body { padding: 16px; }
+.listing-title { font-weight: 700; font-size: 1rem; margin-bottom: 4px; }
+.listing-location { color: var(--gray); font-size: 0.83rem; margin-bottom: 12px; display: flex; align-items: center; gap: 4px; }
+.listing-details { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.tag {
+  background: var(--light); color: var(--navy);
+  padding: 3px 10px; border-radius: 6px; font-size: 0.78rem; font-weight: 500;
+}
+.listing-rent { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 800; color: #0F4C81; margin-bottom: 14px; }
+.listing-rent span { font-size: 0.8rem; color: var(--gray); font-weight: 400; }
+.listing-footer { display: flex; gap: 8px; }
+.listing-footer .btn { flex: 1; font-size: 0.82rem; padding: 8px 10px; text-align: center; }
+
+/* ── FORMS ── */
+.form-page { max-width: 560px; margin: 32px auto; padding: 0 16px 40px; }
+.form-card { background: var(--white); border-radius: 24px; padding: 32px; box-shadow: 0 4px 32px rgba(11,58,99,0.10); border: 1px solid var(--border); }
+.form-card h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; }
+.form-card .form-sub { color: var(--gray); font-size: 0.88rem; margin-bottom: 24px; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-weight: 600; font-size: 0.88rem; margin-bottom: 6px; color: var(--navy); }
+.form-group label .hin { color: var(--gray); font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif; font-size: 0.82rem; font-weight: 400; margin-left: 4px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+  border-radius: 10px; font-size: 0.92rem; font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--cream); color: var(--navy); transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--blue); background: var(--white); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+.form-note { background: #fff8e6; border: 1px solid #ffe066; border-radius: 8px; padding: 10px 14px; font-size: 0.83rem; color: #3a2e00; margin-bottom: 18px; }
+.form-success { display: none; text-align: center; padding: 24px; }
+.form-success .success-icon { font-size: 3rem; margin-bottom: 12px; }
+.form-success h3 { font-size: 1.2rem; font-weight: 800; color: #0F4C81; margin-bottom: 8px; }
+.form-success p { color: var(--gray); font-size: 0.9rem; line-height: 1.5; }
+
+/* ── ADMIN ── */
+.admin-page { max-width: 960px; margin: 0 auto; padding: 28px 16px 48px; }
+.admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.admin-header h2 { font-size: 1.4rem; font-weight: 800; }
+.admin-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab-btn {
+  padding: 8px 20px; border-radius: 8px; border: 1.5px solid var(--border);
+  background: var(--white); color: var(--navy); font-weight: 600; cursor: pointer;
+  font-size: 0.88rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.tab-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
+.admin-table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--navy); color: var(--white); padding: 12px 14px; text-align: left; font-size: 0.82rem; font-weight: 600; }
+td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.87rem; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--light); }
+.status-badge { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+.status-pending { background: #fffbe6; color: #3a2e00; }
+.status-approved { background: #E8F0F9; color: #0B3A63; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
+.action-btns { display: flex; gap: 6px; }
+.btn-sm { padding: 5px 12px; font-size: 0.78rem; border-radius: 6px; }
+
+/* ── ALERT ── */
+.alert { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 0.88rem; display: none; }
+.alert-success { background: #E8F0F9; color: #0B3A63; border: 1px solid #1A6BB5; display: block; }
+.alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; display: block; }
+
+
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,35,66,0.6); z-index: 300;
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white); border-radius: 20px; padding: 28px;
+  max-width: 400px; width: 100%; box-shadow: var(--shadow-lg);
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+.modal h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+/* ── USER DROPDOWN ── */
+.user-menu { position: relative; }
+.user-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: #F8FAFC; border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px 12px 6px 8px;
+  cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem; font-weight: 600; color: var(--navy);
+  transition: all 0.2s;
+}
+.user-btn:hover { background: #E8F0F9; border-color: var(--blue); }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--blue); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
+}
+.user-chevron { font-size: 0.65rem; color: var(--gray); transition: transform 0.2s; }
+.user-menu.open .user-chevron { transform: rotate(180deg); }
+.user-dropdown {
+  display: none; position: absolute; top: calc(100% + 8px); right: 0;
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 14px; min-width: 200px;
+  box-shadow: 0 8px 32px rgba(15,76,129,0.12);
+  z-index: 200; overflow: hidden;
+  animation: dropIn 0.18s ease;
+}
+.user-menu.open .user-dropdown { display: block; }
+@keyframes dropIn { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform: translateY(0); } }
+.dropdown-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  background: #F8FAFC;
+}
+.dropdown-header .dh-name { font-weight: 700; font-size: 0.92rem; color: var(--navy); }
+.dropdown-header .dh-id { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
+.dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; font-size: 0.87rem; font-weight: 500;
+  color: var(--navy); cursor: pointer; transition: background 0.15s;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.dropdown-item:hover { background: #E8F0F9; color: var(--blue); }
+.dropdown-item.danger { color: var(--red); }
+.dropdown-item.danger:hover { background: #fff0f0; }
+.dropdown-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+/* Change password modal */
+.cp-modal { display:none; position:fixed; inset:0; background:rgba(26,38,34,0.5); z-index:400; align-items:center; justify-content:center; padding:16px; }
+.cp-modal.open { display:flex; }
+.cp-box { background:#fff; border-radius:20px; padding:28px; max-width:380px; width:100%; box-shadow: 0 8px 40px rgba(15,76,129,0.18); animation: slideUp 0.22s ease; }
+.cp-box h3 { font-size:1.1rem; font-weight:700; margin-bottom:16px; color:var(--navy); }
+
+/* ── DETAIL MODAL ── */
+.detail-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(11,58,99,0.55); z-index: 350;
+  align-items: center; justify-content: center; padding: 16px;
+  overflow-y: auto;
+}
+.detail-modal-overlay.open { display: flex; }
+.detail-modal {
+  background: var(--white); border-radius: 24px;
+  max-width: 520px; width: 100%;
+  box-shadow: 0 16px 48px rgba(11,58,99,0.22);
+  animation: slideUp 0.25s ease;
+  overflow: hidden; position: relative;
+  max-height: 90vh; display: flex; flex-direction: column;
+}
+.detail-img {
+  height: 180px; display: flex; align-items: center;
+  justify-content: center; font-size: 4rem; flex-shrink: 0;
+  position: relative;
+}
+.detail-body { padding: 20px 24px 24px; overflow-y: auto; }
+.detail-title { font-size: 1.3rem; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+.detail-location { color: var(--gray); font-size: 0.9rem; margin-bottom: 14px; }
+.detail-rent { font-size: 1.5rem; font-weight: 800; color: var(--blue); margin-bottom: 14px; }
+.detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.detail-tag { background: var(--light); color: var(--navy); padding: 4px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 500; }
+.detail-desc { font-size: 0.88rem; color: var(--gray); line-height: 1.7; margin-bottom: 18px; border-top: 1px solid var(--border); padding-top: 14px; }
+.detail-close-btn { position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.85); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
+.detail-footer-btns { display: flex; gap: 10px; }
+.detail-footer-btns .btn { flex: 1; padding: 11px 10px; font-size: 0.88rem; }
+@media(max-width:600px) {
+  .detail-modal { border-radius: 16px; max-height: 95vh; }
+  .detail-img { height: 140px; font-size: 3rem; }
+  .detail-body { padding: 16px; }
+  .detail-title { font-size: 1.1rem; }
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--navy); color: #ffffff;
+  text-align: center; padding: 28px 24px;
+  font-size: 0.83rem; line-height: 1.7; margin-top: 40px;
+}
+footer strong { color: var(--gold); }
+footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-top: 8px; }
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE — max 600px
+══════════════════════════════════════ */
+@media(max-width:600px) {
+
+  /* ── Navbar ── */
+  nav { padding: 0 14px; height: 56px; }
+  .nav-logo-text { font-size: 1.05rem; }
+  .nav-logo-sub { display: none; }
+  .nav-logo-icon { width: 30px; height: 30px; font-size: 16px; }
+  .lang-toggle { display: none; }
+  .nav-actions { gap: 6px; }
+  .btn { padding: 6px 12px; font-size: 0.8rem; }
+  #nav-logged-out { gap: 6px; }
+  .user-btn { padding: 5px 8px 5px 6px; font-size: 0.8rem; gap: 6px; }
+  .user-dropdown { right: 0; min-width: 180px; }
+
+  /* ── Hero ── */
+  .hero { padding: 28px 16px 40px; }
+  .hero h1 { font-size: 1.45rem; }
+  .hero p { font-size: 0.88rem; margin-bottom: 16px; }
+  .hero-badge { font-size: 0.7rem; padding: 3px 12px; }
+  .hero-btns { flex-direction: column; align-items: center; gap: 10px; }
+  .hero-btns .btn, .hero-btns .btn-hero-outline { width: 100%; max-width: 300px; padding: 11px 20px !important; font-size: 0.95rem !important; }
+  .hero-stats { gap: 14px; padding-top: 20px; margin-top: 24px; }
+  .stat-num { font-size: 1.3rem; }
+  .stat-label { font-size: 0.68rem; }
+  .why-chip { font-size: 0.75rem; padding: 5px 10px; }
+  .hero-why { gap: 6px; margin-bottom: 20px; }
+
+  /* ── Features ── */
+  .features { padding: 36px 16px; }
+  .features-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .feature-card { padding: 20px 14px; border-radius: 14px; }
+  .feature-icon { font-size: 1.8rem; margin-bottom: 10px; }
+  .feature-card h3 { font-size: 0.88rem; }
+  .feature-card p { font-size: 0.78rem; }
+  .section-title h2 { font-size: 1.3rem; }
+
+  /* ── Page headers ── */
+  .page-header { padding: 22px 16px 18px; }
+  .page-header h2 { font-size: 1.25rem; }
+  .page-header p { font-size: 0.82rem; }
+
+  /* ── Search bar ── */
+  .search-bar-wrap { padding: 12px 16px; }
+  .search-bar { flex-direction: column; gap: 8px; }
+  .search-bar input, .search-bar select { min-width: unset; width: 100%; }
+
+  /* ── Listings ── */
+  .listings-grid { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+  .listing-img { height: 140px; }
+  .listing-body { padding: 14px; }
+  .listing-title { font-size: 0.95rem; }
+  .listing-rent { font-size: 1.15rem; }
+  .listing-footer { gap: 6px; }
+  .listing-footer .btn { font-size: 0.78rem; padding: 7px 8px; }
+
+  /* ── Forms ── */
+  .form-page { margin: 16px auto; padding: 0 12px 32px; }
+  .form-card { padding: 22px 16px; border-radius: 18px; }
+  .form-card h2 { font-size: 1.2rem; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { font-size: 0.83rem; }
+  .form-group input, .form-group select, .form-group textarea { font-size: 0.88rem; padding: 10px 12px; }
+
+  /* ── Photo upload ── */
+  #photo-upload-area { padding: 16px 12px; }
+
+  /* ── Admin ── */
+  .admin-page { padding: 16px 12px 40px; }
+  .admin-header h2 { font-size: 1.15rem; }
+  .admin-tabs { gap: 6px; }
+  .tab-btn { padding: 7px 12px; font-size: 0.78rem; }
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { font-size: 0.75rem; min-width: 500px; }
+  th, td { padding: 8px 8px; white-space: nowrap; }
+  .action-btns { flex-direction: column; gap: 4px; }
+  .btn-sm { padding: 4px 8px; font-size: 0.72rem; }
+
+  /* ── Modals ── */
+  .modal { padding: 22px 18px; border-radius: 16px; }
+  .cp-box { padding: 22px 18px; border-radius: 16px; }
+  .cp-box h3 { font-size: 1rem; }
+
+  /* ── Footer ── */
+  footer { padding: 22px 16px; font-size: 0.78rem; }
+
+  /* ── CTA bottom box ── */
+  .features + div > div { padding: 28px 20px !important; border-radius: 16px !important; }
+
+  /* ── WhatsApp float ── */
+
+  /* ── Lang toggle — show compact in menu instead ── */
+  .nav-actions .lang-toggle { display: none; }
+}
+
+/* ══════════════════════════════════════
+   TABLET — 601px to 900px
+══════════════════════════════════════ */
+@media(min-width:601px) and (max-width:900px) {
+  .listings-grid { grid-template-columns: repeat(2, 1fr); padding: 20px 16px; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  nav { padding: 0 18px; }
+  .lang-toggle { display: none; }
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 600px; }
+}
+</style>
+<!-- ══ Firebase SDK ══ -->
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-firestore-compat.min.js"></script>
+</head>
+<body>
+
+<!-- ══ Firebase Loading Splash ══ -->
+<div id="fb-loader" style="position:fixed;inset:0;background:#0F4C81;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;">
+  <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:2rem;color:#fff;letter-spacing:-0.5px;">🏠 Mitr<span style="color:#FFD700;">Awaas</span></div>
+  <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.2);border-top-color:#FFD700;border-radius:50%;animation:fbSpin 0.8s linear infinite;"></div>
+  <div id="fb-loader-msg" style="font-family:'Plus Jakarta Sans',sans-serif;color:rgba(255,255,255,0.75);font-size:0.88rem;letter-spacing:0.2px;">Connecting...</div>
+  <button id="fb-skip-btn" onclick="dismissLoader()" style="display:none;margin-top:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.35);color:#fff;padding:8px 22px;border-radius:20px;font-size:0.82rem;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;">Continue anyway →</button>
+</div>
+<style>@keyframes fbSpin { to { transform:rotate(360deg); } }</style>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="nav-logo-icon">🏠</div>
+    <div>
+      <div class="nav-logo-text">Mitr<span>Awaas</span></div>
+      <span class="nav-logo-sub"><span class="en-text">Only for PNB employees</span><span class="hi-text">केवल PNB कर्मचारियों के लिए</span></span>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <div class="lang-toggle" id="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+      <button class="lang-btn" onclick="setLang('hi')" id="btn-hi">हि</button>
+    </div>
+    <!-- Logged out state -->
+    <div id="nav-logged-out" style="display:flex;gap:8px;">
+    </div>
+    <!-- Logged in state -->
+    <div id="nav-logged-in" style="display:none;">
+      <div class="user-menu" id="user-menu">
+        <button class="user-btn" onclick="toggleUserMenu()">
+          <div class="user-avatar" id="nav-avatar">?</div>
+          <span id="nav-username">User</span>
+          <span class="user-chevron">▼</span>
+        </button>
+        <div class="user-dropdown">
+          <div class="dropdown-header">
+            <div class="dh-name" id="dd-name">—</div>
+            <div class="dh-id" id="dd-empid">Emp ID: —</div>
+          </div>
+          <button class="dropdown-item" onclick="showPage('listings');closeUserMenu()">
+            <span class="dropdown-icon">🏠</span>
+            <span class="en-text">Browse listings</span><span class="hi-text">घर देखें</span>
+          </button>
+          <button class="dropdown-item" onclick="showPage('post');closeUserMenu()">
+            <span class="dropdown-icon">➕</span>
+            <span class="en-text">Post a listing</span><span class="hi-text">अपना घर लिस्ट करें</span>
+          </button>
+          <button class="dropdown-item" onclick="showPage('wishlist');closeUserMenu()">
+            <span class="dropdown-icon">❤️</span>
+            <span class="en-text">My wishlist</span><span class="hi-text">मेरी विशलिस्ट</span>
+            <span id="wishlist-count-badge" style="background:var(--blue);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-left:auto;display:none;">0</span>
+          </button>
+          <button class="dropdown-item" onclick="showPage('enquiries');closeUserMenu()">
+            <span class="dropdown-icon">📬</span>
+            <span class="en-text">My enquiries</span><span class="hi-text">मेरी पूछताछ</span>
+            <span id="enquiry-count-badge" style="background:var(--blue);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-left:auto;display:none;">0</span>
+          </button>
+          <button class="dropdown-item" onclick="showPage('profile');closeUserMenu()">
+            <span class="dropdown-icon">👤</span>
+            <span class="en-text">My profile</span><span class="hi-text">मेरी प्रोफाइल</span>
+          </button>
+          <button class="dropdown-item" onclick="openChangePassword();closeUserMenu()">
+            <span class="dropdown-icon">🔑</span>
+            <span class="en-text">Change password</span><span class="hi-text">पासवर्ड बदलें</span>
+          </button>
+          <button class="dropdown-item danger" onclick="userLogout()">
+            <span class="dropdown-icon">🚪</span>
+            <span class="en-text">Logout</span><span class="hi-text">लॉगआउट</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Firebase sync dot -->
+  <div id="fb-sync-dot" title="Syncing..." style="position:absolute;bottom:5px;right:8px;width:7px;height:7px;border-radius:50%;background:#22c55e;opacity:0;transition:opacity 0.4s;pointer-events:none;"></div>
+</nav>
+
+<!-- Mobile lang bar -->
+<div id="mobile-lang-bar" style="display:none;background:#F8FAFC;border-bottom:1px solid var(--border);padding:6px 14px;">
+  <div style="display:flex;gap:4px;justify-content:center;">
+    <button class="lang-btn" onclick="setLang('en')" id="m-btn-en" style="flex:1;max-width:80px;text-align:center;">EN</button>
+    <button class="lang-btn" onclick="setLang('hi')" id="m-btn-hi" style="flex:1;max-width:80px;text-align:center;">हि</button>
+  </div>
+</div>
+<style>
+@media(max-width:600px) {
+  #mobile-lang-bar { display: block !important; }
+}
+</style>
+
+<!-- ════════════ HOME PAGE ════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-badge">🏦 <span class="en-text">Only for PNB employees — 100% free</span><span class="hi-text">केवल PNB कर्मचारियों के लिए - पूरी तरह मुफ़्त</span></div>
+    <h1><span class="en-text">Find your <span style="color:var(--gold)">Home</span> among<br/>trusted Colleagues</span><span class="hi-text">भरोसेमंद साथियों के बीच<br/><span style="color:var(--gold)">अपना घर</span> खोजें</span></h1>
+    <p><span class="en-text">MitrAwaas is a free, private platform exclusively for PNB employees. Find rentals, avoid brokers, and connect directly with verified colleagues — safely and hassle-free.</span><span class="hi-text">MitrAwaas PNB कर्मचारियों के लिए एक मुफ़्त और निजी प्लेटफॉर्म है। दलालों से बचें और सीधे सत्यापित साथियों से जुड़ें।</span></p>
+    <div class="hero-why" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;">
+      <span class="why-chip">✅ <span class="en-text">Zero broker fee</span><span class="hi-text">शून्य दलाली</span></span>
+      <span class="why-chip">🔒 <span class="en-text">Verified PNB members only</span><span class="hi-text">केवल PNB के सदस्य</span></span>
+      <span class="why-chip">🆓 <span class="en-text">Absolutely free</span><span class="hi-text">बिल्कुल मुफ़्त</span></span>
+      <span class="why-chip">⚡ <span class="en-text">Ideal during transfers</span><span class="hi-text">तबादले में सहायक</span></span>
+    </div>
+    <div class="hero-btns">
+      <button type="button" class="btn btn-gold" onclick="showPage('register')" style="padding:12px 28px;font-size:1rem;">🚀 <span class="en-text">Join free now</span><span class="hi-text">अभी जुड़ें - मुफ़्त</span></button>
+      <button type="button" class="btn btn-hero-outline" onclick="showPage('login')" style="padding:12px 28px;font-size:1rem;">🔑 <span class="en-text">Login</span><span class="hi-text">लॉगिन करें</span></button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">0%</div><div class="stat-label"><span class="en-text">Brokerage</span><span class="hi-text">दलाली</span></div></div>
+      <div class="stat"><div class="stat-num">🆓</div><div class="stat-label"><span class="en-text">Absolutely free</span><span class="hi-text">बिल्कुल मुफ़्त</span></div></div>
+      <div class="stat"><div class="stat-num">🔒</div><div class="stat-label"><span class="en-text">PNB employees only</span><span class="hi-text">केवल PNB के साथी</span></div></div>
+      <div class="stat"><div class="stat-num">✓</div><div class="stat-label"><span class="en-text">No disputes</span><span class="hi-text">कोई विवाद नहीं</span></div></div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="section-title">
+      <h2><span class="en-text">Why MitrAwaas?</span><span class="hi-text" style="color:var(--gold)">मित्र आवास क्यों?</span></h2>
+      <div class="sub"><span class="en-text">Built exclusively for PNB employees</span><span class="hi-text">केवल PNB कर्मचारियों के लिए</span></div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3><span class="en-text">Trusted tenants</span><span class="hi-text">विश्वसनीय किरायेदार</span><br/></h3>
+        <p><span class="en-text">Every user is a verified PNB employee. No strangers, no fraud risk.</span><span class="hi-text">हर उपयोगकर्ता सत्यापित PNB कर्मचारी है। कोई अजनबी नहीं।</span></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3><span class="en-text">Zero brokerage</span><span class="hi-text">शून्य दलाली</span><br/></h3>
+        <p><span class="en-text">Save thousands in broker fees. Connect directly with colleagues.</span><span class="hi-text">दलाली में हजारों बचाएं। साथियों से सीधे जुड़ें।</span></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3><span class="en-text">Fast transfer</span><span class="hi-text">त्वरित स्थानांतरण</span><br/></h3>
+        <p><span class="en-text">Getting transferred? Find a colleague's home at your new posting quickly.</span><span class="hi-text">तबादला हो रहा है? नई पोस्टिंग पर साथी का घर जल्दी खोजें।</span></p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3><span class="en-text">No disputes</span><span class="hi-text">कोई विवाद नहीं</span><br/></h3>
+        <p><span class="en-text">Colleague to colleague means mutual respect and smooth tenancy.</span><span class="hi-text">साथी से साथी - आपसी सम्मान और सुगम किरायेदारी।</span></p>
+      </div>
+    </div>
+
+  <div style="background:#E8F0F9;border:1px solid #1A6BB5;border-radius:16px;padding:20px 24px;margin-top:8px;display:flex;gap:14px;align-items:flex-start;">
+    <div style="font-size:1.5rem;flex-shrink:0;">🔐</div>
+    <div>
+      <div style="font-weight:700;font-size:0.95rem;color:#0B3A63;margin-bottom:4px;"><span class="en-text">Your data is 100% confidential</span><span class="hi-text">आपका डेटा 100% गोपनीय है</span></div>
+      <div style="font-size:0.85rem;color:#0B3A63;line-height:1.6;"><span class="en-text">MitrAwaas does not share your personal details with any third party, external website, or application. Your information — name, mobile number, Employee ID — is visible only to verified PNB members within this platform and to the admin for verification purposes.</span><span class="hi-text">MitrAwaas आपकी व्यक्तिगत जानकारी किसी तीसरे पक्ष, बाहरी वेबसाइट या ऐप के साथ साझा नहीं करता। आपकी जानकारी - नाम, मोबाइल, कर्मचारी ID — केवल इस प्लेटफॉर्म के सत्यापित PNB सदस्यों और सत्यापन के लिए व्यवस्थापक को दिखती है।</span></div>
+    </div>
+  </div>
+  </div>
+
+  <div style="text-align:center;padding:0 24px 56px;">
+    <div style="background:var(--navy);color:var(--white);border-radius:20px;padding:36px 28px;max-width:600px;margin:0 auto;">
+      <div style="font-size:2rem;margin-bottom:12px;">🏠</div>
+      <h2 style="font-size:1.4rem;margin-bottom:8px;"><span class="en-text">Have a home to rent out?</span><span class="hi-text">किराये पर देने के लिए घर है?</span></h2>
+      
+      <p style="color:#ffffff;font-size:0.9rem;margin-bottom:24px;"><span class="en-text">List it free. Reach hundreds of your PNB colleagues looking for trusted homes.</span><span class="hi-text">मुफ़्त में लिस्ट करें। आपके सैकड़ों PNB साथियों तक पहुंचें।</span></p>
+      <button type="button" class="btn btn-gold" onclick="showPage('post')" style="padding:12px 28px;font-size:1rem;"><span class="en-text">Post a listing free →</span><span class="hi-text">मुफ़्त  लिस्ट करें →</span></button>
+    </div>
+  </div>
+
+  <!-- ── Beta / Improvement Banner ── -->
+  <div style="max-width:680px;margin:0 auto 48px;padding:0 24px;">
+    <div style="background:#fff;border:2px dashed var(--border);border-radius:20px;padding:28px 28px 24px;text-align:center;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:#E8F0F9;border-radius:20px;padding:5px 14px;font-size:0.78rem;font-weight:700;color:var(--blue);letter-spacing:0.4px;margin-bottom:14px;">
+        🚧 <span class="en-text">BETA — CONTINUOUSLY IMPROVING</span><span class="hi-text">बीटा — लगातार सुधार</span>
+      </div>
+      <h3 style="font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:8px;">
+        <span class="en-text">Help us make MitrAwaas better</span>
+        <span class="hi-text">MitrAwaas को बेहतर बनाने में मदद करें</span>
+      </h3>
+      <p style="font-size:0.87rem;color:var(--gray);line-height:1.6;margin-bottom:18px;">
+        <span class="en-text">This platform is actively being developed. Found a bug? Have a feature idea? We'd love to hear from you — every suggestion is reviewed by the team.</span>
+        <span class="hi-text">यह प्लेटफॉर्म सक्रिय रूप से विकसित हो रहा है। कोई बग मिला? कोई सुझाव है? हर सुझाव टीम द्वारा देखा जाता है।</span>
+      </p>
+      <div id="suggestion-area">
+        <textarea id="suggestion-text" rows="3" placeholder="Type your suggestion, bug report, or feature request..." style="width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:0.9rem;font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:var(--navy);resize:vertical;transition:border-color 0.2s;box-sizing:border-box;" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        <div style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:0.8rem;color:var(--gray);flex:1;text-align:left;min-width:160px;">
+            <span class="en-text">Submitted anonymously · login to attach your name</span>
+            <span class="hi-text">गुमनाम रूप से · नाम जोड़ने के लिए लॉगिन करें</span>
+          </span>
+          <button onclick="submitSuggestion()" class="btn btn-gold" style="padding:9px 22px;font-size:0.88rem;white-space:nowrap;">
+            <span class="en-text">Send feedback →</span><span class="hi-text">सुझाव भेजें →</span>
+          </button>
+        </div>
+      </div>
+      <div id="suggestion-success" style="display:none;padding:14px;background:#E8F0F9;border-radius:10px;color:var(--navy);font-weight:600;font-size:0.9rem;">
+        ✅ <span class="en-text">Thank you! Your feedback has been recorded and will be reviewed.</span>
+        <span class="hi-text">धन्यवाद! आपका सुझाव दर्ज हो गया और समीक्षा की जाएगी।</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ REGISTER PAGE ════════════ -->
+<div id="page-register" class="page">
+  <div class="page-header">
+    <h2><span class="en-text">Join MitrAwaas</span><span class="hi-text">MitrAwaas से जुड़ें</span></h2>
+    <p><span class="en-text">Register with your PNB employee details</span><span class="hi-text">PNB कर्मचारी विवरण से पंजीकरण करें</span></p>
+  </div>
+  <div class="form-page">
+    <div class="form-card">
+      <h2><span class="en-text">Create account</span><span class="hi-text" style="color:var(--gold)">खाता बनाएं</span></h2>
+      <div class="form-sub"><span class="en-text">Fill in your details below to get started.</span><span class="hi-text">नीचे अपनी जानकारी भरें।</span></div>
+      <div class="form-note">⚠️ <span class="en-text">Your Employee ID and name will be manually verified by admin before approval. You will be informed once your account is approved.</span><span class="hi-text">व्यवस्थापक आपकी कर्मचारी ID सत्यापित करेगा। अनुमोदन होने पर आपको सूचित किया जाएगा।</span></div>
+
+      <div id="reg-alert"></div>
+
+      <div id="reg-form">
+        <div class="form-group">
+          <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
+          <input type="text" id="reg-empid" placeholder="e.g. 1234567" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label><span class="en-text">Full Name</span><span class="hi-text">पूरा नाम</span></label>
+            <input type="text" id="reg-name" placeholder="As per service records"/>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Mobile No.</span><span class="hi-text">मोबाइल नंबर</span></label>
+            <input type="tel" id="reg-mobile" placeholder="10-digit number (without country code)" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"/>
+            <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Enter without country code — e.g. 9876543210, not +91...</span><span class="hi-text">देश कोड के बिना दर्ज करें — जैसे 9876543210</span></small>
+          </div>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Email address</span><span class="hi-text">ईमेल पता</span> <span style="color:var(--red);font-weight:700;">*</span></label>
+          <input type="email" id="reg-email" placeholder="e.g. yourname@gmail.com"/>
+          <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Used to notify you about account approval or rejection</span><span class="hi-text">खाता स्वीकृति या अस्वीकृति की सूचना के लिए उपयोग होगा</span></small>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>SOL ID</label>
+            <input type="text" id="reg-branch" placeholder="6-digit SOL ID" maxlength="6" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,6)"/>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">City / Posting</span><span class="hi-text">शहर / पोस्टिंग</span></label>
+            <input type="text" id="reg-city" placeholder="Current posting city"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Designation</span><span class="hi-text">पद</span></label>
+          <select id="reg-designation">
+            <option value="">Select Designation</option>
+            <option value="Clerk">Clerk</option>
+            <option value="Officer Scale 1">Officer Scale 1</option>
+            <option value="Officer Scale 2">Officer Scale 2</option>
+            <option value="Officer Scale 3">Officer Scale 3</option>
+            <option value="Chief Manager">Chief Manager</option>
+            <option value="AGM">AGM</option>
+            <option value="DGM">DGM</option>
+            <option value="GM">GM</option>
+            <option value="CGM">CGM</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <hr class="form-divider"/>
+        <div class="form-row">
+          <div class="form-group">
+            <label><span class="en-text">Password</span><span class="hi-text">पासवर्ड</span></label>
+            <input type="password" id="reg-pass" placeholder="Min 8 chars, 1 uppercase, letters+numbers"/>
+            <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Min 8 characters · at least 1 uppercase · letters and numbers required</span><span class="hi-text">कम से कम 8 अक्षर · 1 बड़ा अक्षर · अक्षर और अंक दोनों</span></small>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Confirm Password</span><span class="hi-text">पासवर्ड दोहराएं</span></label>
+            <input type="password" id="reg-pass2" placeholder="Re-enter password"/>
+          </div>
+        </div>
+        <hr class="form-divider"/>
+        <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:0.83rem;color:#664d03;">
+          ⚠️ <strong><span class="en-text">Important — Password recovery</span><span class="hi-text">महत्वपूर्ण — पासवर्ड रिकवरी</span></strong><br/>
+          <span class="en-text">MitrAwaas does not store or send passwords via email or SMS. If you forget your password, <u>only your security question answer</u> can be used to recover access. Choose a question and answer you will remember.</span>
+          <span class="hi-text">MitrAwaas ईमेल या SMS से पासवर्ड नहीं भेजता। पासवर्ड भूलने पर <u>केवल सुरक्षा प्रश्न का उत्तर</u> ही काम आएगा। ऐसा प्रश्न और उत्तर चुनें जो आपको याद रहे।</span>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Security question</span><span class="hi-text">सुरक्षा प्रश्न</span> <span style="color:var(--red);font-weight:700;">*</span></label>
+          <select id="reg-sec-q">
+            <option value="">-- Select question --</option>
+            <option value="pet">What was the name of your first pet?</option>
+            <option value="school">What was the name of your primary school?</option>
+            <option value="city">In which city were you born?</option>
+            <option value="mother">What is your mother's maiden name?</option>
+            <option value="friend">What is the name of your childhood best friend?</option>
+            <option value="vehicle">What was the registration number of your first vehicle?</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Your answer</span><span class="hi-text">आपका उत्तर</span> <span style="color:var(--red);font-weight:700;">*</span></label>
+          <input type="text" id="reg-sec-a" placeholder="Answer (case-insensitive)"/>
+          <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Remember this — you'll need it to reset your password</span><span class="hi-text">यह याद रखें — पासवर्ड रीसेट में काम आएगा</span></small>
+        </div>
+        <div class="form-group" id="captcha-wrap" style="background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:4px;">
+          <label style="font-weight:600;font-size:0.88rem;"><span class="en-text">Human verification</span><span class="hi-text">सत्यापन</span></label>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:6px;">
+            <span id="captcha-question" style="font-size:1rem;font-weight:700;color:var(--navy);background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 14px;"></span>
+            <span style="color:var(--gray);font-size:0.9rem;">=</span>
+            <input type="text" id="captcha-answer" inputmode="numeric" maxlength="3" placeholder="?" style="width:70px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:1rem;font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:var(--navy);text-align:center;" oninput="this.value=this.value.replace(/\D/g,'')"/>
+          </div>
+          <small style="color:var(--gray);font-size:0.75rem;margin-top:4px;display:block;"><span class="en-text">Solve the sum to confirm you're human</span><span class="hi-text">यह जोड़ हल करें — यह साबित करने के लिए कि आप इंसान हैं</span></small>
+        </div>
+        <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;margin-top:4px;" onclick="submitRegister()"><span class="en-text">Submit Registration →</span><span class="hi-text">पंजीकरण जमा करें →</span></button>
+        <p style="text-align:center;margin-top:14px;font-size:0.85rem;color:var(--gray)"><span class="en-text">Already registered?</span><span class="hi-text">पहले से पंजीकृत?</span> <a href="#" onclick="showPage('login')" style="color:var(--blue);font-weight:600;"><span class="en-text">Login here</span><span class="hi-text">लॉगिन करें</span></a></p>
+      </div>
+
+      <div class="form-success" id="reg-success">
+        <div class="success-icon">⏳</div>
+        <h3><span class="en-text">Registration Submitted!</span><span class="hi-text">पंजीकरण जमा हो गया!</span></h3>
+        <p><span class="en-text">Your registration is under review. Admin will verify your Employee ID and approve within <strong>24 hours</strong>.<br/><br/>Try logging in after 24 hours — your account will be active once approved.</span><span class="hi-text">आपका पंजीकरण समीक्षाधीन है। व्यवस्थापक 24 घंटे में सत्यापित करेगा।<br/><br/><strong id="reg-mobile-display2"></strong> पर WhatsApp संदेश आएगा।</span></p>
+        <button class="btn btn-navy" style="margin-top:20px;" onclick="showPage('home')"><span class="en-text">Back to home</span><span class="hi-text">होम पर जाएं</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ LOGIN PAGE ════════════ -->
+<div id="page-login" class="page">
+  <div class="page-header">
+    <h2><span class="en-text">Login</span><span class="hi-text">लॉगिन</span></h2>
+    <p><span class="en-text">Access your MitrAwaas account</span><span class="hi-text">अपना MitrAwaas खाता खोलें</span></p>
+  </div>
+  <div class="form-page">
+    <div class="form-card">
+      <h2><span class="en-text">Welcome back</span><span class="hi-text" style="color:var(--gold)">स्वागत है</span></h2>
+      <div class="form-sub"><span class="en-text">Login with your Employee ID and password</span><span class="hi-text">अपने कर्मचारी ID और पासवर्ड से लॉगिन करें</span></div>
+      <div id="login-alert"></div>
+      <div class="form-group">
+        <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
+        <input type="text" id="login-empid" placeholder="Your Employee ID"/>
+      </div>
+      <div class="form-group">
+        <label><span class="en-text">Password</span><span class="hi-text">पासवर्ड</span></label>
+        <input type="password" id="login-pass" placeholder="Your password"/>
+      </div>
+      <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;" onclick="submitLogin()"><span class="en-text">Login →</span><span class="hi-text">लॉगिन →</span></button>
+      <p style="text-align:center;margin-top:14px;font-size:0.85rem;color:var(--gray)">
+        <a href="#" onclick="showForgotPassword()" style="color:var(--blue);font-weight:600;"><span class="en-text">Forgot password?</span><span class="hi-text">पासवर्ड भूल गए?</span></a>
+        &nbsp;·&nbsp;
+        <span class="en-text">New user?</span><span class="hi-text">नए उपयोगकर्ता?</span> <a href="#" onclick="showPage('register')" style="color:var(--blue);font-weight:600;"><span class="en-text">Register here</span><span class="hi-text">पंजीकरण करें</span></a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ LISTINGS PAGE ════════════ -->
+<div id="page-listings" class="page">
+  <div class="page-header">
+    <h2><span class="en-text">Available homes</span><span class="hi-text">उपलब्ध घर</span> 🏠</h2>
+    <p><span class="en-text">Browse rental listings from PNB colleagues</span><span class="hi-text">PNB साथियों के किराये के घर</span></p>
+  </div>
+  <div class="search-bar-wrap">
+    <div class="search-bar">
+      <input type="text" id="search-city" placeholder="🔍 Search / खोजें" oninput="filterListings()"/>
+      <select id="search-bhk" onchange="filterListings()">
+        <option value="">All BHK</option>
+        <option>1 BHK</option>
+        <option>2 BHK</option>
+        <option>3 BHK</option>
+        <option>4 BHK</option>
+      </select>
+      <select id="search-rent" onchange="filterListings()">
+        <option value=""><span class="en-text">Any Rent</span> / कोई भी किराया</option>
+        <option value="5000">₹5,000 से कम</option>
+        <option value="10000">₹10,000 से कम</option>
+        <option value="15000">₹15,000 से कम</option>
+        <option value="20000">₹20,000 से कम</option>
+      </select>
+    </div>
+  </div>
+  <div class="listings-grid" id="listings-grid">
+    <!-- Listings rendered by JS -->
+  </div>
+  <div id="no-listings" style="text-align:center;padding:48px 24px;display:none;">
+    <div style="font-size:3rem;margin-bottom:12px;">🏚️</div>
+    <h3 style="color:var(--gray);"><span class="en-text">No listings found</span><span class="hi-text">कोई लिस्टिंग नहीं मिली</span></h3>
+    <p style="color:var(--gray);margin-top:8px;"><span class="en-text">Be the first to post a listing!</span><span class="hi-text">पहली लिस्टिंग आप करें!</span></p>
+    <button class="btn btn-gold" style="margin-top:16px;" onclick="showPage('post')"><span class="en-text">Post a listing</span><span class="hi-text">घर लिस्ट करें</span></button>
+  </div>
+</div>
+
+<!-- ════════════ POST LISTING PAGE ════════════ -->
+<div id="page-post" class="page">
+  <div class="page-header">
+    <h2><span class="en-text">Post Your Home</span><span class="hi-text">अपना घर लिस्ट करें</span> 🏠</h2>
+    <p><span class="en-text">List your property for PNB colleagues</span><span class="hi-text">PNB साथियों के लिए अपना घर सूचीबद्ध करें</span></p>
+  </div>
+  <div class="form-page" style="max-width:620px;">
+    <div class="form-card">
+      <h2><span class="en-text">Property details</span><span class="hi-text" style="color:var(--gold)">संपत्ति विवरण</span></h2>
+      <div class="form-sub"><span class="en-text">Fill in your property details. Your listing goes live immediately.</span><span class="hi-text">संपत्ति का विवरण भरें। आपकी लिस्टिंग तुरंत प्रकाशित होगी।</span></div>
+      <div id="post-alert"></div>
+      <div id="post-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label><span class="en-text">Your Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
+            <input type="text" id="post-empid" placeholder="Employee ID" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Contact Mobile</span><span class="hi-text">संपर्क मोबाइल</span> <span style="color:var(--red);font-size:0.8rem;">*</span></label>
+            <input type="tel" id="post-mobile" placeholder="10-digit number" maxlength="10"/>
+          </div>
+        </div>
+        <hr class="form-divider"/>
+        <div class="form-row">
+          <div class="form-group">
+            <label><span class="en-text">City</span><span class="hi-text">शहर</span></label>
+            <input type="text" id="post-city" placeholder="e.g. Delhi, Mumbai"/>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Locality / area</span><span class="hi-text">मोहल्ला / क्षेत्र</span></label>
+            <input type="text" id="post-area" placeholder="e.g. Karol Bagh"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>BHK Type</label>
+            <select id="post-bhk">
+              <option>1 BHK</option><option>2 BHK</option>
+              <option>3 BHK</option><option>4 BHK</option>
+              <option>Studio / Room</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Furnishing</span><span class="hi-text">फर्निशिंग</span></label>
+            <select id="post-furnish">
+              <option value="Unfurnished">Unfurnished / बिना फर्नीचर</option>
+              <option value="Semi-Furnished">Semi-Furnished / अर्ध-सज्जित</option>
+              <option value="Fully Furnished">Fully Furnished / पूर्ण-सज्जित</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label><span class="en-text">Monthly Rent (₹)</span><span class="hi-text">मासिक किराया (₹)</span> <span style="color:var(--red);font-size:0.8rem;">*</span></label>
+            <input type="number" id="post-rent" placeholder="e.g. 8000" min="0"/>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Available from</span><span class="hi-text">कब से उपलब्ध</span></label>
+            <input type="date" id="post-date"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Maintenance / other charges (₹)</span><span class="hi-text">रखरखाव / अन्य शुल्क (₹)</span></label>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <input type="number" id="post-maintenance" placeholder="Amount e.g. 500" min="0" style="flex:1;min-width:120px;"/>
+            <select id="post-maint-type" style="flex:1;min-width:160px;">
+              <option value="included">Included in rent / किराये में शामिल</option>
+              <option value="extra">Extra / अलग से देय</option>
+              <option value="none">No maintenance / नहीं</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Description</span><span class="hi-text">विवरण</span></label>
+          <textarea id="post-desc" placeholder="Describe your property — nearby facilities, floor, parking, etc. / संपत्ति का विवरण दें"></textarea>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Preferred tenant</span><span class="hi-text">पसंदीदा किरायेदार</span></label>
+          <select id="post-pref">
+            <option value="Any PNB employee">Any PNB employee / कोई भी PNB कर्मचारी</option>
+            <option value="Family preferred">Family preferred / परिवार पसंद</option>
+            <option value="Bachelor preferred">Bachelor / Single / बैचलर</option>
+            <option value="Female only">Female only / महिला</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Property photos</span><span class="hi-text">घर की फ़ोटो</span> <span style="font-size:0.78rem;color:var(--gray);">(max 10)</span></label>
+          <div id="photo-upload-area" onclick="document.getElementById('post-photos').click()"
+            style="border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:var(--light);transition:border-color 0.2s;"
+            onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="font-size:2rem;margin-bottom:6px;">📷</div>
+            <div style="font-size:0.88rem;font-weight:600;color:var(--navy);">
+              <span class="en-text">Click to upload photos</span><span class="hi-text">फ़ोटो अपलोड करें</span>
+            </div>
+            <div style="font-size:0.75rem;color:var(--gray);margin-top:4px;">
+              <span class="en-text">JPG, PNG up to 5MB each · Max 10 photos</span><span class="hi-text">JPG, PNG · अधिकतम 10 फ़ोटो</span>
+            </div>
+          </div>
+          <input type="file" id="post-photos" multiple accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
+          <div id="photo-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
+          <div id="photo-count" style="font-size:0.78rem;color:var(--gray);margin-top:4px;"></div>
+        </div>
+        <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;margin-top:8px;" onclick="submitListing()"><span class="en-text">Submit Listing →</span><span class="hi-text">लिस्टिंग जमा करें →</span></button>
+      </div>
+      <div class="form-success" id="post-success">
+        <div class="success-icon">🎉</div>
+        <h3><span class="en-text">Listing Submitted!</span><span class="hi-text">लिस्टिंग जमा हो गई!</span></h3>
+        <p><span class="en-text">Your listing is now live! Other members can browse and contact you.</span><span class="hi-text">आपकी लिस्टिंग अभी लाइव है! अन्य सदस्य आपसे संपर्क कर सकते हैं।</span></p>
+        <button class="btn btn-navy" style="margin-top:20px;" onclick="showPage('listings')"><span class="en-text">Browse listings</span><span class="hi-text">घर देखें</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ ADMIN PAGE ════════════ -->
+<!-- ════════════ PROFILE PAGE ════════════ -->
+<div id="page-profile" class="page">
+  <div class="page-header">
+    <h2><span class="en-text">My profile</span><span class="hi-text">मेरी प्रोफाइल</span></h2>
+    <p><span class="en-text">Update your contact details and security question</span><span class="hi-text">अपनी जानकारी अपडेट करें</span></p>
+  </div>
+  <div class="form-page">
+    <div class="form-card">
+      <div id="profile-alert"></div>
+      <div class="form-group">
+        <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
+        <input type="text" id="profile-empid" readonly style="background:#e9ecef;color:var(--gray);cursor:not-allowed;"/>
+      </div>
+      <div class="form-group">
+        <label><span class="en-text">Full name</span><span class="hi-text">पूरा नाम</span></label>
+        <input type="text" id="profile-name" readonly style="background:#e9ecef;color:var(--gray);cursor:not-allowed;"/>
+      </div>
+      <hr class="form-divider"/>
+      <div class="form-row">
+        <div class="form-group">
+          <label><span class="en-text">Mobile number</span><span class="hi-text">मोबाइल नंबर</span></label>
+          <input type="tel" id="profile-mobile" placeholder="10-digit mobile" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"/>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Email address</span><span class="hi-text">ईमेल पता</span></label>
+          <input type="email" id="profile-email" placeholder="yourname@example.com"/>
+        </div>
+      </div>
+      <hr class="form-divider"/>
+      <div class="form-group">
+        <label><span class="en-text">Security question</span><span class="hi-text">सुरक्षा प्रश्न</span></label>
+        <select id="profile-sec-q">
+          <option value="">-- Select question --</option>
+          <option value="pet">What was the name of your first pet?</option>
+          <option value="school">What was the name of your primary school?</option>
+          <option value="city">In which city were you born?</option>
+          <option value="mother">What is your mother's maiden name?</option>
+          <option value="friend">What is the name of your childhood best friend?</option>
+          <option value="vehicle">What was the registration number of your first vehicle?</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label><span class="en-text">New answer</span><span class="hi-text">नया उत्तर</span></label>
+        <input type="text" id="profile-sec-a" placeholder="Leave blank to keep existing answer"/>
+      </div>
+      <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;" onclick="saveProfile()">
+        <span class="en-text">Save changes</span><span class="hi-text">बदलाव सहेजें</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ WISHLIST PAGE ════════════ -->
+<div id="page-wishlist" class="page">
+  <div class="page-header">
+    <h2>❤️ <span class="en-text">My wishlist</span><span class="hi-text">मेरी विशलिस्ट</span></h2>
+    <p><span class="en-text">Properties you've saved</span><span class="hi-text">आपकी पसंदीदा प्रॉपर्टी</span></p>
+  </div>
+  <div id="wishlist-grid" class="listings-grid"></div>
+  <div id="wishlist-empty" style="display:none;text-align:center;padding:60px 24px;">
+    <div style="font-size:3rem;margin-bottom:12px;">💔</div>
+    <h3 style="color:var(--gray);"><span class="en-text">No saved properties yet</span><span class="hi-text">कोई सहेजी गई प्रॉपर्टी नहीं</span></h3>
+    <p style="color:var(--gray);margin-top:8px;font-size:0.9rem;"><span class="en-text">Tap the ❤ on any listing to save it here</span><span class="hi-text">किसी भी लिस्टिंग पर ❤ दबाएं</span></p>
+    <button class="btn btn-gold" style="margin-top:20px;" onclick="showPage('listings')"><span class="en-text">Browse listings</span><span class="hi-text">घर देखें</span></button>
+  </div>
+</div>
+
+<!-- ════════════ ENQUIRIES PAGE ════════════ -->
+<div id="page-enquiries" class="page">
+  <div class="page-header">
+    <h2>📬 <span class="en-text">My enquiries</span><span class="hi-text">मेरी पूछताछ</span></h2>
+    <p><span class="en-text">People who contacted you about your listings</span><span class="hi-text">जिन्होंने आपकी प्रॉपर्टी के बारे में पूछा</span></p>
+  </div>
+  <div style="max-width:800px;margin:0 auto;padding:24px 16px 48px;">
+    <div id="enquiries-list"></div>
+    <div id="enquiries-empty" style="display:none;text-align:center;padding:60px 24px;">
+      <div style="font-size:3rem;margin-bottom:12px;">📭</div>
+      <h3 style="color:var(--gray);"><span class="en-text">No enquiries yet</span><span class="hi-text">अभी कोई पूछताछ नहीं</span></h3>
+      <p style="color:var(--gray);margin-top:8px;font-size:0.9rem;"><span class="en-text">When someone views your contact details, they'll appear here</span><span class="hi-text">जब कोई आपका संपर्क देखेगा, वह यहाँ दिखेगा</span></p>
+    </div>
+  </div>
+</div>
+
+<div id="page-admin" class="page">
+  <div class="page-header">
+    <h2>🔐 Admin Panel</h2>
+    <p>Manage registrations and listings</p>
+  </div>
+  <div class="admin-page">
+    <div id="admin-login-wrap">
+      <div class="form-card" style="max-width:360px;margin:0 auto;">
+        <h2>Admin Login</h2>
+        <div class="form-sub">Enter admin password to continue</div>
+        <div id="admin-login-alert"></div>
+        <div class="form-group">
+          <label>Admin Password</label>
+          <input type="password" id="admin-pass-input" placeholder="Admin password"/>
+        </div>
+        <button class="btn btn-navy" style="width:100%;padding:12px;" onclick="adminLogin()"><span class="en-text">Login →</span><span class="hi-text">लॉगिन →</span></button>
+      </div>
+    </div>
+
+    <div id="admin-panel" style="display:none;">
+      <div id="web3-setup-banner" style="display:none;background:#E8F0F9;border:1px solid #1A6BB5;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.85rem;color:#54463A;">
+        ⚠️ <strong>Email notifications not configured.</strong> Add your Web3Forms key to receive alerts for new registrations and listings.
+        <a href="https://web3forms.com" target="_blank" style="color:#0F4C81;font-weight:600;margin-left:6px;">Get free key →</a>
+      </div>
+      <div class="admin-header">
+        <h2>Admin Panel <span style="color:var(--gold)">व्यवस्थापक पैनल</span></h2>
+        <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="adminLogout()">Logout</button>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="tab-btn active" onclick="adminTab('registrations', this)">
+          Pending Registrations <span id="pending-count" style="background:var(--gold);color:var(--navy);border-radius:10px;padding:1px 7px;font-size:0.75rem;margin-left:4px;">0</span>
+        </button>
+        <button class="tab-btn" onclick="adminTab('all-users', this)">All Users</button>
+        <button class="tab-btn" onclick="adminTab('listings-admin', this)">Listings</button>
+        <button class="tab-btn" onclick="adminTab('suggestions', this)">
+          💬 Feedback <span id="suggestions-count" style="background:var(--blue);color:#fff;border-radius:10px;padding:1px 7px;font-size:0.75rem;margin-left:4px;display:none;">0</span>
+        </button>
+      </div>
+
+      <!-- Pending Registrations -->
+      <div id="tab-registrations" class="admin-table-wrap">
+        <table>
+          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Designation</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="pending-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- All Users -->
+      <div id="tab-all-users" class="admin-table-wrap" style="display:none;">
+        <table>
+          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="all-users-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Listings -->
+      <div id="tab-listings-admin" class="admin-table-wrap" style="display:none;">
+        <table>
+          <thead><tr><th>Emp ID</th><th>City/Area</th><th>BHK</th><th>Rent</th><th>Furnish</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="listings-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Suggestions / Feedback -->
+      <div id="tab-suggestions" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:0.9rem;color:var(--gray);" id="suggestions-meta">Loading...</span>
+          <button class="btn btn-sm btn-outline" style="color:var(--red);border-color:var(--red);" onclick="clearAllSuggestions()">🗑️ Clear all</button>
+        </div>
+        <div id="suggestions-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ PROPERTY DETAIL MODAL ════ -->
+<div class="detail-modal-overlay" id="detail-modal">
+  <div class="detail-modal">
+    <div class="detail-img" id="detail-img">
+      <button class="detail-close-btn" onclick="closeDetailModal()">✕</button>
+      <span id="detail-emoji">🏠</span>
+      <span class="listing-badge" id="detail-bhk-badge" style="position:absolute;top:12px;right:12px;"></span>
+      <button id="detail-heart" onclick="toggleWishlist(event, window._detailListingId)" style="position:absolute;top:10px;left:12px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">🤍</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-title" id="detail-title"></div>
+      <div class="detail-location" id="detail-location"></div>
+      <div class="detail-rent" id="detail-rent"></div>
+      <div id="detail-maintenance" style="font-size:0.82rem;color:var(--gray);margin-top:-10px;margin-bottom:14px;"></div>
+      <div class="detail-tags" id="detail-tags"></div>
+      <div class="detail-desc" id="detail-desc"></div>
+      <div class="detail-footer-btns" id="detail-btns"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ EDIT LISTING MODAL ════ -->
+<div class="cp-modal" id="edit-listing-modal">
+  <div class="cp-box" style="max-width:500px;width:100%;max-height:90vh;overflow-y:auto;">
+    <h3>✏️ Edit listing</h3>
+    <div id="edit-listing-alert"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" id="edit-city" placeholder="e.g. Delhi"/>
+      </div>
+      <div class="form-group">
+        <label>Locality / Area</label>
+        <input type="text" id="edit-area" placeholder="e.g. Rohini Sector 11"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>BHK type</label>
+        <select id="edit-bhk">
+          <option value="1 BHK">1 BHK</option>
+          <option value="2 BHK">2 BHK</option>
+          <option value="3 BHK">3 BHK</option>
+          <option value="4 BHK">4 BHK</option>
+          <option value="Studio">Studio</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Furnishing</label>
+        <select id="edit-furnish">
+          <option value="Fully Furnished">Fully Furnished</option>
+          <option value="Semi-Furnished">Semi-Furnished</option>
+          <option value="Unfurnished">Unfurnished</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Monthly rent (₹)</label>
+        <input type="number" id="edit-rent" placeholder="e.g. 12000" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>Contact mobile</label>
+        <input type="tel" id="edit-mobile" maxlength="10" inputmode="numeric"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Preferred tenant</label>
+      <select id="edit-pref">
+        <option value="Any Bank employee">Any Bank employee</option>
+        <option value="Family preferred">Family preferred</option>
+        <option value="Bachelor preferred">Bachelor / Single</option>
+        <option value="Female only">Female only</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="edit-desc" rows="3" placeholder="Describe the property..."></textarea>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeEditListing()">Cancel</button>
+      <button class="btn btn-gold" style="flex:2;" onclick="saveEditListing()">💾 Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CONTACT MODAL ════ -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal">
+    <h3><span class="en-text">Contact landlord</span><span class="hi-text">मकान मालिक से संपर्क</span> 📞</h3>
+    <p style="color:var(--gray);font-size:0.88rem;margin-bottom:16px;"><span class="en-text">You must be a registered & approved member to view contact details.</span><span class="hi-text">संपर्क विवरण देखने के लिए आपका पंजीकृत सदस्य होना आवश्यक है।</span></p>
+    <div id="contact-details"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="closeModal()">Close</button>
+      <button class="btn btn-green" id="whatsapp-contact-btn">WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════ CHANGE PASSWORD MODAL ════ -->
+<div class="cp-modal" id="cp-modal">
+  <div class="cp-box">
+    <h3>🔑 <span class="en-text">Change password</span><span class="hi-text">पासवर्ड बदलें</span></h3>
+    <div id="cp-alert"></div>
+    <div class="form-group">
+      <label><span class="en-text">Current Password</span><span class="hi-text">मौजूदा पासवर्ड</span></label>
+      <input type="password" id="cp-current" placeholder="Current password"/>
+    </div>
+    <div class="form-group">
+      <label><span class="en-text">New Password</span><span class="hi-text">नया पासवर्ड</span></label>
+      <input type="password" id="cp-new" placeholder="Min 6 characters"/>
+    </div>
+    <div class="form-group">
+      <label><span class="en-text">Confirm New Password</span><span class="hi-text">नया पासवर्ड दोहराएं</span></label>
+      <input type="password" id="cp-confirm" placeholder="Re-enter new password"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeChangePassword()">
+        <span class="en-text">Cancel</span><span class="hi-text">रद्द करें</span>
+      </button>
+      <button class="btn btn-gold" style="flex:1;" onclick="submitChangePassword()">
+        <span class="en-text">Update</span><span class="hi-text">अपडेट करें</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FORGOT PASSWORD MODAL ════ -->
+<div class="cp-modal" id="fp-modal">
+  <div class="cp-box" style="max-width:420px;">
+    <h3>🔑 <span class="en-text">Reset password</span><span class="hi-text">पासवर्ड रीसेट करें</span></h3>
+    <div id="fp-alert"></div>
+
+    <!-- Step 1: Enter Employee ID -->
+    <div id="fp-step1">
+      <div class="form-sub" style="margin-bottom:16px;"><span class="en-text">Enter your Employee ID to find your account.</span><span class="hi-text">अपनी कर्मचारी ID दर्ज करें।</span></div>
+      <div class="form-group">
+        <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
+        <input type="text" id="fp-empid" placeholder="Your Employee ID" inputmode="numeric" maxlength="7"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeForgotPassword()"><span class="en-text">Cancel</span><span class="hi-text">रद्द करें</span></button>
+        <button class="btn btn-gold" style="flex:1;" onclick="fpStep1()"><span class="en-text">Next →</span><span class="hi-text">आगे →</span></button>
+      </div>
+    </div>
+
+    <!-- Step 2: Answer security question -->
+    <div id="fp-step2" style="display:none;">
+      <div class="form-sub" style="margin-bottom:16px;"><span class="en-text">Answer your security question to verify your identity.</span><span class="hi-text">अपनी पहचान सत्यापित करें।</span></div>
+      <div class="form-group">
+        <label id="fp-question-label" style="color:var(--navy);font-weight:600;"></label>
+        <input type="text" id="fp-answer" placeholder="Your answer"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="fpBack()"><span class="en-text">← Back</span><span class="hi-text">← वापस</span></button>
+        <button class="btn btn-gold" style="flex:1;" onclick="fpStep2()"><span class="en-text">Verify →</span><span class="hi-text">सत्यापित करें →</span></button>
+      </div>
+    </div>
+
+    <!-- Step 3: Set new password -->
+    <div id="fp-step3" style="display:none;">
+      <div class="form-sub" style="margin-bottom:16px;"><span class="en-text">Identity verified! Set your new password.</span><span class="hi-text">पहचान सत्यापित! नया पासवर्ड सेट करें।</span></div>
+      <div class="form-group">
+        <label><span class="en-text">New password</span><span class="hi-text">नया पासवर्ड</span></label>
+        <input type="password" id="fp-new" placeholder="Min 8 chars, 1 uppercase, letters+numbers"/>
+      </div>
+      <div class="form-group">
+        <label><span class="en-text">Confirm new password</span><span class="hi-text">नया पासवर्ड दोहराएं</span></label>
+        <input type="password" id="fp-confirm" placeholder="Re-enter new password"/>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeForgotPassword()"><span class="en-text">Cancel</span><span class="hi-text">रद्द करें</span></button>
+        <button class="btn btn-gold" style="flex:1;" onclick="fpStep3()"><span class="en-text">Reset password</span><span class="hi-text">रीसेट करें</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ADMIN RESET PASSWORD MODAL ════ -->
+<div class="cp-modal" id="ar-modal">
+  <div class="cp-box" style="max-width:380px;">
+    <h3>🔑 Reset user password</h3>
+    <div id="ar-alert"></div>
+    <div class="form-sub" style="margin-bottom:16px;">Set a temporary password for <strong id="ar-user-name"></strong> (<span id="ar-user-id"></span>).</div>
+    <div class="form-group">
+      <label>New temporary password</label>
+      <input type="password" id="ar-new" placeholder="Min 8 chars, 1 uppercase, letters+numbers"/>
+    </div>
+    <div class="form-group">
+      <label>Confirm password</label>
+      <input type="password" id="ar-confirm" placeholder="Re-enter password"/>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:8px;">
+      <button class="btn btn-outline" style="flex:1;color:var(--navy);border-color:var(--border);" onclick="closeAdminReset()">Cancel</button>
+      <button class="btn btn-gold" style="flex:1;" onclick="submitAdminReset()">Reset & notify via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ APPROVAL NOTICE MODAL ════ -->
+<div class="cp-modal" id="approval-modal">
+  <div class="cp-box" style="max-width:440px;">
+    <h3 id="approval-modal-title">✅ User approved</h3>
+    <p id="approval-modal-note" style="font-size:0.88rem;color:var(--gray);margin-bottom:8px;">Notify the user by sending an email.</p>
+    <div class="form-group" style="margin-top:12px;">
+      <label style="font-size:0.82rem;font-weight:600;color:var(--navy);">Message to send</label>
+      <textarea id="approval-msg-text" rows="5" readonly style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;font-family:'Plus Jakarta Sans',sans-serif;background:#F8FAFC;color:var(--navy);resize:none;margin-top:6px;line-height:1.6;"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+      <button class="btn btn-outline" style="flex:1;min-width:80px;color:var(--navy);border-color:var(--border);" onclick="document.getElementById('approval-modal').classList.remove('open')">Close</button>
+      <button class="btn btn-outline" style="flex:1;min-width:100px;color:var(--navy);border-color:var(--border);" onclick="copyApprovalMsg()">📋 Copy</button>
+      <button class="btn btn-gold" style="flex:2;min-width:140px;" onclick="sendApprovalEmail()">✉️ Send email</button>
+    </div>
+    <div id="copy-confirm" style="display:none;text-align:center;font-size:0.82rem;color:var(--green);margin-top:8px;font-weight:600;">✅ Copied to clipboard!</div>
+  </div>
+</div>
+
+<footer>
+  <strong>MitrAwaas</strong> 🏠<br/>
+  <span class="en-text">A free, trusted home-rental platform for PNB employees.</span>
+  <span class="hi-text">PNB कर्मचारियों के लिए मुफ़्त और भरोसेमंद आवास प्लेटफॉर्म।</span>
+  <div style="margin-top:12px;">
+    <button onclick="showEmailContact()" style="background:transparent;border:1px solid rgba(255,255,255,0.35);color:#ffffff;padding:5px 16px;border-radius:20px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;" onmouseover="this.style.borderColor='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.35)'">✉️ <span class="en-text">Contact us</span><span class="hi-text">संपर्क करें</span></button>
+    <div id="email-reveal" style="display:none;margin-top:10px;">
+      <a id="email-link" href="#" style="color:#f0abfc;font-size:0.85rem;font-weight:600;text-decoration:underline;"></a>
+    </div>
+  </div>
+  <div class="disclaimer"><span class="en-text">Not officially affiliated with or endorsed by PNB.</span><span class="hi-text">यह प्लेटफॉर्म PNB द्वारा संबद्ध या अनुमोदित नहीं है।</span></div>
+  <div style="margin-top:10px;">
+    <span onclick="showPage('admin')" style="color:rgba(255,255,255,0.35);font-size:0.72rem;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:1px;transition:color 0.2s;cursor:pointer;user-select:none;-webkit-user-select:none;-ms-user-select:none;" onmouseover="this.style.color='rgba(255,255,255,0.75)'" onmouseout="this.style.color='rgba(255,255,255,0.35)'" ondblclick="return false" onselectstart="return false">⚙ Admin</span>
+  </div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+// DATA STORE (localStorage for persistence)
+// ══════════════════════════════════════
+const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
+
+// ══════════════════════════════════════
+// WEB3FORMS CONFIG
+// Get your free access key at https://web3forms.com
+// Replace the key below with your own key
+// ══════════════════════════════════════
+const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_ACCESS_KEY'; // ← Replace this
+
+async function sendEmailNotification(subject, body) {
+  if (WEB3FORMS_KEY === '0c8fef8c-8099-4d68-8dd7-118a824014f6') return; // skip if not configured
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: subject,
+        message: body,
+        from_name: 'MitrAwaas Platform'
+      })
+    });
+  } catch(e) { console.log('Email notification failed:', e); }
+}
+
+// ══════════════════════════════════════════════════════════
+// FIREBASE CONFIGURATION
+// ══════════════════════════════════════════════════════════
+// HOW TO SET UP (one-time, takes ~10 minutes):
+//
+//  1. Go to https://console.firebase.google.com
+//  2. Click "Add project" → name it "mitrawaas" → Create
+//  3. Left menu → "Firestore Database" → Create → Test mode → Enable
+//  4. Click ⚙️ gear → "Project settings" → scroll to "Your apps"
+//  5. Click </> (Web) → Register app → copy the config values below
+//  6. Replace the placeholder values and save this file
+//
+const FB_CONFIG = {
+  apiKey: "AIzaSyCTZEd0g7jracvK9Qy7tnAE4NPLQitvfFE",
+  authDomain: "mitrawaas.firebaseapp.com",
+  databaseURL: "https://mitrawaas-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mitrawaas",
+  storageBucket: "mitrawaas.firebasestorage.app",
+  messagingSenderId: "252317610256",
+  appId: "1:252317610256:web:79a24acb9a2189e188f595"
+};
+
+
+// These localStorage keys will be synced to Firebase
+const FB_KEYS = ['ma_users','ma_listings','ma_wishlists','ma_enquiries','ma_suggestions'];
+
+let _db  = null;   // Firestore instance
+let _fbOk = false; // true once data is loaded from Firebase
+
+// ── getData: reads from localStorage cache (always instant/sync) ──
+function getData(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; }
+}
+
+// ── setData: writes to localStorage AND mirrors to Firebase ──
+function setData(key, val) {
+  localStorage.setItem(key, JSON.stringify(val));
+  _fbSync(key, val);
+  _showSyncDot();
+}
+
+function _fbSync(key, val) {
+  if (!_db || !_fbOk || !FB_KEYS.includes(key)) return;
+  _db.collection('mitrawaas').doc(key)
+     .set({ val })
+     .catch(e => console.warn('[MitrAwaas] Firebase write failed:', e));
+}
+
+function _showSyncDot() {
+  const dot = document.getElementById('fb-sync-dot');
+  if (!dot) return;
+  dot.style.opacity = '1';
+  clearTimeout(dot._t);
+  dot._t = setTimeout(() => { dot.style.opacity = '0'; }, 1400);
+}
+
+// ── dismissLoader: force-hide the splash (called by skip btn or timeout) ──
+function dismissLoader() {
+  const loader = document.getElementById('fb-loader');
+  if (loader) loader.style.display = 'none';
+}
+
+// ── withTimeout: wraps a promise with a max wait time ──
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), ms)
+    )
+  ]);
+}
+
+// ── initFirebase: called on page load ──
+async function initFirebase() {
+  const loader  = document.getElementById('fb-loader');
+  const msg     = document.getElementById('fb-loader-msg');
+  const skipBtn = document.getElementById('fb-skip-btn');
+
+  // Hard safety net: show skip button after 5s, force dismiss after 10s
+  const skipTimer  = setTimeout(() => { if (skipBtn) skipBtn.style.display = 'block'; }, 5000);
+  const killTimer  = setTimeout(() => dismissLoader(), 10000);
+
+  function cleanup() {
+    clearTimeout(skipTimer);
+    clearTimeout(killTimer);
+  }
+
+  // Check Firebase SDK actually loaded (can fail on slow/blocked mobile networks)
+  if (typeof firebase === 'undefined') {
+    cleanup();
+    if (msg) msg.textContent = 'Running offline — database unavailable';
+    setTimeout(() => dismissLoader(), 1500);
+    return;
+  }
+
+  // No config filled in yet
+  if (!FB_CONFIG.apiKey || FB_CONFIG.apiKey === 'YOUR_API_KEY') {
+    cleanup();
+    if (msg) msg.textContent = 'Starting in offline mode...';
+    setTimeout(() => dismissLoader(), 800);
+    return;
+  }
+
+  try {
+    if (msg) msg.textContent = 'Connecting...';
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    _db = firebase.firestore();
+
+    // Force long polling — avoids WebChannel/WebSocket blocks on mobile networks
+    _db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
+
+    // Enable offline cache (single-tab, avoids deprecated multi-tab warning)
+    try {
+      await _db.enablePersistence();
+    } catch(e) { /* persistence not critical — continue without it */ }
+
+    if (msg) msg.textContent = 'Loading data...';
+
+    // Fetch all collections with a 8-second timeout per request
+    const snaps = await withTimeout(
+      Promise.all(FB_KEYS.map(k => _db.collection('mitrawaas').doc(k).get())),
+      8000
+    );
+
+    snaps.forEach((snap, i) => {
+      if (snap.exists && snap.data().val !== undefined) {
+        localStorage.setItem(FB_KEYS[i], JSON.stringify(snap.data().val));
+      }
+    });
+
+    _fbOk = true;
+    if (msg) msg.textContent = '✅ Ready!';
+
+    // Refresh UI with freshly loaded data
+    updateNavAuth();
+    const active = document.querySelector('.page.active');
+    if (active && active.id === 'page-listings') renderListings();
+
+  } catch (err) {
+    console.warn('[MitrAwaas] Firebase issue, using local data:', err.message);
+    if (msg) msg.textContent = 'Using saved data...';
+  }
+
+  cleanup();
+  setTimeout(() => dismissLoader(), 1200);
+}
+
+// Sample demo listings
+function initDemoData() {
+  // Clear any old demo data from previous version
+  if (localStorage.getItem('ma_initialized_v1') && !localStorage.getItem('ma_initialized_v2')) {
+    const users = getData('ma_users');
+    // Remove the 6 demo listing IDs (1-6) that were seeded before
+    let listings = getData('ma_listings');
+    listings = listings.filter(l => l.id > 6);
+    setData('ma_listings', listings);
+    localStorage.setItem('ma_initialized_v2', '1');
+  }
+  if (!localStorage.getItem('ma_initialized_v2')) {
+    setData('ma_listings', []);
+    setData('ma_users', []);
+    localStorage.setItem('ma_initialized_v2', '1');
+  }
+}
+initDemoData();
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+function showPage(id) {
+  // Gate listings and post pages behind login
+  const gated = ['listings','post'];
+  if (gated.includes(id) && !sessionStorage.getItem('ma_loggedIn')) {
+    showLoginGate(id);
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+  if (id === 'listings') renderListings();
+  if (id === 'admin') renderAdmin();
+  if (id === 'register') initCaptcha();
+  if (id === 'profile') openProfilePage();
+  if (id === 'wishlist') renderWishlist();
+  if (id === 'enquiries') renderEnquiries();
+}
+function showLoginGate(intendedPage) {
+  sessionStorage.setItem('ma_intended', intendedPage);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-login').classList.add('active');
+  window.scrollTo(0, 0);
+  const alertEl = document.getElementById('login-alert');
+  alertEl.className = 'alert alert-error';
+  alertEl.textContent = getLang()==='hi'
+    ? '🔒 घर देखने के लिए पहले लॉगिन करें।'
+    : '🔒 Please login to browse listings.';
+}
+
+// ══════════════════════════════════════
+// REGISTER
+// ══════════════════════════════════════
+function validateEmpId(el) {
+  if (el.value.length > 0 && el.value[0] !== '5') {
+    el.style.borderColor = '#e24b4a';
+  } else {
+    el.style.borderColor = '';
+  }
+}
+function submitRegister() {
+  const empId = document.getElementById('reg-empid').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const mobile = document.getElementById('reg-mobile').value.trim();
+  const branch = document.getElementById('reg-branch').value.trim();
+  const city = document.getElementById('reg-city').value.trim();
+  const designation = document.getElementById('reg-designation').value;
+  const pass = document.getElementById('reg-pass').value;
+  const pass2 = document.getElementById('reg-pass2').value;
+  const secQ = document.getElementById('reg-sec-q').value;
+  const secA = document.getElementById('reg-sec-a').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+
+  const alertEl = document.getElementById('reg-alert');
+  alertEl.className = 'alert';
+
+  if (!empId || !name || !mobile || !branch || !city || !designation) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सभी फ़ील्ड भरें।' : '⚠️ Please fill all fields.'; return;
+  }
+  if (empId.length === 0 || isNaN(empId) || empId.length > 7) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही कर्मचारी ID दर्ज करें।' : '⚠️ Please enter a valid Employee ID.'; return;
+  }
+  if (empId[0] !== '5') {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही कर्मचारी ID दर्ज करें।' : '⚠️ Please enter a valid Employee ID.'; return;
+  }
+  if (branch.length !== 6 || isNaN(branch)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ SOL ID must be exactly 6 digits.'; return;
+  }
+  if (mobile.length !== 10 || isNaN(mobile)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Enter valid 10-digit mobile number.'; return;
+  }
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid email address.'; return;
+  }
+  if (pass.length < 8) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ पासवर्ड कम से कम 8 अक्षर का होना चाहिए।' : '⚠️ Password must be at least 8 characters.'; return;
+  }
+  if (!/[A-Z]/.test(pass)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ पासवर्ड में कम से कम एक बड़ा अक्षर (A-Z) होना चाहिए।' : '⚠️ Password must include at least one uppercase letter (A-Z).'; return;
+  }
+  if (!/[a-zA-Z]/.test(pass) || !/[0-9]/.test(pass)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ पासवर्ड में अक्षर और अंक दोनों होने चाहिए।' : '⚠️ Password must contain both letters and numbers.'; return;
+  }
+  if (pass !== pass2) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ पासवर्ड मेल नहीं खाते।' : '⚠️ Passwords do not match.'; return;
+  }
+  if (!secQ || !secA) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please select a security question and provide an answer.'; return;
+  }
+  const captchaInput = parseInt(document.getElementById('captcha-answer').value);
+  if (isNaN(captchaInput) || captchaInput !== window._captchaAnswer) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ सत्यापन गलत है। सही संख्या दर्ज करें।' : '⚠️ Verification failed. Please solve the sum correctly.'; return;
+  }
+
+  let users = getData('ma_users');
+  const existingIdx = users.findIndex(u => u.empId === empId);
+  if (existingIdx !== -1) {
+    const existing = users[existingIdx];
+    if (existing.status === 'rejected') {
+      // Allow re-registration — remove old rejected record
+      users.splice(existingIdx, 1);
+    } else if (existing.status === 'pending') {
+      alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ This Employee ID is already registered and awaiting admin approval.'; return;
+    } else if (existing.status === 'approved') {
+      alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ This Employee ID is already a registered member. Please login.'; return;
+    }
+  }
+
+  users.push({ empId, name, mobile, email, branch, city, designation, pass, secQ, secA, status: 'pending', joinedAt: new Date().toISOString() });
+  setData('ma_users', users);
+
+  sendEmailNotification(
+    '🆕 New Registration — MitrAwaas',
+    `New registration request received:\n\n` +
+    `Employee ID : ${empId}\n` +
+    `Name        : ${name}\n` +
+    `SOL ID      : ${branch}\n` +
+    `City        : ${city}\n` +
+    `Designation : ${designation}\n` +
+    `Mobile      : ${mobile}\n\n` +
+    `This listing is now live on MitrAwaas.`
+  );
+
+  document.getElementById('reg-mobile-display').textContent = mobile;
+  document.getElementById('reg-form').style.display = 'none';
+  document.getElementById('reg-success').style.display = 'block';
+}
+
+// ══════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════
+function submitLogin() {
+  const empId = document.getElementById('login-empid').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  const alertEl = document.getElementById('login-alert');
+  alertEl.className = 'alert';
+
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === empId && u.pass === pass);
+
+  if (!user) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Invalid Employee ID or password.'; return; }
+  if (user.status === 'pending') { alertEl.className = 'alert alert-error'; alertEl.textContent = '⏳ Your registration is still pending admin approval.'; return; }
+  if (user.status === 'rejected') { alertEl.className = 'alert alert-error'; alertEl.textContent = '❌ Your registration was not approved. You may re-register with the same Employee ID or contact admin.'; return; }
+
+  sessionStorage.setItem('ma_loggedIn', empId);
+  updateNavAuth();
+  alertEl.className = 'alert alert-success'; alertEl.textContent = '✅ Login successful! Welcome, ' + user.name;
+  const intended = sessionStorage.getItem('ma_intended') || 'listings';
+  sessionStorage.removeItem('ma_intended');
+  setTimeout(() => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + intended).classList.add('active');
+    window.scrollTo(0, 0);
+    if (intended === 'listings') renderListings();
+  }, 900);
+}
+
+// ══════════════════════════════════════
+// LISTINGS
+// ══════════════════════════════════════
+const emojis = ['🏠','🏡','🏢','🏣','🏤'];
+function renderListings(filtered) {
+  const listings = filtered !== undefined ? filtered : getData('ma_listings').filter(l => l.status === 'approved');
+  const grid = document.getElementById('listings-grid');
+  const noEl = document.getElementById('no-listings');
+  grid.innerHTML = '';
+  if (!listings.length) { noEl.style.display = 'block'; return; }
+  noEl.style.display = 'none';
+  listings.forEach((l, i) => {
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.innerHTML = `
+      <div class="listing-img" style="background:linear-gradient(135deg,${['#0B3A63','#0F4C81','#1A6BB5','#0d3360','#1565a8'][i%5]},${['#0F4C81','#1A6BB5','#0B3A63','#1565a8','#0F4C81'][i%5]});position:relative;">
+        <span>${emojis[i%emojis.length]}</span>
+        <span class="listing-badge">${l.bhk}</span>
+        <button onclick="toggleWishlist(event,${l.id})" id="heart-${l.id}" style="position:absolute;top:10px;left:12px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;" title="Save to wishlist">${isWishlisted(l.id)?'❤️':'🤍'}</button>
+      </div>
+      <div class="listing-body" onclick="openDetailModal(${l.id})" style="cursor:pointer;">
+        <div class="listing-title">${l.bhk} in ${l.area}</div>
+        <div class="listing-location">📍 ${l.city}</div>
+        <div class="listing-details">
+          <span class="tag">🛋️ ${l.furnish}</span>
+          <span class="tag">👤 ${l.pref}</span>
+        </div>
+        <div class="listing-rent">₹${Number(l.rent).toLocaleString('en-IN')} <span>/ month</span></div>
+        ${l.maintenance && l.maintType !== 'none' ? `<div style="font-size:0.78rem;color:var(--gray);margin-top:-8px;margin-bottom:8px;">+ ₹${Number(l.maintenance).toLocaleString('en-IN')} maintenance <span style="color:${l.maintType==='included'?'var(--blue)':'#e07b00'}">(${l.maintType==='included'?'included':'extra'})</span></div>` : ''}
+        <div class="listing-footer" onclick="event.stopPropagation()">
+          <button class="btn btn-navy btn-sm" onclick="showContact('${l.mobile}','${l.empId}','${l.city}','${l.bhk}')">📞 Contact</button>
+          <button class="btn btn-green btn-sm" onclick="whatsappContact('${l.mobile}','${l.city}','${l.bhk}','${l.rent}')">💬 WhatsApp</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function filterListings() {
+  const city = document.getElementById('search-city').value.toLowerCase();
+  const bhk = document.getElementById('search-bhk').value;
+  const maxRent = parseInt(document.getElementById('search-rent').value) || Infinity;
+  const all = getData('ma_listings').filter(l => l.status === 'approved');
+  const filtered = all.filter(l =>
+    (!city || l.city.toLowerCase().includes(city) || l.area.toLowerCase().includes(city)) &&
+    (!bhk || l.bhk === bhk) &&
+    (l.rent <= maxRent)
+  );
+  renderListings(filtered);
+}
+
+function showContact(mobile, empId, city, bhk) {
+  const users = getData('ma_users');
+  const owner = users.find(u => u.empId === empId);
+  const displayName = owner ? owner.name : '—';
+  document.getElementById('contact-details').innerHTML = `
+    <div style="background:var(--light);border-radius:10px;padding:14px;margin-bottom:8px;">
+      <div style="font-size:0.82rem;color:var(--gray);margin-bottom:4px;">Owner name</div>
+      <div style="font-weight:700;font-size:1rem;">👤 ${displayName}</div>
+    </div>
+    <div style="background:var(--light);border-radius:10px;padding:14px;">
+      <div style="font-size:0.82rem;color:var(--gray);margin-bottom:4px;">Mobile number</div>
+      <div style="font-weight:700;font-size:1.1rem;">📞 ${mobile}</div>
+    </div>`;
+  document.getElementById('whatsapp-contact-btn').onclick = () => whatsappContact(mobile, city, bhk, '');
+  document.getElementById('contact-modal').classList.add('open');
+  // Record enquiry for the owner
+  const viewerEmpId = sessionStorage.getItem('ma_loggedIn');
+  if (viewerEmpId && viewerEmpId !== empId) {
+    const viewer = users.find(u => u.empId === viewerEmpId);
+    const enquiries = getData('ma_enquiries');
+    enquiries.push({
+      ownerEmpId: empId,
+      viewerEmpId,
+      viewerName: viewer ? viewer.name : viewerEmpId,
+      viewerMobile: viewer ? viewer.mobile : '—',
+      city, bhk,
+      at: new Date().toISOString()
+    });
+    setData('ma_enquiries', enquiries);
+    updateEnquiryBadge();
+  }
+}
+function closeModal() { document.getElementById('contact-modal').classList.remove('open'); }
+
+// ══ DETAIL MODAL ══
+const detailGradients = ['#0B3A63','#0F4C81','#1A6BB5','#0d3360','#1565a8'];
+const detailGradients2 = ['#0F4C81','#1A6BB5','#0B3A63','#1565a8','#0F4C81'];
+const detailEmojis = ['🏠','🏡','🏢','🏣','🏤'];
+let _detailIdx = 0;
+
+function openDetailModal(listingId) {
+  const listings = getData('ma_listings');
+  const l = listings.find(x => x.id === listingId);
+  if (!l) return;
+  const idx = listings.filter(x => x.status === 'approved').findIndex(x => x.id === listingId);
+  _detailIdx = idx >= 0 ? idx : 0;
+  window._detailListingId = listingId;
+
+  // Image gradient
+  const imgEl = document.getElementById('detail-img');
+  imgEl.style.background = `linear-gradient(135deg,${detailGradients[_detailIdx%5]},${detailGradients2[_detailIdx%5]})`;
+  document.getElementById('detail-emoji').textContent = detailEmojis[_detailIdx%5];
+  document.getElementById('detail-bhk-badge').textContent = l.bhk;
+
+  // Heart
+  document.getElementById('detail-heart').textContent = isWishlisted(listingId) ? '❤️' : '🤍';
+
+  // Content
+  document.getElementById('detail-title').textContent = l.bhk + ' in ' + l.area;
+  document.getElementById('detail-location').textContent = '📍 ' + l.city;
+  document.getElementById('detail-rent').textContent = '₹' + Number(l.rent).toLocaleString('en-IN') + ' / month';
+
+  const maint = document.getElementById('detail-maintenance');
+  maint.innerHTML = (l.maintenance && l.maintType !== 'none')
+    ? `+ ₹${Number(l.maintenance).toLocaleString('en-IN')} maintenance <span style="color:${l.maintType==='included'?'var(--blue)':'#e07b00'}">(${l.maintType==='included'?'included':'extra'})</span>`
+    : '';
+
+  document.getElementById('detail-tags').innerHTML =
+    `<span class="detail-tag">🛋️ ${l.furnish}</span><span class="detail-tag">👤 ${l.pref}</span>` +
+    (l.date ? `<span class="detail-tag">📅 ${new Date(l.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>` : '');
+
+  document.getElementById('detail-desc').textContent = l.desc || 'No description provided.';
+
+  // Buttons — show Edit if it's the logged-in user's listing
+  const myEmpId = sessionStorage.getItem('ma_loggedIn');
+  const isOwner = myEmpId === l.empId;
+  const btns = document.getElementById('detail-btns');
+  if (isOwner) {
+    btns.innerHTML = `
+      <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="closeDetailModal()">Close</button>
+      <button class="btn btn-navy" onclick="openEditListing(${l.id});closeDetailModal()">✏️ Edit listing</button>
+      <button class="btn btn-sm" style="background:var(--red);color:#fff;" onclick="deleteMyListing(${l.id})">🗑️ Delete</button>`;
+  } else {
+    btns.innerHTML = `
+      <button class="btn btn-outline" style="flex:0.5;color:var(--navy);border-color:var(--border);" onclick="closeDetailModal()">Close</button>
+      <button class="btn btn-navy" onclick="showContact('${l.mobile}','${l.empId}','${l.city}','${l.bhk}');closeDetailModal()">📞 Contact</button>
+      <button class="btn btn-green" onclick="whatsappContact('${l.mobile}','${l.city}','${l.bhk}','${l.rent}')">💬 WhatsApp</button>`;
+  }
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+function closeDetailModal() { document.getElementById('detail-modal').classList.remove('open'); }
+document.getElementById('detail-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDetailModal();
+});
+
+// ══ EDIT LISTING ══
+let _editListingId = null;
+function openEditListing(id) {
+  const listings = getData('ma_listings');
+  const l = listings.find(x => x.id === id);
+  if (!l) return;
+  _editListingId = id;
+  document.getElementById('edit-city').value = l.city || '';
+  document.getElementById('edit-area').value = l.area || '';
+  document.getElementById('edit-bhk').value = l.bhk || '2 BHK';
+  document.getElementById('edit-furnish').value = l.furnish || 'Semi-Furnished';
+  document.getElementById('edit-rent').value = l.rent || '';
+  document.getElementById('edit-mobile').value = l.mobile || '';
+  document.getElementById('edit-pref').value = l.pref || 'Any Bank employee';
+  document.getElementById('edit-desc').value = l.desc || '';
+  document.getElementById('edit-listing-alert').className = 'alert';
+  document.getElementById('edit-listing-alert').textContent = '';
+  document.getElementById('edit-listing-modal').classList.add('open');
+}
+function closeEditListing() { document.getElementById('edit-listing-modal').classList.remove('open'); }
+function saveEditListing() {
+  const alertEl = document.getElementById('edit-listing-alert');
+  const city = document.getElementById('edit-city').value.trim();
+  const area = document.getElementById('edit-area').value.trim();
+  const rent = document.getElementById('edit-rent').value;
+  const mobile = document.getElementById('edit-mobile').value.trim();
+  if (!city || !area) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ City and area are required.'; return; }
+  if (!rent || parseInt(rent) <= 0) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid rent amount.'; return; }
+  if (mobile && (mobile.length !== 10 || isNaN(mobile))) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Mobile must be 10 digits.'; return; }
+  const listings = getData('ma_listings');
+  const l = listings.find(x => x.id === _editListingId);
+  if (!l) return;
+  l.city = city;
+  l.area = area;
+  l.bhk = document.getElementById('edit-bhk').value;
+  l.furnish = document.getElementById('edit-furnish').value;
+  l.rent = parseInt(rent);
+  if (mobile) l.mobile = mobile;
+  l.pref = document.getElementById('edit-pref').value;
+  l.desc = document.getElementById('edit-desc').value.trim();
+  l.updatedAt = new Date().toISOString();
+  setData('ma_listings', listings);
+  alertEl.className = 'alert alert-success';
+  alertEl.textContent = '✅ Listing updated!';
+  setTimeout(() => { closeEditListing(); renderListings(); }, 1000);
+}
+document.getElementById('edit-listing-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditListing();
+});
+
+function deleteMyListing(id) {
+  if (!confirm('Are you sure you want to delete this listing?')) return;
+  let listings = getData('ma_listings');
+  listings = listings.filter(x => x.id !== id);
+  setData('ma_listings', listings);
+  closeDetailModal();
+  renderListings();
+}
+function whatsappContact(mobile, city, bhk, rent) {
+  const msg = `Hello! I saw your listing on MitrAwaas for ${bhk ? bhk + ' in ' + city : city} at ₹${rent}/month. I am a PNB colleague. Is it still available?`;
+  window.open(`https://wa.me/91${mobile}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ══════════════════════════════════════
+// POST LISTING
+// ══════════════════════════════════════
+function handlePhotoUpload(event) {
+  const files = Array.from(event.target.files);
+  const preview = document.getElementById('photo-preview');
+  const countEl = document.getElementById('photo-count');
+  const existing = preview.querySelectorAll('.photo-thumb').length;
+  const canAdd = Math.min(files.length, 10 - existing);
+  if (files.length > canAdd) {
+    alert(getLang()==='hi' ? `अधिकतम 10 फ़ोटो ही अपलोड हो सकती हैं।` : `You can upload a maximum of 10 photos.`);
+  }
+  const toAdd = files.slice(0, canAdd);
+  toAdd.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const wrap = document.createElement('div');
+      wrap.className = 'photo-thumb';
+      wrap.style.cssText = 'position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;border:1px solid var(--border);flex-shrink:0;';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+      const del = document.createElement('button');
+      del.innerHTML = '✕';
+      del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;';
+      del.onclick = () => { wrap.remove(); updatePhotoCount(); };
+      wrap.appendChild(img); wrap.appendChild(del);
+      preview.appendChild(wrap);
+      updatePhotoCount();
+    };
+    reader.readAsDataURL(file);
+  });
+  event.target.value = '';
+}
+function updatePhotoCount() {
+  const count = document.getElementById('photo-preview').querySelectorAll('.photo-thumb').length;
+  const el = document.getElementById('photo-count');
+  el.textContent = count > 0 ? (getLang()==='hi' ? `${count} फ़ोटो चुनी गई` : `${count} photo${count>1?'s':''} selected`) : '';
+}
+function submitListing() {
+  const empId = document.getElementById('post-empid').value.trim();
+  const mobile = document.getElementById('post-mobile').value.trim();
+  const city = document.getElementById('post-city').value.trim();
+  const area = document.getElementById('post-area').value.trim();
+  const bhk = document.getElementById('post-bhk').value;
+  const furnish = document.getElementById('post-furnish').value;
+  const rent = document.getElementById('post-rent').value;
+  const desc = document.getElementById('post-desc').value.trim();
+  const pref = document.getElementById('post-pref').value;
+  const maintenance = document.getElementById('post-maintenance').value;
+  const maintType = document.getElementById('post-maint-type').value;
+  const alertEl = document.getElementById('post-alert');
+
+  if (!empId || empId[0] !== '5' || empId.length > 7 || isNaN(empId)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही कर्मचारी ID दर्ज करें।' : '⚠️ Please enter a valid Employee ID.'; return;
+  }
+  if (!mobile || mobile.length !== 10 || isNaN(mobile)) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।' : '⚠️ Please enter a valid 10-digit mobile number.'; return;
+  }
+  if (!rent || parseInt(rent) <= 0) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया किराया राशि दर्ज करें।' : '⚠️ Please enter the monthly rent amount.'; return;
+  }
+  if (!city || !area) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया शहर और क्षेत्र भरें।' : '⚠️ Please fill in city and locality.'; return;
+  }
+  const photoCount = document.getElementById('photo-preview').querySelectorAll('.photo-thumb').length;
+  const listings = getData('ma_listings');
+  listings.push({ id: Date.now(), empId, mobile, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, status: 'approved', date: new Date().toISOString() });
+  setData('ma_listings', listings);
+
+  sendEmailNotification(
+    '🏠 New Listing Submitted — MitrAwaas',
+    `A new property listing has been submitted:\n\n` +
+    `Employee ID  : ${empId}\n` +
+    `City / Area  : ${city}, ${area}\n` +
+    `BHK Type     : ${bhk}\n` +
+    `Furnishing   : ${furnish}\n` +
+    `Monthly Rent : ₹${parseInt(rent).toLocaleString('en-IN')}\n` +
+    `Maintenance  : ${maintenance ? '₹' + parseInt(maintenance).toLocaleString('en-IN') + ' (' + maintType + ')' : 'None'}\n` +
+    `Mobile       : ${mobile}\n` +
+    `Photos       : ${photoCount} uploaded\n\n` +
+    `This listing is now live on MitrAwaas.`
+  );
+
+  document.getElementById('post-form').style.display = 'none';
+  document.getElementById('post-success').style.display = 'block';
+}
+
+// ══════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════
+function adminLogin() {
+  const pass = document.getElementById('admin-pass-input').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('admin-login-wrap').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    renderAdmin();
+  } else {
+    document.getElementById('admin-login-alert').className = 'alert alert-error';
+    document.getElementById('admin-login-alert').textContent = '❌ Wrong password.';
+  }
+}
+function adminLogout() {
+  document.getElementById('admin-login-wrap').style.display = 'block';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-pass-input').value = '';
+}
+
+function renderAdmin() {
+  const banner = document.getElementById('web3-setup-banner');
+  if (banner) banner.style.display = WEB3FORMS_KEY === '0c8fef8c-8099-4d68-8dd7-118a824014f6' ? 'block' : 'none';
+  const users = getData('ma_users');
+  const listings = getData('ma_listings');
+  const pending = users.filter(u => u.status === 'pending');
+  document.getElementById('pending-count').textContent = pending.length;
+  const unreadSuggestions = getData('ma_suggestions').filter(s => !s.read).length;
+  const sugBadge = document.getElementById('suggestions-count');
+  if (sugBadge) { sugBadge.textContent = unreadSuggestions; sugBadge.style.display = unreadSuggestions > 0 ? 'inline' : 'none'; }
+
+  // Pending registrations
+  const pendingTbody = document.getElementById('pending-tbody');
+  pendingTbody.innerHTML = '';
+  if (!pending.length) {
+    pendingTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray);padding:24px;">No pending registrations ✅</td></tr>';
+  } else {
+    pending.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td><td>${u.designation}</td>
+        <td><span class="status-badge status-pending">Pending</span></td>
+        <td><div class="action-btns">
+          <button class="btn btn-green btn-sm" onclick="approveUser('${u.empId}')">✅ Approve</button>
+          <button class="btn btn-sm" style="background:var(--red);color:white;" onclick="rejectUser('${u.empId}')">❌ Reject</button>
+        </div></td>`;
+      pendingTbody.appendChild(tr);
+    });
+  }
+
+  // All users
+  const allTbody = document.getElementById('all-users-tbody');
+  allTbody.innerHTML = '';
+  if (!users.length) {
+    allTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:24px;">No users yet</td></tr>';
+  } else {
+    users.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td>
+        <td><span class="status-badge status-${u.status}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
+        <td style="font-size:0.78rem;color:var(--gray);">${new Date(u.joinedAt).toLocaleDateString('en-IN')}</td>
+        <td><button class="btn btn-sm" style="background:var(--blue);color:#fff;white-space:nowrap;" onclick="openAdminReset('${u.empId}','${u.name}')">🔑 Reset pwd</button></td>`;
+      allTbody.appendChild(tr);
+    });
+  }
+
+  // Listings
+  const listTbody = document.getElementById('listings-tbody');
+  listTbody.innerHTML = '';
+  if (!listings.length) {
+    listTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:24px;">No listings yet</td></tr>';
+  } else {
+    listings.forEach(l => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${l.empId}</td><td>${l.city} / ${l.area}</td><td>${l.bhk}</td>
+        <td>₹${Number(l.rent).toLocaleString('en-IN')}</td><td>${l.furnish}</td>
+        <td><span class="status-badge status-${l.status}">${l.status.charAt(0).toUpperCase()+l.status.slice(1)}</span></td>
+        <td><div class="action-btns">
+          ${l.status!=='approved'?`<button class="btn btn-green btn-sm" onclick="approveListing(${l.id})">✅ Approve</button>`:''}
+          <button class="btn btn-sm" style="background:var(--red);color:white;" onclick="deleteListing(${l.id})">🗑️ Delete</button>
+        </div></td>`;
+      listTbody.appendChild(tr);
+    });
+  }
+}
+
+function approveUser(empId) {
+  const users = getData('ma_users');
+  const u = users.find(x => x.empId === empId);
+  if (u) {
+    u.status = 'approved';
+    setData('ma_users', users);
+    sendEmailNotification(
+      `✅ User Approved — ${u.name} (${u.empId})`,
+      `You have approved the following user on MitrAwaas:\n\n` +
+      `Employee ID : ${u.empId}\n` +
+      `Name        : ${u.name}\n` +
+      `SOL ID      : ${u.branch}\n` +
+      `City        : ${u.city}\n` +
+      `Designation : ${u.designation}\n` +
+      `Mobile      : ${u.mobile}`
+    );
+    renderAdmin();
+    // Show approval notice modal — admin can copy & send from any number
+    const msg = `✅ Dear ${u.name}, your MitrAwaas account (Emp ID: ${u.empId}) has been approved! You can now login and browse/post listings at MitrAwaas. - MitrAwaas Admin`;
+    document.getElementById('approval-modal-title').textContent = '✅ User approved';
+    document.getElementById('approval-modal-note').innerHTML = 'Notify the user by sending an email to: <strong style="color:var(--navy);">' + (u.email || u.mobile) + '</strong>';
+    document.getElementById('approval-msg-text').value = msg;
+    window._approvalUserEmail = u.email || '';
+    document.getElementById('approval-modal').classList.add('open');
+  }
+}
+function rejectUser(empId) {
+  const users = getData('ma_users');
+  const u = users.find(x => x.empId === empId);
+  if (u) {
+    u.status = 'rejected';
+    setData('ma_users', users);
+    renderAdmin();
+    const msg = `Dear ${u.name},\n\nWe regret to inform you that your MitrAwaas registration (Employee ID: ${u.empId}) could not be approved at this time.\n\nIf you believe this is an error, please contact the platform administrator.\n\n- MitrAwaas Admin`;
+    document.getElementById('approval-modal-title').textContent = '❌ User rejected';
+    document.getElementById('approval-modal-note').innerHTML = 'The user has been rejected. You may notify them via email. Their email: <strong id="approval-user-mobile" style="color:var(--navy);">' + (u.email || 'not provided') + '</strong>';
+    document.getElementById('approval-msg-text').value = msg;
+    window._approvalUserEmail = u.email || '';
+    document.getElementById('approval-modal').classList.add('open');
+  }
+}
+function approveListing(id) {
+  const listings = getData('ma_listings');
+  const l = listings.find(x => x.id === id);
+  if (l) { l.status = 'approved'; setData('ma_listings', listings); renderAdmin(); }
+}
+function deleteListing(id) {
+  let listings = getData('ma_listings');
+  listings = listings.filter(x => x.id !== id);
+  setData('ma_listings', listings); renderAdmin();
+}
+
+function adminTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-registrations').style.display = tab === 'registrations' ? 'block' : 'none';
+  document.getElementById('tab-all-users').style.display = tab === 'all-users' ? 'block' : 'none';
+  document.getElementById('tab-listings-admin').style.display = tab === 'listings-admin' ? 'block' : 'none';
+  document.getElementById('tab-suggestions').style.display = tab === 'suggestions' ? 'block' : 'none';
+  if (tab === 'suggestions') renderSuggestions();
+}
+
+
+// ══════════════════════════════════════
+// LANGUAGE TOGGLE
+// ══════════════════════════════════════
+function getLang() { return document.body.getAttribute('data-lang') || 'bi'; }
+function setLang(lang) {
+  document.body.setAttribute('data-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  ['btn-','m-btn-'].forEach(prefix => {
+    const el = document.getElementById(prefix + lang);
+    if (el) el.classList.add('active');
+  });
+  localStorage.setItem('ma_lang', lang);
+}
+// Init language
+(function() {
+  const saved = localStorage.getItem('ma_lang') || 'en';
+  setLang(saved);
+})();
+
+// ══════════════════════════════════════
+// AUTH NAV STATE
+// ══════════════════════════════════════
+function updateNavAuth() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  const loggedOut = document.getElementById('nav-logged-out');
+  const loggedIn = document.getElementById('nav-logged-in');
+  if (empId) {
+    const users = getData('ma_users');
+    const user = users.find(u => u.empId === empId);
+    if (user) {
+      const initials = user.name.trim().split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+      document.getElementById('nav-avatar').textContent = initials;
+      document.getElementById('nav-username').textContent = user.name.split(' ')[0];
+      document.getElementById('dd-name').textContent = user.name;
+      document.getElementById('dd-empid').textContent = 'Emp ID: ' + user.empId;
+      loggedOut.style.display = 'none';
+      loggedIn.style.display = 'block';
+      updateWishlistBadge();
+      updateEnquiryBadge();
+    }
+  } else {
+    loggedOut.style.display = 'flex';
+    loggedIn.style.display = 'none';
+  }
+}
+
+function toggleUserMenu() {
+  document.getElementById('user-menu').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('user-menu').classList.remove('open');
+}
+
+function userLogout() {
+  sessionStorage.removeItem('ma_loggedIn');
+  updateNavAuth();
+  closeUserMenu();
+  showPage('home');
+}
+
+// ── Change Password ──
+function openChangePassword() {
+  document.getElementById('cp-current').value = '';
+  document.getElementById('cp-new').value = '';
+  document.getElementById('cp-confirm').value = '';
+  document.getElementById('cp-alert').className = 'alert';
+  document.getElementById('cp-alert').textContent = '';
+  document.getElementById('cp-modal').classList.add('open');
+}
+function closeChangePassword() {
+  document.getElementById('cp-modal').classList.remove('open');
+}
+function submitChangePassword() {
+  const current = document.getElementById('cp-current').value;
+  const newPass = document.getElementById('cp-new').value;
+  const confirm = document.getElementById('cp-confirm').value;
+  const alertEl = document.getElementById('cp-alert');
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === empId);
+  const hi = getLang() === 'hi';
+
+  if (!user || user.pass !== current) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = hi ? '⚠️ मौजूदा पासवर्ड गलत है।' : '⚠️ Current password is incorrect.'; return;
+  }
+  if (newPass.length < 8) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = hi ? '⚠️ नया पासवर्ड कम से कम 8 अक्षर का होना चाहिए।' : '⚠️ New password must be at least 8 characters.'; return;
+  }
+  if (!/[A-Z]/.test(newPass) || !/[a-zA-Z]/.test(newPass) || !/[0-9]/.test(newPass)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = hi ? '⚠️ पासवर्ड में कम से कम 8 अक्षर, एक बड़ा अक्षर और एक अंक होना चाहिए।' : '⚠️ Password must be at least 8 characters with one uppercase letter and one number.'; return;
+  }
+  if (newPass !== confirm) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = hi ? '⚠️ पासवर्ड मेल नहीं खाते।' : '⚠️ Passwords do not match.'; return;
+  }
+  user.pass = newPass;
+  setData('ma_users', users);
+  alertEl.className = 'alert alert-success';
+  alertEl.textContent = hi ? '✅ पासवर्ड सफलतापूर्वक बदल दिया गया।' : '✅ Password updated successfully!';
+  setTimeout(() => closeChangePassword(), 1500);
+}
+
+// Init auth state on page load
+updateNavAuth();
+
+// Connect to Firebase and sync data
+initFirebase();
+
+// Hash-based admin access
+window.addEventListener('load', function() {
+  if (window.location.hash === '#admin') {
+    showPage('admin');
+  }
+});
+
+// Close dropdown on outside click
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('user-menu');
+  if (menu && !menu.contains(e.target)) closeUserMenu();
+});
+
+// Close change password modal on outside click
+document.getElementById('cp-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeChangePassword();
+});
+
+// Close modal on outside click
+document.getElementById('contact-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+
+// ══════════════════════════════════════
+// CAPTCHA
+// ══════════════════════════════════════
+function initCaptcha() {
+  const a = Math.floor(Math.random() * 9) + 1;
+  const b = Math.floor(Math.random() * 9) + 1;
+  window._captchaAnswer = a + b;
+  const el = document.getElementById('captcha-question');
+  if (el) { el.textContent = a + ' + ' + b + ' = ?'; }
+  const ans = document.getElementById('captcha-answer');
+  if (ans) ans.value = '';
+}
+initCaptcha();
+
+// ══════════════════════════════════════
+// HIDDEN ADMIN ACCESS
+// ══════════════════════════════════════
+// Admin access via footer ⚙ Admin link or #admin URL hash
+
+// ══════════════════════════════════════
+// FORGOT PASSWORD — SECURITY QUESTION FLOW
+// ══════════════════════════════════════
+let _fpEmpId = null;
+
+const SEC_QUESTIONS = {
+  pet:     'What was the name of your first pet?',
+  school:  'What was the name of your primary school?',
+  city:    'In which city were you born?',
+  mother:  "What is your mother's maiden name?",
+  friend:  'What is the name of your childhood best friend?',
+  vehicle: 'What was the registration number of your first vehicle?'
+};
+
+function showForgotPassword() {
+  _fpEmpId = null;
+  document.getElementById('fp-empid').value = '';
+  document.getElementById('fp-answer').value = '';
+  document.getElementById('fp-new').value = '';
+  document.getElementById('fp-confirm').value = '';
+  document.getElementById('fp-alert').className = 'alert';
+  document.getElementById('fp-alert').textContent = '';
+  document.getElementById('fp-step1').style.display = 'block';
+  document.getElementById('fp-step2').style.display = 'none';
+  document.getElementById('fp-step3').style.display = 'none';
+  document.getElementById('fp-modal').classList.add('open');
+}
+function closeForgotPassword() {
+  document.getElementById('fp-modal').classList.remove('open');
+}
+function fpBack() {
+  document.getElementById('fp-step1').style.display = 'block';
+  document.getElementById('fp-step2').style.display = 'none';
+  document.getElementById('fp-alert').className = 'alert';
+  document.getElementById('fp-alert').textContent = '';
+}
+
+function fpStep1() {
+  const empId = document.getElementById('fp-empid').value.trim();
+  const alertEl = document.getElementById('fp-alert');
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === empId);
+  if (!user) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ No account found with this Employee ID.'; return;
+  }
+  if (!user.secQ || !user.secA) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ This account has no security question set. Please contact admin to reset your password.'; return;
+  }
+  _fpEmpId = empId;
+  document.getElementById('fp-question-label').textContent = SEC_QUESTIONS[user.secQ] || user.secQ;
+  alertEl.className = 'alert';
+  alertEl.textContent = '';
+  document.getElementById('fp-step1').style.display = 'none';
+  document.getElementById('fp-step2').style.display = 'block';
+}
+
+function fpStep2() {
+  const answer = document.getElementById('fp-answer').value.trim().toLowerCase();
+  const alertEl = document.getElementById('fp-alert');
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === _fpEmpId);
+  if (!user || user.secA.toLowerCase() !== answer) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Incorrect answer. Please try again.'; return;
+  }
+  alertEl.className = 'alert';
+  alertEl.textContent = '';
+  document.getElementById('fp-step2').style.display = 'none';
+  document.getElementById('fp-step3').style.display = 'block';
+}
+
+function fpStep3() {
+  const newPass = document.getElementById('fp-new').value;
+  const confirm = document.getElementById('fp-confirm').value;
+  const alertEl = document.getElementById('fp-alert');
+  if (newPass.length < 8) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Password must be at least 8 characters.'; return;
+  }
+  if (!/[A-Z]/.test(newPass) || !/[a-zA-Z]/.test(newPass) || !/[0-9]/.test(newPass)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Password must have at least 1 uppercase letter and contain both letters and numbers.'; return;
+  }
+  if (newPass !== confirm) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Passwords do not match.'; return;
+  }
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === _fpEmpId);
+  user.pass = newPass;
+  setData('ma_users', users);
+  alertEl.className = 'alert alert-success';
+  alertEl.textContent = '✅ Password reset successfully! You can now login.';
+  setTimeout(() => { closeForgotPassword(); showPage('login'); }, 1800);
+}
+
+document.getElementById('fp-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeForgotPassword();
+});
+
+// ══════════════════════════════════════
+// ADMIN RESET PASSWORD
+// ══════════════════════════════════════
+let _arEmpId = null;
+
+function openAdminReset(empId, name) {
+  _arEmpId = empId;
+  document.getElementById('ar-user-name').textContent = name;
+  document.getElementById('ar-user-id').textContent = empId;
+  document.getElementById('ar-new').value = '';
+  document.getElementById('ar-confirm').value = '';
+  document.getElementById('ar-alert').className = 'alert';
+  document.getElementById('ar-alert').textContent = '';
+  document.getElementById('ar-modal').classList.add('open');
+}
+function closeAdminReset() {
+  document.getElementById('ar-modal').classList.remove('open');
+}
+function submitAdminReset() {
+  const newPass = document.getElementById('ar-new').value;
+  const confirm = document.getElementById('ar-confirm').value;
+  const alertEl = document.getElementById('ar-alert');
+  if (newPass.length < 8) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Password must be at least 8 characters.'; return;
+  }
+  if (!/[A-Z]/.test(newPass) || !/[a-zA-Z]/.test(newPass) || !/[0-9]/.test(newPass)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Password must have at least 1 uppercase letter and contain both letters and numbers.'; return;
+  }
+  if (newPass !== confirm) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Passwords do not match.'; return;
+  }
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === _arEmpId);
+  if (!user) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ User not found.'; return; }
+  user.pass = newPass;
+  setData('ma_users', users);
+  const resetMsg = `🔑 Dear ${user.name}, your MitrAwaas password has been reset by admin. Your temporary password is: ${newPass} — Please login and change it immediately. - MitrAwaas Admin`;
+  document.getElementById('approval-modal-title').textContent = '🔑 Password reset';
+  document.getElementById('approval-modal-note').innerHTML = 'Send the new credentials to: <strong style="color:var(--navy);">' + (user.email || user.mobile) + '</strong>';
+  document.getElementById('approval-msg-text').value = resetMsg;
+  window._approvalUserEmail = user.email || '';
+  alertEl.className = 'alert alert-success';
+  alertEl.textContent = '✅ Password reset successfully.';
+  setTimeout(() => { closeAdminReset(); document.getElementById('approval-modal').classList.add('open'); }, 1800);
+}
+document.getElementById('ar-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminReset();
+});
+
+// ══════════════════════════════════════
+// COPY APPROVAL MESSAGE
+// ══════════════════════════════════════
+function copyApprovalMsg() {
+  const txt = document.getElementById('approval-msg-text');
+  txt.select();
+  txt.setSelectionRange(0, 9999);
+  try {
+    document.execCommand('copy');
+  } catch(e) {
+    navigator.clipboard.writeText(txt.value).catch(() => {});
+  }
+  const conf = document.getElementById('copy-confirm');
+  conf.style.display = 'block';
+  setTimeout(() => { conf.style.display = 'none'; }, 2000);
+}
+
+function sendApprovalEmail() {
+  const msg = document.getElementById('approval-msg-text').value;
+  const toEmail = window._approvalUserEmail || '';
+  const title = document.getElementById('approval-modal-title').textContent;
+  const subject = encodeURIComponent('MitrAwaas — ' + title.replace(/[✅❌🔑]/g, '').trim());
+  const body = encodeURIComponent(msg);
+  // Opens system default email client pre-filled; if crossteams@hotmail.com
+  // is the default account in Outlook/Mail, it will send from that address
+  const mailtoUrl = `mailto:${encodeURIComponent(toEmail)}?subject=${subject}&body=${body}`;
+  window.open(mailtoUrl, '_blank');
+}
+document.getElementById('approval-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// ══════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════
+function openProfilePage() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  if (!empId) return;
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === empId);
+  if (!user) return;
+  document.getElementById('profile-empid').value = user.empId;
+  document.getElementById('profile-name').value = user.name;
+  document.getElementById('profile-mobile').value = user.mobile || '';
+  document.getElementById('profile-email').value = user.email || '';
+  document.getElementById('profile-sec-q').value = user.secQ || '';
+  document.getElementById('profile-sec-a').value = '';
+  document.getElementById('profile-alert').className = 'alert';
+  document.getElementById('profile-alert').textContent = '';
+}
+function saveProfile() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  const mobile = document.getElementById('profile-mobile').value.trim();
+  const email = document.getElementById('profile-email').value.trim();
+  const secQ = document.getElementById('profile-sec-q').value;
+  const secA = document.getElementById('profile-sec-a').value.trim();
+  const alertEl = document.getElementById('profile-alert');
+  if (mobile && (mobile.length !== 10 || isNaN(mobile))) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.'; return;
+  }
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Please enter a valid email address.'; return;
+  }
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === empId);
+  if (!user) return;
+  if (mobile) user.mobile = mobile;
+  if (email) user.email = email;
+  if (secQ) user.secQ = secQ;
+  if (secA) user.secA = secA;
+  setData('ma_users', users);
+  alertEl.className = 'alert alert-success';
+  alertEl.textContent = '✅ Profile updated successfully!';
+  updateNavAuth();
+}
+
+// ══════════════════════════════════════
+// WISHLIST
+// ══════════════════════════════════════
+function getWishlist() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  if (!empId) return [];
+  const all = getData('ma_wishlists');
+  const mine = all.find(w => w.empId === empId);
+  return mine ? mine.ids : [];
+}
+function saveWishlist(ids) {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  if (!empId) return;
+  let all = getData('ma_wishlists');
+  const idx = all.findIndex(w => w.empId === empId);
+  if (idx >= 0) all[idx].ids = ids;
+  else all.push({ empId, ids });
+  setData('ma_wishlists', all);
+  updateWishlistBadge();
+}
+function isWishlisted(listingId) {
+  return getWishlist().includes(listingId);
+}
+function toggleWishlist(e, listingId) {
+  e.stopPropagation();
+  const btn = document.getElementById('heart-' + listingId);
+  let ids = getWishlist();
+  if (ids.includes(listingId)) {
+    ids = ids.filter(id => id !== listingId);
+    if (btn) btn.textContent = '🤍';
+  } else {
+    ids.push(listingId);
+    if (btn) { btn.textContent = '❤️'; btn.style.transform = 'scale(1.3)'; setTimeout(() => btn.style.transform = 'scale(1)', 200); }
+  }
+  saveWishlist(ids);
+}
+function updateWishlistBadge() {
+  const count = getWishlist().length;
+  const badge = document.getElementById('wishlist-count-badge');
+  if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline' : 'none'; }
+}
+function renderWishlist() {
+  const ids = getWishlist();
+  const allListings = getData('ma_listings').filter(l => l.status === 'approved' && ids.includes(l.id));
+  const grid = document.getElementById('wishlist-grid');
+  const empty = document.getElementById('wishlist-empty');
+  grid.innerHTML = '';
+  if (!allListings.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  const emojis = ['🏠','🏡','🏢','🏣','🏤'];
+  allListings.forEach((l, i) => {
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.innerHTML = `
+      <div class="listing-img" style="background:linear-gradient(135deg,${['#0B3A63','#0F4C81','#1A6BB5','#0d3360','#1565a8'][i%5]},${['#0F4C81','#1A6BB5','#0B3A63','#1565a8','#0F4C81'][i%5]});position:relative;">
+        <span>${emojis[i%emojis.length]}</span>
+        <span class="listing-badge">${l.bhk}</span>
+        <button onclick="toggleWishlist(event,${l.id});renderWishlist()" id="heart-w-${l.id}" style="position:absolute;top:10px;left:12px;background:rgba(255,255,255,0.9);border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">❤️</button>
+      </div>
+      <div class="listing-body">
+        <div class="listing-title">${l.bhk} in ${l.area}</div>
+        <div class="listing-location">📍 ${l.city}</div>
+        <div class="listing-details"><span class="tag">🛋️ ${l.furnish}</span><span class="tag">👤 ${l.pref}</span></div>
+        <div class="listing-rent">₹${Number(l.rent).toLocaleString('en-IN')} <span>/ month</span></div>
+        <div class="listing-footer">
+          <button class="btn btn-navy btn-sm" onclick="showContact('${l.mobile}','${l.empId}','${l.city}','${l.bhk}')">📞 Contact</button>
+          <button class="btn btn-green btn-sm" onclick="whatsappContact('${l.mobile}','${l.city}','${l.bhk}','${l.rent}')">💬 WhatsApp</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════
+// ENQUIRIES
+// ══════════════════════════════════════
+function updateEnquiryBadge() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  if (!empId) return;
+  const enquiries = getData('ma_enquiries').filter(e => e.ownerEmpId === empId);
+  const seen = (() => { try { return (JSON.parse(localStorage.getItem('ma_enquiries_seen')) || {})[empId] || 0; } catch { return 0; } })();
+  const unseen = enquiries.length - seen;
+  const badge = document.getElementById('enquiry-count-badge');
+  if (badge) { badge.textContent = unseen > 0 ? unseen : enquiries.length; badge.style.display = enquiries.length > 0 ? 'inline' : 'none'; }
+}
+function renderEnquiries() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  if (!empId) return;
+  const enquiries = getData('ma_enquiries').filter(e => e.ownerEmpId === empId).reverse();
+  const list = document.getElementById('enquiries-list');
+  const empty = document.getElementById('enquiries-empty');
+  list.innerHTML = '';
+  if (!enquiries.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  enquiries.forEach(e => {
+    const d = new Date(e.at);
+    const dateStr = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const timeStr = d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+    const card = document.createElement('div');
+    card.style.cssText = 'background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);';
+    card.innerHTML = `
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;flex-shrink:0;">${e.viewerName.charAt(0).toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:0.95rem;color:var(--navy);">${e.viewerName}</div>
+        <div style="font-size:0.82rem;color:var(--gray);margin-top:2px;">📞 ${e.viewerMobile} &nbsp;·&nbsp; 🏘️ ${e.bhk||''} ${e.city}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:0.78rem;color:var(--gray);">${dateStr}</div>
+        <div style="font-size:0.75rem;color:var(--gray);">${timeStr}</div>
+      </div>`;
+    list.appendChild(card);
+  });
+  // Mark all as seen
+  let seen = (() => { try { return JSON.parse(localStorage.getItem('ma_enquiries_seen')) || {}; } catch { return {}; } })();
+  seen[empId] = enquiries.length;
+  setData('ma_enquiries_seen', seen);
+  updateEnquiryBadge();
+}
+
+// ══════════════════════════════════════
+// SUGGESTIONS / FEEDBACK
+// ══════════════════════════════════════
+function submitSuggestion() {
+  const text = document.getElementById('suggestion-text').value.trim();
+  if (!text) { alert('Please type something before submitting.'); return; }
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  const users = getData('ma_users');
+  const user = empId ? users.find(u => u.empId === empId) : null;
+  const suggestions = getData('ma_suggestions');
+  suggestions.push({
+    id: Date.now(),
+    text,
+    from: user ? user.name : 'Anonymous',
+    empId: user ? user.empId : '',
+    at: new Date().toISOString(),
+    read: false
+  });
+  setData('ma_suggestions', suggestions);
+  document.getElementById('suggestion-text').value = '';
+  document.getElementById('suggestion-area').style.display = 'none';
+  document.getElementById('suggestion-success').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('suggestion-success').style.display = 'none';
+    document.getElementById('suggestion-area').style.display = 'block';
+  }, 3000);
+}
+
+function renderSuggestions() {
+  const suggestions = getData('ma_suggestions').slice().reverse();
+  const list = document.getElementById('suggestions-list');
+  const meta = document.getElementById('suggestions-meta');
+  const badge = document.getElementById('suggestions-count');
+  const unread = suggestions.filter(s => !s.read).length;
+  meta.textContent = `${suggestions.length} total · ${unread} unread`;
+  badge.textContent = unread;
+  badge.style.display = unread > 0 ? 'inline' : 'none';
+  list.innerHTML = '';
+  if (!suggestions.length) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray);">No feedback yet</div>';
+    return;
+  }
+  suggestions.forEach(s => {
+    const d = new Date(s.at);
+    const dateStr = d.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+    const timeStr = d.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+    const card = document.createElement('div');
+    card.style.cssText = `background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:10px;box-shadow:var(--shadow);border-left:4px solid ${s.read ? 'var(--border)' : 'var(--blue)'};`;
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0;">${s.from.charAt(0).toUpperCase()}</div>
+        <div style="flex:1;">
+          <div style="font-weight:700;font-size:0.88rem;color:var(--navy);">${s.from}${s.empId ? ' <span style="color:var(--gray);font-weight:400;font-size:0.78rem;">· ' + s.empId + '</span>' : ''}</div>
+          <div style="font-size:0.75rem;color:var(--gray);">${dateStr} · ${timeStr}</div>
+        </div>
+        ${!s.read ? '<span style="background:#E8F0F9;color:var(--blue);font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;">NEW</span>' : ''}
+        <button onclick="deleteSuggestion(${s.id})" style="background:none;border:none;color:var(--gray);cursor:pointer;font-size:1rem;padding:4px;">🗑️</button>
+      </div>
+      <div style="font-size:0.9rem;color:var(--navy);line-height:1.6;background:var(--cream);border-radius:8px;padding:12px 14px;">${s.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+    // Mark as read
+    if (!s.read) {
+      const allS = getData('ma_suggestions');
+      const found = allS.find(x => x.id === s.id);
+      if (found) { found.read = true; setData('ma_suggestions', allS); }
+    }
+    list.appendChild(card);
+  });
+}
+
+function deleteSuggestion(id) {
+  let suggestions = getData('ma_suggestions');
+  suggestions = suggestions.filter(s => s.id !== id);
+  setData('ma_suggestions', suggestions);
+  renderSuggestions();
+}
+function clearAllSuggestions() {
+  if (!confirm('Delete all feedback entries? This cannot be undone.')) return;
+  setData('ma_suggestions', []);
+  renderSuggestions();
+}
+
+// ══════════════════════════════════════
+// EMAIL CONTACT REVEAL
+// ══════════════════════════════════════
+function showEmailContact() {
+  const reveal = document.getElementById('email-reveal');
+  const link = document.getElementById('email-link');
+  const e = 'crossteams' + '@' + 'hotmail.com';
+  link.href = 'mailto:' + e;
+  link.textContent = e;
+  reveal.style.display = 'block';
+}
+
+</script>
+</body>
+</html>
