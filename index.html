@@ -1634,25 +1634,67 @@ function _showSyncDot() {
   dot._t = setTimeout(() => { dot.style.opacity = '0'; }, 1400);
 }
 
-// ── safeAppend: read fresh from Firebase, append item, write back ──
-// Prevents stale localStorage from overwriting Firebase data
+// ── safeAppend: atomic Firestore Transaction ──
+// Reads and writes atomically — no race conditions possible
 async function safeAppend(key, newItem) {
-  let arr;
   if (_db && _fbOk) {
     try {
-      const snap = await _db.collection('mitrawaas').doc(key).get();
-      arr = (snap.exists && Array.isArray(snap.data().val)) ? snap.data().val : getData(key);
-      localStorage.setItem(key, JSON.stringify(arr));
+      let finalArr;
+      await _db.runTransaction(async (tx) => {
+        const ref = _db.collection('mitrawaas').doc(key);
+        const snap = await tx.get(ref);
+        const arr = (snap.exists && Array.isArray(snap.data().val))
+          ? [...snap.data().val] : [];
+        arr.push(newItem);
+        tx.set(ref, { val: arr });
+        finalArr = arr;
+      });
+      // Update localStorage AFTER transaction confirms
+      localStorage.setItem(key, JSON.stringify(finalArr));
+      return finalArr;
     } catch(e) {
-      console.warn('[MitrAwaas] safeAppend read failed, using localStorage:', e.message);
-      arr = getData(key);
+      console.warn('[MitrAwaas] Transaction failed, using local fallback:', e.message);
+      const arr = getData(key);
+      arr.push(newItem);
+      setData(key, arr);
+      return arr;
     }
   } else {
-    arr = getData(key);
+    const arr = getData(key);
+    arr.push(newItem);
+    setData(key, arr);
+    return arr;
   }
-  arr.push(newItem);
-  setData(key, arr);
-  return arr;
+}
+
+// ── safeUpdate: atomic update of an item in a Firebase array ──
+// Used for approve, reject, delete — modifies existing items
+async function safeUpdate(key, updateFn) {
+  if (_db && _fbOk) {
+    try {
+      let finalArr;
+      await _db.runTransaction(async (tx) => {
+        const ref = _db.collection('mitrawaas').doc(key);
+        const snap = await tx.get(ref);
+        let arr = (snap.exists && Array.isArray(snap.data().val))
+          ? [...snap.data().val] : getData(key);
+        arr = updateFn(arr);
+        tx.set(ref, { val: arr });
+        finalArr = arr;
+      });
+      localStorage.setItem(key, JSON.stringify(finalArr));
+      return finalArr;
+    } catch(e) {
+      console.warn('[MitrAwaas] safeUpdate transaction failed:', e.message);
+      const arr = updateFn(getData(key));
+      setData(key, arr);
+      return arr;
+    }
+  } else {
+    const arr = updateFn(getData(key));
+    setData(key, arr);
+    return arr;
+  }
 }
 
 // ── dismissLoader: force-hide the splash (called by skip btn or timeout) ──
@@ -2241,7 +2283,11 @@ function saveEditListing() {
   l.pref = document.getElementById('edit-pref').value;
   l.desc = document.getElementById('edit-desc').value.trim();
   l.updatedAt = new Date().toISOString();
-  setData('ma_listings', listings);
+  safeUpdate('ma_listings', arr => {
+    const idx = arr.findIndex(x => x.id === _editListingId);
+    if (idx !== -1) arr[idx] = l;
+    return arr;
+  });
   alertEl.className = 'alert alert-success';
   alertEl.textContent = '✅ Listing updated!';
   setTimeout(() => {
@@ -2272,9 +2318,7 @@ function closeDeleteConfirm() {
 }
 function confirmDeleteListing() {
   if (!_deleteListingId) return;
-  let listings = getData('ma_listings');
-  listings = listings.filter(x => x.id !== _deleteListingId);
-  setData('ma_listings', listings);
+  safeUpdate('ma_listings', arr => arr.filter(x => x.id !== _deleteListingId));
   // Show success then close
   document.getElementById('delete-confirm-btns').style.display = 'none';
   document.getElementById('delete-success-msg').style.display = 'block';
@@ -2606,27 +2650,17 @@ async function renderAdmin() {
 }
 
 async function approveUser(empId) {
-  // Read FRESH from Firebase to avoid stale localStorage data
-  let users;
-  if (_db && _fbOk) {
-    try {
-      const snap = await _db.collection('mitrawaas').doc('ma_users').get();
-      users = (snap.exists && snap.data().val) ? snap.data().val : getData('ma_users');
-      localStorage.setItem('ma_users', JSON.stringify(users));
-    } catch(e) {
-      users = getData('ma_users');
-    }
-  } else {
-    users = getData('ma_users');
-  }
-  const u = users.find(x => x.empId === empId);
+  let u;
+  await safeUpdate('ma_users', arr => {
+    const found = arr.find(x => x.empId === empId);
+    if (found) { found.status = 'approved'; u = found; }
+    return arr;
+  });
   if (!u) {
     alert('User not found. Please click 🔄 Refresh and try again.');
     return;
   }
   if (u) {
-    u.status = 'approved';
-    setData('ma_users', users);
     // Email to the USER at their registered email
     if (u.email) {
       sendEmailNotification(
@@ -2646,17 +2680,13 @@ async function approveUser(empId) {
     document.getElementById('approval-modal').classList.add('open');
   }
 }
-function adminDeleteUser(empId, name) {
+async function adminDeleteUser(empId, name) {
   if (!confirm(`Delete user ${name} (${empId}) permanently? This cannot be undone.`)) return;
   const users = getData('ma_users');
   const u = users.find(x => x.empId === empId);
   const deletedEmail = u ? u.email : '';
-  const updatedUsers = users.filter(u => u.empId !== empId);
-  setData('ma_users', updatedUsers);
-  // Also remove their listings
-  let listings = getData('ma_listings');
-  listings = listings.filter(l => l.empId !== empId);
-  setData('ma_listings', listings);
+  await safeUpdate('ma_users', arr => arr.filter(x => x.empId !== empId));
+  await safeUpdate('ma_listings', arr => arr.filter(l => l.empId !== empId));
   // Email notification to admin about deletion
   sendEmailNotification(
     `🗑️ User Deleted — ${name} (${empId})`,
@@ -2676,26 +2706,17 @@ function adminDeleteUser(empId, name) {
 }
 
 async function rejectUser(empId) {
-  let users;
-  if (_db && _fbOk) {
-    try {
-      const snap = await _db.collection('mitrawaas').doc('ma_users').get();
-      users = (snap.exists && snap.data().val) ? snap.data().val : getData('ma_users');
-      localStorage.setItem('ma_users', JSON.stringify(users));
-    } catch(e) {
-      users = getData('ma_users');
-    }
-  } else {
-    users = getData('ma_users');
-  }
-  const u = users.find(x => x.empId === empId);
+  let u;
+  await safeUpdate('ma_users', arr => {
+    const found = arr.find(x => x.empId === empId);
+    if (found) { found.status = 'rejected'; u = found; }
+    return arr;
+  });
   if (!u) {
     alert('User not found. Please click 🔄 Refresh and try again.');
     return;
   }
   if (u) {
-    u.status = 'rejected';
-    setData('ma_users', users);
     renderAdmin();
     const msg = `Dear ${u.name},
 
@@ -2727,10 +2748,7 @@ function approveListing(id) {
 }
 function deleteListing(id) {
   if (!confirm('Delete this listing from the platform?')) return;
-  let listings = getData('ma_listings');
-  listings = listings.filter(x => x.id !== id);
-  setData('ma_listings', listings);
-  renderAdmin();
+  safeUpdate('ma_listings', arr => arr.filter(x => x.id !== id)).then(() => renderAdmin());
 }
 
 function adminTab(tab, btn) {
