@@ -1102,6 +1102,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         <h2>Admin Panel <span style="color:var(--gold)">व्यवस्थापक पैनल</span></h2>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
           <button class="btn btn-sm" id="sync-btn" style="background:var(--green);color:#fff;font-size:0.8rem;" onclick="forceSyncToFirebase()">☁️ Sync to Firebase</button>
+          <button class="btn btn-sm" style="background:var(--blue);color:#fff;font-size:0.8rem;" onclick="testEmail()">📧 Test email</button>
           <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="adminLogout()">Logout</button>
         </div>
       </div>
@@ -2216,6 +2217,55 @@ function adminLogout() {
 }
 
 // ── Force push ALL local data to Firebase (one-time fix) ──
+async function testEmail() {
+  const resultEl = document.getElementById('sync-result');
+  resultEl.style.display = 'block';
+  resultEl.style.background = '#E8F0F9';
+  resultEl.style.color = 'var(--navy)';
+  resultEl.innerHTML = '⏳ Sending test email...';
+
+  // Show which key is being used (masked)
+  const keyPreview = WEB3FORMS_KEY
+    ? WEB3FORMS_KEY.slice(0,8) + '...' + WEB3FORMS_KEY.slice(-4)
+    : 'NOT SET';
+  console.log('[MitrAwaas] Using key:', keyPreview);
+
+  if (!WEB3FORMS_KEY || WEB3FORMS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') {
+    resultEl.style.background = '#fee2e2';
+    resultEl.style.color = '#991b1b';
+    resultEl.innerHTML = '❌ Web3Forms key not set in the HTML file. Key value: ' + keyPreview;
+    return;
+  }
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_KEY,
+        subject: '🧪 MitrAwaas — Test email',
+        message: 'This is a test email from MitrAwaas admin panel.\n\nIf you received this, Web3Forms is working correctly.',
+        from_name: 'MitrAwaas Platform',
+        botcheck: ''
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      resultEl.style.background = '#e2ede8';
+      resultEl.style.color = '#174D38';
+      resultEl.innerHTML = '✅ Test email sent successfully! Check your inbox at crossteams@hotmail.com (also check Spam/Junk folder). Key used: ' + keyPreview;
+    } else {
+      resultEl.style.background = '#fee2e2';
+      resultEl.style.color = '#991b1b';
+      resultEl.innerHTML = '❌ Web3Forms rejected the request: <strong>' + (data.message || 'Unknown error') + '</strong><br>Key used: ' + keyPreview;
+    }
+  } catch(e) {
+    resultEl.style.background = '#fee2e2';
+    resultEl.style.color = '#991b1b';
+    resultEl.innerHTML = '❌ Network error — could not reach Web3Forms: <strong>' + e.message + '</strong>';
+  }
+}
+
 async function forceSyncToFirebase() {
   const btn = document.getElementById('sync-btn');
   const result = document.getElementById('sync-result');
