@@ -386,7 +386,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   /* ── Navbar ── */
   nav { padding: 0 14px; height: 56px; }
   .nav-logo-text { font-size: 1.05rem; }
-  .nav-logo-sub { display: none; }
+  .nav-logo-sub { display: block; font-size: 0.6rem; }
   .nav-logo-icon { width: 30px; height: 30px; font-size: 16px; }
   .lang-toggle { display: none; }
   .nav-actions { gap: 6px; }
@@ -590,6 +590,26 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 
 <!-- ════════════ HOME PAGE ════════════ -->
 <div id="page-home" class="page active">
+
+  <!-- ── Brand Banner ── -->
+  <div style="background:linear-gradient(135deg,#0B3A63 0%,#0F4C81 60%,#1A6BB5 100%);padding:14px 20px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:180px;">
+      <div style="width:52px;height:52px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🏠</div>
+      <div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.7rem;line-height:1;color:#ffffff;letter-spacing:-0.5px;">Mitr<span style="color:#FFD700;">Awaas</span></div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.75);margin-top:3px;">
+          <span class="en-text">Free · Trusted · Bank employees only</span>
+          <span class="hi-text">मुफ़्त · भरोसेमंद · Bank कर्मचारियों के लिए</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
+      <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;padding:4px 11px;border-radius:20px;font-size:0.72rem;font-weight:600;">🔒 <span class="en-text">Verified</span><span class="hi-text">सत्यापित</span></span>
+      <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;padding:4px 11px;border-radius:20px;font-size:0.72rem;font-weight:600;">🆓 <span class="en-text">Free</span><span class="hi-text">मुफ़्त</span></span>
+      <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;padding:4px 11px;border-radius:20px;font-size:0.72rem;font-weight:600;">🤝 <span class="en-text">No broker</span><span class="hi-text">दलाल नहीं</span></span>
+    </div>
+  </div>
+
   <div class="hero">
     <div class="hero-badge">🏦 <span class="en-text">Only for PNB employees — 100% free</span><span class="hi-text">केवल PNB कर्मचारियों के लिए - पूरी तरह मुफ़्त</span></div>
     <h1><span class="en-text">Find your <span style="color:var(--gold)">Home</span> among<br/>trusted Colleagues</span><span class="hi-text">भरोसेमंद साथियों के बीच<br/><span style="color:var(--gold)">अपना घर</span> खोजें</span></h1>
@@ -1037,7 +1057,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           </select>
         </div>
         <div class="form-group">
-          <label><span class="en-text">Property photos</span><span class="hi-text">घर की फ़ोटो</span> <span style="font-size:0.78rem;color:var(--gray);">(max 10)</span></label>
+          <label><span class="en-text">Property photos</span><span class="hi-text">घर की फ़ोटो</span> <span style="font-size:0.78rem;color:var(--gray);">(max 5)</span></label>
           <div id="photo-upload-area" onclick="document.getElementById('post-photos').click()"
             style="border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;cursor:pointer;background:var(--light);transition:border-color 0.2s;"
             onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -1046,7 +1066,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
               <span class="en-text">Click to upload photos</span><span class="hi-text">फ़ोटो अपलोड करें</span>
             </div>
             <div style="font-size:0.75rem;color:var(--gray);margin-top:4px;">
-              <span class="en-text">JPG, PNG up to 5MB each · Max 10 photos</span><span class="hi-text">JPG, PNG · अधिकतम 10 फ़ोटो</span>
+              <span class="en-text">JPG, PNG up to 5MB each · Max 5 photos</span><span class="hi-text">JPG, PNG · अधिकतम 5 फ़ोटो</span>
             </div>
           </div>
           <input type="file" id="post-photos" multiple accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)"/>
@@ -1533,7 +1553,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
+const ADMIN_PASSWORD = 'Sviket!@#'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
@@ -2473,9 +2493,9 @@ function handlePhotoUpload(event) {
   const files = Array.from(event.target.files);
   const preview = document.getElementById('photo-preview');
   const existing = preview.querySelectorAll('.photo-thumb').length;
-  const canAdd = Math.min(files.length, 10 - existing);
+  const canAdd = Math.min(files.length, 5 - existing);
   if (files.length > canAdd) {
-    alert(getLang()==='hi' ? 'अधिकतम 10 फ़ोटो ही अपलोड हो सकती हैं।' : 'You can upload a maximum of 10 photos.');
+    alert(getLang()==='hi' ? 'अधिकतम 5 फ़ोटो ही अपलोड हो सकती हैं।' : 'You can upload a maximum of 5 photos.');
   }
   const toAdd = files.slice(0, canAdd);
   toAdd.forEach(file => {
