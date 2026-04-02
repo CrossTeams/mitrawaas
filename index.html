@@ -1080,8 +1080,12 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       </div>
       <div class="admin-header">
         <h2>Admin Panel <span style="color:var(--gold)">व्यवस्थापक पैनल</span></h2>
-        <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="adminLogout()">Logout</button>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-sm" id="sync-btn" style="background:var(--green);color:#fff;font-size:0.8rem;" onclick="forceSyncToFirebase()">☁️ Sync to Firebase</button>
+          <button class="btn btn-outline" style="color:var(--navy);border-color:var(--border);" onclick="adminLogout()">Logout</button>
+        </div>
       </div>
+      <div id="sync-result" style="display:none;background:#E8F0F9;border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:0.88rem;color:var(--navy);"></div>
 
       <div class="admin-tabs">
         <button class="tab-btn active" onclick="adminTab('registrations', this)">
@@ -1518,8 +1522,17 @@ async function initFirebase() {
     );
 
     snaps.forEach((snap, i) => {
+      const key = FB_KEYS[i];
       if (snap.exists && snap.data().val !== undefined) {
-        localStorage.setItem(FB_KEYS[i], JSON.stringify(snap.data().val));
+        // Firebase has data → overwrite local (Firebase is source of truth)
+        localStorage.setItem(key, JSON.stringify(snap.data().val));
+      } else {
+        // Firebase is empty for this key → push local data UP to Firebase
+        const localVal = (() => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } })();
+        if (localVal && Array.isArray(localVal) && localVal.length > 0) {
+          _db.collection('mitrawaas').doc(key).set({ val: localVal })
+            .catch(e => console.warn('[MitrAwaas] Upload failed for', key, e));
+        }
       }
     });
 
@@ -2034,6 +2047,40 @@ function adminLogout() {
   document.getElementById('admin-login-wrap').style.display = 'block';
   document.getElementById('admin-panel').style.display = 'none';
   document.getElementById('admin-pass-input').value = '';
+}
+
+// ── Force push ALL local data to Firebase (one-time fix) ──
+async function forceSyncToFirebase() {
+  const btn = document.getElementById('sync-btn');
+  const result = document.getElementById('sync-result');
+  if (!_db) {
+    result.style.display = 'block';
+    result.textContent = '❌ Firebase not connected. Check your internet and reload.';
+    return;
+  }
+  btn.textContent = '⏳ Syncing...';
+  btn.disabled = true;
+  result.style.display = 'none';
+  let pushed = 0, skipped = 0;
+  for (const key of FB_KEYS) {
+    const localVal = (() => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } })();
+    if (localVal !== null) {
+      try {
+        await _db.collection('mitrawaas').doc(key).set({ val: localVal });
+        pushed++;
+      } catch(e) {
+        console.warn('[MitrAwaas] Sync failed for', key, e);
+        skipped++;
+      }
+    } else { skipped++; }
+  }
+  _fbOk = true;
+  btn.textContent = '☁️ Sync to Firebase';
+  btn.disabled = false;
+  result.style.display = 'block';
+  result.innerHTML = pushed > 0
+    ? `✅ Synced ${pushed} data collections to Firebase. All devices will now see the latest data.`
+    : `ℹ️ Nothing to sync — Firebase already has the latest data.`;
 }
 
 function renderAdmin() {
