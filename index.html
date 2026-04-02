@@ -1542,23 +1542,36 @@ function _fbSync(key, val) {
   _flushQueue();
 }
 
-function _flushQueue() {
-  Object.keys(_writeQueue).forEach(key => {
+async function _flushQueue() {
+  for (const key of Object.keys(_writeQueue)) {
     const val = _writeQueue[key];
-    // Lock this key — prevent onSnapshot from overwriting during write
+    // Safety check: never overwrite ma_users with empty or fewer entries
+    // than what Firebase already has — prevents accidental data wipe
+    if (key === 'ma_users' && Array.isArray(val)) {
+      try {
+        const existing = await _db.collection('mitrawaas').doc('ma_users').get();
+        if (existing.exists && existing.data().val) {
+          const fbCount = existing.data().val.length;
+          if (val.length === 0 && fbCount > 0) {
+            console.warn('[MitrAwaas] BLOCKED empty ma_users write — Firebase has', fbCount, 'users');
+            delete _writeQueue[key];
+            continue;
+          }
+        }
+      } catch(e) { /* proceed with write if check fails */ }
+    }
     _writeLock[key] = Date.now();
     _db.collection('mitrawaas').doc(key)
        .set({ val })
        .then(() => {
          delete _writeQueue[key];
-         // Release lock after 2s (enough time for onSnapshot echo to pass)
          setTimeout(() => { delete _writeLock[key]; }, 2000);
        })
        .catch(e => {
          console.warn('[MitrAwaas] Firebase write failed:', key, e);
-         delete _writeLock[key]; // release on error too
+         delete _writeLock[key];
        });
-  });
+  }
 }
 
 function _showSyncDot() {
@@ -1732,7 +1745,7 @@ function showPage(id) {
     document.getElementById('login-alert').textContent = '';
   }
   if (id === 'listings') renderListings();
-  if (id === 'admin') renderAdmin();
+  if (id === 'admin') { renderAdmin(); }
   if (id === 'post') {
     // Reset form to fresh state each visit
     document.getElementById('post-form').style.display = 'block';
@@ -2379,7 +2392,22 @@ async function forceSyncToFirebase() {
     : `ℹ️ Nothing to sync — Firebase already has the latest data.`;
 }
 
-function renderAdmin() {
+async function renderAdmin() {
+  // Always fetch fresh from Firebase before rendering
+  if (_db && _fbOk) {
+    try {
+      const [uSnap, lSnap, sSnap] = await Promise.all([
+        _db.collection('mitrawaas').doc('ma_users').get(),
+        _db.collection('mitrawaas').doc('ma_listings').get(),
+        _db.collection('mitrawaas').doc('ma_suggestions').get()
+      ]);
+      if (uSnap.exists && uSnap.data().val) localStorage.setItem('ma_users', JSON.stringify(uSnap.data().val));
+      if (lSnap.exists && lSnap.data().val) localStorage.setItem('ma_listings', JSON.stringify(lSnap.data().val));
+      if (sSnap.exists && sSnap.data().val) localStorage.setItem('ma_suggestions', JSON.stringify(sSnap.data().val));
+    } catch(e) {
+      console.warn('[MitrAwaas] renderAdmin fetch error:', e.message);
+    }
+  }
   const banner = document.getElementById('web3-setup-banner');
   if (banner) banner.style.display = (!WEB3FORMS_KEY || WEB3FORMS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') ? 'block' : 'none';
   const users = getData('ma_users');
