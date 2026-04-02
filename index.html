@@ -1405,10 +1405,17 @@ async function sendEmailNotification(subject, body) {
 //  6. Replace the placeholder values and save this file
 //
 const FB_CONFIG = {
-  apiKey:     "AIzaSyCTZEd0g7jracvK9Qy7tnAE4NPLQitvfFE",           // e.g. "AIzaSyAbc123..."
+  apiKey: "AIzaSyCTZEd0g7jracvK9Qy7tnAE4NPLQitvfFE",
   authDomain: "mitrawaas.firebaseapp.com",
-  projectId:  "mitrawaas",        // e.g. "mitrawaas-a1b2c"
+  databaseURL: "https://mitrawaas-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mitrawaas",
+  storageBucket: "mitrawaas.firebasestorage.app",
+  messagingSenderId: "252317610256",
+  appId: "1:252317610256:web:79a24acb9a2189e188f595"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
 // These localStorage keys will be synced to Firebase
 const FB_KEYS = ['ma_users','ma_listings','ma_wishlists','ma_enquiries','ma_suggestions'];
