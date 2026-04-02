@@ -707,9 +707,9 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           </div>
         </div>
         <div class="form-group">
-          <label><span class="en-text">Email address</span><span class="hi-text">ईमेल पता</span> <span style="color:var(--red);font-weight:700;">*</span></label>
+          <label><span class="en-text">Personal email address</span><span class="hi-text">व्यक्तिगत ईमेल पता</span> <span style="color:var(--red);font-weight:700;">*</span></label>
           <input type="email" id="reg-email" placeholder="e.g. yourname@gmail.com"/>
-          <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Used to notify you about account approval or rejection</span><span class="hi-text">खाता स्वीकृति या अस्वीकृति की सूचना के लिए उपयोग होगा</span></small>
+          <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Use personal email (Gmail, Hotmail etc.) — not your PNB bank email, which may block notifications due to firewall</span><span class="hi-text">व्यक्तिगत ईमेल उपयोग करें (Gmail, Hotmail आदि) — PNB बैंक ईमेल नहीं, वह फ़ायरवॉल के कारण ब्लॉक हो सकता है</span></small>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -875,7 +875,8 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         <div class="form-row">
           <div class="form-group">
             <label><span class="en-text">Your Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
-            <input type="text" id="post-empid" placeholder="Employee ID" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
+            <input type="text" id="post-empid" placeholder="e.g. 5012345" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
+            <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">7-digit ID starting with 5 — e.g. 5012345</span><span class="hi-text">5 से शुरू होने वाला 7 अंकों का ID — जैसे 5012345</span></small>
           </div>
           <div class="form-group">
             <label><span class="en-text">Contact Mobile</span><span class="hi-text">संपर्क मोबाइल</span> <span style="color:var(--red);font-size:0.8rem;">*</span></label>
@@ -1436,29 +1437,32 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'Str0ng!@#'; // Change this!
+const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
 // Get your free access key at https://web3forms.com
 // Replace the key below with your own key
 // ══════════════════════════════════════
-const WEB3FORMS_KEY = '0c8fef8c-8099-4d68-8dd7-118a824014f6'; // ← Replace this
+const WEB3FORMS_KEY = '0c8fef8c-8099-4d68-8dd7-118a824014f6';
 
 async function sendEmailNotification(subject, body) {
-  if (WEB3FORMS_KEY === '0c8fef8c-8099-4d68-8dd7-118a824014f6') return; // skip if not configured
+  if (!WEB3FORMS_KEY || WEB3FORMS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') return;
   try {
-    await fetch('https://api.web3forms.com/submit', {
+    const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         access_key: WEB3FORMS_KEY,
         subject: subject,
         message: body,
-        from_name: 'MitrAwaas Platform'
+        from_name: 'MitrAwaas Platform',
+        botcheck: ''
       })
     });
-  } catch(e) { console.log('Email notification failed:', e); }
+    const data = await res.json();
+    if (!data.success) console.warn('[MitrAwaas] Email failed:', data.message);
+  } catch(e) { console.warn('[MitrAwaas] Email error:', e); }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1749,6 +1753,14 @@ function submitRegister() {
   }
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid email address.'; return;
+  }
+  const emailDomain = email.split('@')[1].toLowerCase();
+  const pnbDomains = ['pnb.co.in','pnbindia.in','punjabbank.com','pnb.in'];
+  if (pnbDomains.some(d => emailDomain.includes(d) || emailDomain === d)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = getLang()==='hi'
+      ? '⚠️ कृपया व्यक्तिगत ईमेल उपयोग करें (Gmail, Hotmail आदि)। PNB बैंक ईमेल फ़ायरवॉल के कारण काम नहीं करेगा।'
+      : '⚠️ Please use a personal email (Gmail, Hotmail etc.), not your PNB bank email — it may be blocked by the bank firewall.'; return;
   }
   if (pass.length < 8) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ पासवर्ड कम से कम 8 अक्षर का होना चाहिए।' : '⚠️ Password must be at least 8 characters.'; return;
@@ -2128,8 +2140,11 @@ function submitListing() {
   const maintType = document.getElementById('post-maint-type').value;
   const alertEl = document.getElementById('post-alert');
 
-  if (!empId || empId[0] !== '5' || empId.length > 7 || isNaN(empId)) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही कर्मचारी ID दर्ज करें।' : '⚠️ Please enter a valid Employee ID.'; return;
+  if (!empId || isNaN(empId) || empId.length !== 7 || empId[0] !== '5') {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = getLang()==='hi'
+      ? '⚠️ कर्मचारी ID 7 अंकों का होना चाहिए और 5 से शुरू होना चाहिए।'
+      : '⚠️ Employee ID must be exactly 7 digits and start with 5.'; return;
   }
   if (!mobile || mobile.length !== 10 || isNaN(mobile)) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें।' : '⚠️ Please enter a valid 10-digit mobile number.'; return;
@@ -2219,7 +2234,7 @@ async function forceSyncToFirebase() {
 
 function renderAdmin() {
   const banner = document.getElementById('web3-setup-banner');
-  if (banner) banner.style.display = WEB3FORMS_KEY === '0c8fef8c-8099-4d68-8dd7-118a824014f6' ? 'block' : 'none';
+  if (banner) banner.style.display = (!WEB3FORMS_KEY || WEB3FORMS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') ? 'block' : 'none';
   const users = getData('ma_users');
   const listings = getData('ma_listings');
   const pending = users.filter(u => u.status === 'pending');
