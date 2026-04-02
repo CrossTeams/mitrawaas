@@ -693,22 +693,22 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <div id="reg-form">
         <div class="form-group">
           <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
-          <input type="text" id="reg-empid" placeholder="e.g. 1234567" maxlength="7" pattern="[0-9]*" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
+          <input type="text" id="reg-empid" placeholder="e.g. 1234567" maxlength="7" pattern="[0-9]*" inputmode="numeric" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label><span class="en-text">Full Name</span><span class="hi-text">पूरा नाम</span></label>
-            <input type="text" id="reg-name" placeholder="As per service records"/>
+            <input type="text" id="reg-name" placeholder="As per service records" autocomplete="off"/>
           </div>
           <div class="form-group">
             <label><span class="en-text">Mobile No.</span><span class="hi-text">मोबाइल नंबर</span></label>
-            <input type="tel" id="reg-mobile" placeholder="10-digit number (without country code)" maxlength="10" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"/>
+            <input type="tel" id="reg-mobile" placeholder="10-digit number (without country code)" maxlength="10" inputmode="numeric" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"/>
             <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Enter without country code — e.g. 9876543210, not +91...</span><span class="hi-text">देश कोड के बिना दर्ज करें — जैसे 9876543210</span></small>
           </div>
         </div>
         <div class="form-group">
           <label><span class="en-text">Personal email address</span><span class="hi-text">व्यक्तिगत ईमेल पता</span> <span style="color:var(--red);font-weight:700;">*</span></label>
-          <input type="email" id="reg-email" placeholder="e.g. yourname@gmail.com"/>
+          <input type="email" id="reg-email" placeholder="e.g. yourname@gmail.com" autocomplete="off"/>
           <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Use personal email (Gmail, Hotmail etc.) — not your PNB bank email, which may block notifications due to firewall</span><span class="hi-text">व्यक्तिगत ईमेल उपयोग करें (Gmail, Hotmail आदि) — PNB बैंक ईमेल नहीं, वह फ़ायरवॉल के कारण ब्लॉक हो सकता है</span></small>
         </div>
         <div class="form-row">
@@ -741,12 +741,12 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         <div class="form-row">
           <div class="form-group">
             <label><span class="en-text">Password</span><span class="hi-text">पासवर्ड</span></label>
-            <input type="password" id="reg-pass" placeholder="Min 8 chars, 1 uppercase, letters+numbers"/>
+            <input type="password" id="reg-pass" placeholder="Min 8 chars, 1 uppercase, letters+numbers" autocomplete="new-password"/>
             <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;"><span class="en-text">Min 8 characters · at least 1 uppercase · letters and numbers required</span><span class="hi-text">कम से कम 8 अक्षर · 1 बड़ा अक्षर · अक्षर और अंक दोनों</span></small>
           </div>
           <div class="form-group">
             <label><span class="en-text">Confirm Password</span><span class="hi-text">पासवर्ड दोहराएं</span></label>
-            <input type="password" id="reg-pass2" placeholder="Re-enter password"/>
+            <input type="password" id="reg-pass2" placeholder="Re-enter password" autocomplete="new-password"/>
           </div>
         </div>
         <hr class="form-divider"/>
@@ -872,6 +872,24 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <div class="form-sub"><span class="en-text">Fill in your property details. Your listing goes live immediately.</span><span class="hi-text">संपत्ति का विवरण भरें। आपकी लिस्टिंग तुरंत प्रकाशित होगी।</span></div>
       <div id="post-alert"></div>
       <div id="post-form">
+        <div style="background:#E8F0F9;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:0.83rem;color:#0B3A63;">
+          👤 <span class="en-text">Your name is required so interested tenants can address you correctly when contacting.</span>
+          <span class="hi-text">आपका नाम आवश्यक है ताकि किरायेदार संपर्क करते समय आपको सही तरीके से संबोधित कर सकें।</span>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label><span class="en-text">First name</span><span class="hi-text">पहला नाम</span> <span style="color:var(--red);">*</span></label>
+            <input type="text" id="post-fname" placeholder="First name" autocomplete="off"/>
+          </div>
+          <div class="form-group">
+            <label><span class="en-text">Middle name</span><span class="hi-text">मध्य नाम</span> <span style="color:var(--gray);font-size:0.75rem;">(optional)</span></label>
+            <input type="text" id="post-mname" placeholder="Middle name (optional)" autocomplete="off"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label><span class="en-text">Last name</span><span class="hi-text">अंतिम नाम</span> <span style="color:var(--red);">*</span></label>
+          <input type="text" id="post-lname" placeholder="Last name" autocomplete="off"/>
+        </div>
         <div class="form-row">
           <div class="form-group">
             <label><span class="en-text">Your Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
@@ -1696,7 +1714,23 @@ function showPage(id) {
   window.scrollTo(0, 0);
   if (id === 'listings') renderListings();
   if (id === 'admin') renderAdmin();
-  if (id === 'register') initCaptcha();
+  if (id === 'post') prefillPostForm();
+  if (id === 'register') {
+    initCaptcha();
+    // Clear all fields to prevent browser prefill
+    ['reg-empid','reg-name','reg-mobile','reg-email','reg-branch','reg-city',
+     'reg-pass','reg-pass2','reg-sec-a','captcha-answer'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    const sq = document.getElementById('reg-sec-q');
+    if (sq) sq.selectedIndex = 0;
+    const des = document.getElementById('reg-designation');
+    if (des) des.selectedIndex = 0;
+    document.getElementById('reg-alert').className = 'alert';
+    document.getElementById('reg-form').style.display = 'block';
+    document.getElementById('reg-success').style.display = 'none';
+  }
   if (id === 'mylistings') renderMyListings();
   if (id === 'profile') openProfilePage();
   if (id === 'wishlist') renderWishlist();
@@ -1916,14 +1950,25 @@ function filterListings() {
 function showContact(mobile, empId, city, bhk) {
   const users = getData('ma_users');
   const owner = users.find(u => u.empId === empId);
-  const displayName = owner ? owner.name : '—';
+  // Try listing's stored name first, fall back to user profile name
+  const listings = getData('ma_listings');
+  const listing = listings.find(l => l.empId === empId && l.mobile === mobile);
+  const firstName = (listing && listing.fname) ? listing.fname
+                  : (owner && owner.name) ? owner.name.split(' ')[0] : '—';
+  const fullName  = (listing && listing.ownerName) ? listing.ownerName
+                  : (owner ? owner.name : '—');
   document.getElementById('contact-details').innerHTML = `
-    <div style="background:var(--light);border-radius:10px;padding:14px;margin-bottom:8px;">
-      <div style="font-size:0.82rem;color:var(--gray);margin-bottom:4px;">Owner name</div>
-      <div style="font-weight:700;font-size:1rem;">👤 ${displayName}</div>
+    <div style="background:var(--light);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;gap:14px;align-items:center;">
+      <div style="width:46px;height:46px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;flex-shrink:0;">${firstName.charAt(0).toUpperCase()}</div>
+      <div>
+        <div style="font-size:0.75rem;color:var(--gray);margin-bottom:2px;">First name</div>
+        <div style="font-weight:800;font-size:1.1rem;color:var(--navy);">${firstName}</div>
+        <div style="font-size:0.75rem;color:var(--gray);margin-top:6px;margin-bottom:2px;">Employee ID</div>
+        <div style="font-weight:700;font-size:0.95rem;color:var(--navy);">🪪 ${empId}</div>
+      </div>
     </div>
     <div style="background:var(--light);border-radius:10px;padding:14px;">
-      <div style="font-size:0.82rem;color:var(--gray);margin-bottom:4px;">Mobile number</div>
+      <div style="font-size:0.75rem;color:var(--gray);margin-bottom:4px;">Mobile number</div>
       <div style="font-weight:700;font-size:1.1rem;">📞 ${mobile}</div>
     </div>`;
   document.getElementById('whatsapp-contact-btn').onclick = () => whatsappContact(mobile, city, bhk, '');
@@ -2143,7 +2188,37 @@ function updatePhotoCount() {
   const el = document.getElementById('photo-count');
   el.textContent = count > 0 ? (getLang()==='hi' ? `${count} फ़ोटो चुनी गई` : `${count} photo${count>1?'s':''} selected`) : '';
 }
+
+// ── Pre-fill post listing form from logged-in user ──
+function prefillPostForm() {
+  const empId = sessionStorage.getItem('ma_loggedIn');
+  if (!empId) return;
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === empId);
+  if (!user) return;
+  // Pre-fill empId and mobile
+  const empEl = document.getElementById('post-empid');
+  if (empEl && !empEl.value) empEl.value = empId;
+  const mobEl = document.getElementById('post-mobile');
+  if (mobEl && !mobEl.value) mobEl.value = user.mobile || '';
+  // Pre-fill name from registered name
+  const parts = (user.name || '').trim().split(/\s+/);
+  const fnEl = document.getElementById('post-fname');
+  const mnEl = document.getElementById('post-mname');
+  const lnEl = document.getElementById('post-lname');
+  if (fnEl && !fnEl.value) fnEl.value = parts[0] || '';
+  if (parts.length === 3) {
+    if (mnEl && !mnEl.value) mnEl.value = parts[1] || '';
+    if (lnEl && !lnEl.value) lnEl.value = parts[2] || '';
+  } else if (parts.length === 2) {
+    if (lnEl && !lnEl.value) lnEl.value = parts[1] || '';
+  }
+}
+
 function submitListing() {
+  const fname = document.getElementById('post-fname').value.trim();
+  const mname = document.getElementById('post-mname').value.trim();
+  const lname = document.getElementById('post-lname').value.trim();
   const empId = document.getElementById('post-empid').value.trim();
   const mobile = document.getElementById('post-mobile').value.trim();
   const city = document.getElementById('post-city').value.trim();
@@ -2157,6 +2232,12 @@ function submitListing() {
   const maintType = document.getElementById('post-maint-type').value;
   const alertEl = document.getElementById('post-alert');
 
+  if (!fname || !lname) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = getLang()==='hi'
+      ? '⚠️ पहला नाम और अंतिम नाम आवश्यक है।'
+      : '⚠️ First name and last name are required.'; return;
+  }
   if (!empId || isNaN(empId) || empId.length !== 7 || empId[0] !== '5') {
     alertEl.className = 'alert alert-error';
     alertEl.textContent = getLang()==='hi'
@@ -2174,7 +2255,8 @@ function submitListing() {
   }
   const photoCount = document.getElementById('photo-preview').querySelectorAll('.photo-thumb').length;
   const listings = getData('ma_listings');
-  listings.push({ id: Date.now(), empId, mobile, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, status: 'approved', date: new Date().toISOString() });
+  const ownerName = [fname, mname, lname].filter(Boolean).join(' ');
+  listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, status: 'approved', date: new Date().toISOString() });
   setData('ma_listings', listings);
 
   sendEmailNotification(
