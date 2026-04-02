@@ -939,7 +939,14 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           </div>
           <div class="form-group">
             <label><span class="en-text">Available from</span><span class="hi-text">कब से उपलब्ध</span></label>
-            <input type="date" id="post-date"/>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <input type="checkbox" id="post-immediately" onchange="toggleAvailDate(this)" style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue);flex-shrink:0;"/>
+              <label for="post-immediately" style="font-size:0.9rem;font-weight:600;color:var(--navy);cursor:pointer;margin:0;">
+                <span class="en-text">Immediately available</span>
+                <span class="hi-text">तुरंत उपलब्ध</span>
+              </label>
+            </div>
+            <input type="date" id="post-date" style="transition:opacity 0.2s;"/>
           </div>
         </div>
         <div class="form-group">
@@ -1752,6 +1759,9 @@ function showPage(id) {
     document.getElementById('post-success').style.display = 'none';
     document.getElementById('post-alert').className = 'alert';
     // Clear all post fields before prefilling
+    document.getElementById('post-immediately').checked = false;
+    document.getElementById('post-date').disabled = false;
+    document.getElementById('post-date').style.opacity = '1';
     ['post-fname','post-mname','post-lname','post-empid','post-mobile',
      'post-city','post-area','post-rent','post-desc','post-maintenance'].forEach(id => {
       const el = document.getElementById(id);
@@ -1969,6 +1979,7 @@ function renderListings(filtered) {
         </div>
         <div class="listing-rent">₹${Number(l.rent).toLocaleString('en-IN')} <span>/ month</span></div>
         ${l.maintenance && l.maintType !== 'none' ? `<div style="font-size:0.78rem;color:var(--gray);margin-top:-8px;margin-bottom:8px;">+ ₹${Number(l.maintenance).toLocaleString('en-IN')} maintenance <span style="color:${l.maintType==='included'?'var(--blue)':'#e07b00'}">(${l.maintType==='included'?'included':'extra'})</span></div>` : ''}
+        ${l.availFrom ? `<div style="font-size:0.78rem;font-weight:600;color:${l.availFrom==='Immediately'?'#15803d':'var(--navy)'};margin-bottom:6px;">${l.availFrom==='Immediately'?'✅ Available immediately':'🗓️ Available from '+new Date(l.availFrom).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</div>` : ''}
         <div class="listing-footer" onclick="event.stopPropagation()">
           <button class="btn btn-navy btn-sm" onclick="showContact('${l.mobile}','${l.empId}','${l.city}','${l.bhk}')">📞 Contact</button>
           <button class="btn btn-green btn-sm" onclick="whatsappContact('${l.mobile}','${l.city}','${l.bhk}','${l.rent}')">💬 WhatsApp</button>
@@ -2069,9 +2080,13 @@ function openDetailModal(listingId) {
     ? `+ ₹${Number(l.maintenance).toLocaleString('en-IN')} maintenance <span style="color:${l.maintType==='included'?'var(--blue)':'#e07b00'}">(${l.maintType==='included'?'included':'extra'})</span>`
     : '';
 
+  const availLabel = l.availFrom === 'Immediately' ? '✅ Immediately'
+    : l.availFrom ? '🗓️ From ' + new Date(l.availFrom).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+    : '';
   document.getElementById('detail-tags').innerHTML =
     `<span class="detail-tag">🛋️ ${l.furnish}</span><span class="detail-tag">👤 ${l.pref}</span>` +
-    (l.date ? `<span class="detail-tag">📅 ${new Date(l.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>` : '');
+    (availLabel ? `<span class="detail-tag">${availLabel}</span>` : '') +
+    (l.date ? `<span class="detail-tag">📅 Listed ${new Date(l.date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}</span>` : '');
 
   document.getElementById('detail-desc').textContent = l.desc || 'No description provided.';
 
@@ -2233,6 +2248,19 @@ function updatePhotoCount() {
   el.textContent = count > 0 ? (getLang()==='hi' ? `${count} फ़ोटो चुनी गई` : `${count} photo${count>1?'s':''} selected`) : '';
 }
 
+// ── Toggle available date field based on "Immediately" checkbox ──
+function toggleAvailDate(cb) {
+  const dateEl = document.getElementById('post-date');
+  if (cb.checked) {
+    dateEl.disabled = true;
+    dateEl.value = '';
+    dateEl.style.opacity = '0.4';
+  } else {
+    dateEl.disabled = false;
+    dateEl.style.opacity = '1';
+  }
+}
+
 // ── Pre-fill post listing form from logged-in user ──
 function prefillPostForm() {
   const empId = sessionStorage.getItem('ma_loggedIn');
@@ -2300,7 +2328,9 @@ function submitListing() {
   const photoCount = document.getElementById('photo-preview').querySelectorAll('.photo-thumb').length;
   const listings = getData('ma_listings');
   const ownerName = [fname, mname, lname].filter(Boolean).join(' ');
-  listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, status: 'approved', date: new Date().toISOString() });
+  const immediately = document.getElementById('post-immediately').checked;
+  const availDate = immediately ? 'Immediately' : (document.getElementById('post-date').value || '');
+  listings.push({ id: Date.now(), empId, mobile, ownerName, fname, city, area, bhk, furnish, rent: parseInt(rent), maintenance: maintenance ? parseInt(maintenance) : 0, maintType, desc, pref, photoCount, availFrom: availDate, status: 'approved', date: new Date().toISOString() });
   setData('ma_listings', listings);
 
   // Listing submission email removed per user preference
