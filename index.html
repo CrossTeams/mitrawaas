@@ -1652,23 +1652,45 @@ function _fbSync(key, val) {
 
 async function _flushQueue() {
   for (const key of Object.keys(_writeQueue)) {
-    const val = _writeQueue[key];
-    // Double safety: never send empty array for critical keys
+    const queuedVal = _writeQueue[key];
+    // Never flush empty arrays for critical keys
     const criticalKeys = ['ma_users', 'ma_listings'];
-    if (criticalKeys.includes(key) && Array.isArray(val) && val.length === 0) {
-      try {
-        const existing = await _db.collection('mitrawaas').doc(key).get();
-        if (existing.exists && existing.data().val && existing.data().val.length > 0) {
-          console.error('[MitrAwaas] DOUBLE-BLOCKED empty ' + key + ' write — Firebase has ' + existing.data().val.length + ' items');
-          delete _writeQueue[key];
-          continue;
-        }
-      } catch(e) { /* if check fails, proceed with write */ }
+    if (criticalKeys.includes(key) && Array.isArray(queuedVal) && queuedVal.length === 0) {
+      console.warn('[MitrAwaas] Skipping empty queue flush for', key);
+      delete _writeQueue[key];
+      continue;
     }
-    _db.collection('mitrawaas').doc(key)
-       .set({ val })
-       .then(() => { delete _writeQueue[key]; })
-       .catch(e => { console.warn('[MitrAwaas] Write failed:', key, e.message); });
+    // For arrays: merge queued items INTO Firebase rather than overwrite
+    // This prevents stale queue data from wiping newer Firebase data
+    if (Array.isArray(queuedVal)) {
+      try {
+        await _db.runTransaction(async (tx) => {
+          const ref = _db.collection('mitrawaas').doc(key);
+          const snap = await tx.get(ref);
+          const fbArr = (snap.exists && Array.isArray(snap.data().val))
+            ? snap.data().val : [];
+          // Find queued items that don't already exist in Firebase (by id or empId)
+          const newItems = queuedVal.filter(qi => {
+            const uid = qi.id || qi.empId;
+            if (!uid) return true;
+            return !fbArr.some(fi => (fi.id || fi.empId) === uid);
+          });
+          if (newItems.length === 0) return; // nothing new to add
+          const merged = [...fbArr, ...newItems];
+          tx.set(ref, { val: merged });
+          localStorage.setItem(key, JSON.stringify(merged));
+        });
+        delete _writeQueue[key];
+      } catch(e) {
+        console.warn('[MitrAwaas] Queue flush transaction failed:', key, e.message);
+      }
+    } else {
+      // Non-array: simple overwrite
+      _db.collection('mitrawaas').doc(key)
+         .set({ val: queuedVal })
+         .then(() => { delete _writeQueue[key]; })
+         .catch(e => { console.warn('[MitrAwaas] Write failed:', key, e.message); });
+    }
   }
 }
 
