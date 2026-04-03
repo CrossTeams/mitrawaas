@@ -1569,11 +1569,15 @@ async function sendEmailNotification(subject, body, toEmail) {
       access_key: WEB3FORMS_KEY,
       subject: subject,
       message: body,
-      from_name: 'MitrAwaas Platform',
+      from_name: 'Team Mitrawaas',
       botcheck: ''
     };
-    // If a recipient email is provided, use replyto so they see it
-    if (toEmail) payload.replyto = toEmail;
+    // If a recipient email is provided, send directly to them and BCC admin
+    if (toEmail) {
+      payload.to = toEmail;
+      payload.replyto = toEmail;
+      payload.cc = 'crossteams@hotmail.com';
+    }
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2066,11 +2070,8 @@ function submitRegister() {
   // Acknowledgement email to the user
   if (email) {
     sendEmailNotification(
-      'MitrAwaas — Registration received',
-      `Dear ${name},\n\nThank you for registering on MitrAwaas!\n\n` +
-      `Your registration (Employee ID: ${empId}) has been received and is under review.\n` +
-      `You will receive another email once your account is approved (usually within 24 hours).\n\n` +
-      `- MitrAwaas Admin`,
+      'Thanks for registering with Mitrawaas!',
+      `Dear ${name},\n\nThanks for registering with Mitrawaas!\n\nWe will respond to your request within 24 hours. The response email may land in your email's Junk folder, so please keep an eye on that.\n\nAs you know, this portal is in initial stages of launch, maybe due to some technical glitches, you might be asked for re-registering. Kindly cooperate with us, and re-register in that case.\n\nTill then, keep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`,
       email
     );
   }
@@ -2923,8 +2924,8 @@ async function approveUser(empId) {
     // Email to the USER at their registered email
     if (u.email) {
       sendEmailNotification(
-        `✅ MitrAwaas — Your account has been approved`,
-        `✅ Dear ${u.name},\n\nYour MitrAwaas account (Emp ID: ${u.empId}) has been approved! You can now login and browse/post listings at MitrAwaas.\n\nwww.mitrawaas.co.in\n\nRegards,\nMitrAwaas Admin`,
+        'Congratulations and welcome to Mitrawaas!',
+        `Dear ${u.name},\n\nCongratulations and welcome to Mitrawaas!\n\nYour request for registration has been approved. Keep posting your listings and search for others' listings.\n\nKeep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`,
         u.email
       );
     }
