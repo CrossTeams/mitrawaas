@@ -226,7 +226,7 @@ nav {
   font-size: 0.88rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .tab-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
-.admin-table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+.admin-table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
 table { width: 100%; border-collapse: collapse; }
 th { background: var(--navy); color: var(--white); padding: 12px 14px; text-align: left; font-size: 0.82rem; font-weight: 600; }
 td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.87rem; vertical-align: middle; }
@@ -1256,7 +1256,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           <button class="btn btn-sm" style="background:#1a7a4a;color:#fff;font-size:0.8rem;" onclick="downloadUsersCSV('all')">⬇️ Download All Users (Excel / CSV)</button>
         </div>
         <table>
-          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Approved on</th><th>Actions</th></tr></thead>
           <tbody id="all-users-tbody"></tbody>
         </table>
       </div>
@@ -2915,6 +2915,7 @@ async function renderAdmin() {
       tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td>
         <td><span class="status-badge status-${u.status}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
         <td style="font-size:0.78rem;color:var(--gray);">${new Date(u.joinedAt).toLocaleDateString('en-IN')}</td>
+        <td style="font-size:0.78rem;color:var(--gray);">${u.approvedAt ? new Date(u.approvedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
         <td><div class="action-btns">
           <button class="btn btn-sm" style="background:var(--blue);color:#fff;white-space:nowrap;min-width:90px;" onclick="openAdminReset('${u.empId}','${u.name}')">🔑 Reset pwd</button>
           <button class="btn btn-sm" style="background:var(--red);color:#fff;white-space:nowrap;min-width:70px;" onclick="adminDeleteUser('${u.empId}','${u.name}')">🗑️ Delete</button>
