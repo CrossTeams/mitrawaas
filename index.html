@@ -226,10 +226,10 @@ nav {
   font-size: 0.88rem; transition: all 0.2s; font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .tab-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
-.admin-table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
-table { width: 100%; border-collapse: collapse; min-width: 700px; }
-th { background: var(--navy); color: var(--white); padding: 10px 10px; text-align: left; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
-td { padding: 10px 10px; border-bottom: 1px solid var(--border); font-size: 0.82rem; vertical-align: middle; white-space: nowrap; }
+.admin-table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+th { background: var(--navy); color: var(--white); padding: 12px 14px; text-align: left; font-size: 0.82rem; font-weight: 600; }
+td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.87rem; vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--light); }
 .status-badge { padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
@@ -237,7 +237,7 @@ tr:hover td { background: var(--light); }
 .status-approved { background: #E8F0F9; color: #0B3A63; }
 .status-rejected { background: #fee2e2; color: #991b1b; }
 .action-btns { display: flex; gap: 6px; }
-.btn-sm { padding: 5px 10px; font-size: 0.75rem; border-radius: 6px; white-space: nowrap; }
+.btn-sm { padding: 5px 12px; font-size: 0.78rem; border-radius: 6px; }
 
 /* ── ALERT ── */
 .alert { padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-size: 0.88rem; display: none; }
@@ -453,10 +453,11 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   .admin-header h2 { font-size: 1.15rem; }
   .admin-tabs { gap: 6px; }
   .tab-btn { padding: 7px 12px; font-size: 0.78rem; }
-  table { font-size: 0.72rem; min-width: 600px; }
-  th, td { padding: 7px 7px; }
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { font-size: 0.75rem; min-width: 500px; }
+  th, td { padding: 8px 8px; white-space: nowrap; }
   .action-btns { flex-direction: column; gap: 4px; }
-  .btn-sm { padding: 4px 7px; font-size: 0.7rem; }
+  .btn-sm { padding: 4px 8px; font-size: 0.72rem; }
 
   /* ── Modals ── */
   .modal { padding: 22px 18px; border-radius: 16px; }
@@ -483,7 +484,8 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   nav { padding: 0 18px; }
   .lang-toggle { display: none; }
-  table { min-width: 700px; }
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { min-width: 600px; }
 }
 </style>
 <!-- ══ Firebase SDK ══ -->
@@ -1238,36 +1240,33 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       </div>
 
       <!-- Pending Registrations -->
-      <div id="tab-registrations">
-        <p style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;text-align:right;">← Scroll to see all columns →</p>
-        <div class="admin-table-wrap">
-          <table style="min-width:820px;">
-            <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Designation</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="pending-tbody"></tbody>
-          </table>
+      <div id="tab-registrations" class="admin-table-wrap">
+        <div style="display:flex;justify-content:flex-end;padding:10px 12px 8px;border-bottom:1px solid var(--border);background:#f8fafc;">
+          <button class="btn btn-sm" style="background:#1a7a4a;color:#fff;font-size:0.8rem;" onclick="downloadUsersCSV('pending')">⬇️ Download as Excel / CSV</button>
         </div>
+        <table>
+          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Designation</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="pending-tbody"></tbody>
+        </table>
       </div>
 
       <!-- All Users -->
-      <div id="tab-all-users" style="display:none;">
-        <p style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;text-align:right;">← Scroll to see all columns →</p>
-        <div class="admin-table-wrap">
-          <table style="min-width:820px;">
-            <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
-            <tbody id="all-users-tbody"></tbody>
-          </table>
+      <div id="tab-all-users" class="admin-table-wrap" style="display:none;">
+        <div style="display:flex;justify-content:flex-end;padding:10px 12px 8px;border-bottom:1px solid var(--border);background:#f8fafc;">
+          <button class="btn btn-sm" style="background:#1a7a4a;color:#fff;font-size:0.8rem;" onclick="downloadUsersCSV('all')">⬇️ Download All Users (Excel / CSV)</button>
         </div>
+        <table>
+          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+          <tbody id="all-users-tbody"></tbody>
+        </table>
       </div>
 
       <!-- Listings -->
-      <div id="tab-listings-admin" style="display:none;">
-        <p style="font-size:0.75rem;color:var(--gray);margin-bottom:6px;text-align:right;">← Scroll to see all columns →</p>
-        <div class="admin-table-wrap">
-          <table style="min-width:640px;">
-            <thead><tr><th>Emp ID</th><th>City/Area</th><th>BHK</th><th>Rent</th><th>Furnish</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="listings-tbody"></tbody>
-          </table>
-        </div>
+      <div id="tab-listings-admin" class="admin-table-wrap" style="display:none;">
+        <table>
+          <thead><tr><th>Emp ID</th><th>City/Area</th><th>BHK</th><th>Rent</th><th>Furnish</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="listings-tbody"></tbody>
+        </table>
       </div>
 
       <!-- Suggestions / Feedback -->
@@ -1535,7 +1534,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
     <p id="approval-modal-note" style="font-size:0.88rem;color:var(--gray);margin-bottom:8px;">Notify the user by sending an email.</p>
     <div class="form-group" style="margin-top:12px;">
       <label style="font-size:0.82rem;font-weight:600;color:var(--navy);">Message to send</label>
-      <textarea id="approval-msg-text" rows="5" readonly style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;font-family:'Plus Jakarta Sans',sans-serif;background:#F8FAFC;color:var(--navy);resize:none;margin-top:6px;line-height:1.6;"></textarea>
+      <textarea id="approval-msg-text" rows="11" readonly style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.85rem;font-family:'Plus Jakarta Sans',sans-serif;background:#F8FAFC;color:var(--navy);resize:none;margin-top:6px;line-height:1.6;"></textarea>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
       <button class="btn btn-outline" style="flex:1;min-width:80px;color:var(--navy);border-color:var(--border);" onclick="document.getElementById('approval-modal').classList.remove('open')">Close</button>
@@ -2948,7 +2947,7 @@ async function approveUser(empId) {
   let u;
   await safeUpdate('ma_users', arr => {
     const found = arr.find(x => x.empId === empId);
-    if (found) { found.status = 'approved'; u = found; }
+    if (found) { found.status = 'approved'; found.approvedAt = new Date().toISOString(); u = found; }
     return arr;
   });
   if (!u) {
@@ -2966,8 +2965,9 @@ async function approveUser(empId) {
     }
     // Admin approval log email removed per user preference
     renderAdmin();
-    // Show approval notice modal — admin can copy & send from any number
-    const msg = `✅ Dear ${u.name}, your MitrAwaas account (Emp ID: ${u.empId}) has been approved! You can now login and browse/post listings at MitrAwaas. - MitrAwaas Admin`;
+    // Show approval notice modal with exact copyable text using first name
+    const firstName = u.name ? u.name.trim().split(' ')[0] : u.name;
+    const msg = `Dear ${firstName},\n\nCongratulations and welcome to Mitrawaas!\n\nYour request for registration has been approved. Keep posting your listings and search for others' listings.\n\nKeep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`;
     document.getElementById('approval-modal-title').textContent = '✅ User approved';
     document.getElementById('approval-modal-note').innerHTML = 'Notify the user by sending an email to: <strong style="color:var(--navy);">' + (u.email || u.mobile) + '</strong>';
     document.getElementById('approval-msg-text').value = msg;
@@ -3699,6 +3699,55 @@ function deleteSuggestion(id) {
 function clearAllSuggestions() {
   if (!confirm('Delete all feedback entries? This cannot be undone.')) return;
   safeUpdate('ma_suggestions', () => []).then(() => renderSuggestions());
+}
+
+// ══════════════════════════════════════
+// EMAIL CONTACT REVEAL
+// ══════════════════════════════════════
+// ══════════════════════════════════════
+// DOWNLOAD USERS AS CSV (Excel)
+// ══════════════════════════════════════
+function downloadUsersCSV(filter) {
+  const users = getData('ma_users');
+  const filtered = filter === 'pending' ? users.filter(u => u.status === 'pending') : users;
+  if (!filtered.length) {
+    alert(filter === 'pending' ? 'No pending registrations to download.' : 'No users to download.');
+    return;
+  }
+  const headers = ['Emp ID', 'Full Name', 'First Name', 'SOL ID', 'City', 'Mobile', 'Email', 'Designation', 'Status', 'Registered On', 'Approved On', 'Ex-PNB', 'Superannuation Date'];
+  const rows = filtered.map(u => {
+    const firstName = u.name ? u.name.trim().split(' ')[0] : '';
+    const approvedOn = u.approvedAt ? new Date(u.approvedAt).toLocaleDateString('en-IN') : '';
+    return [
+      u.empId || '',
+      u.name || '',
+      firstName,
+      u.branch || '',
+      u.city || '',
+      u.mobile || '',
+      u.email || '',
+      u.designation || '',
+      u.status || '',
+      u.joinedAt ? new Date(u.joinedAt).toLocaleDateString('en-IN') : '',
+      approvedOn,
+      u.isExPNB ? 'Yes' : 'No',
+      u.superannuation || ''
+    ];
+  });
+  const csvContent = [headers, ...rows]
+    .map(row => row.map(val => '"' + String(val).replace(/"/g, '""') + '"').join(','))
+    .join('\n');
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  a.download = (filter === 'pending' ? 'MitrAwaas_Pending_' : 'MitrAwaas_AllUsers_') + dateStr + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ══════════════════════════════════════
