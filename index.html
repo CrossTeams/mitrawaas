@@ -1553,7 +1553,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'Sviket!@#'; // Change this!
+const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
@@ -1562,7 +1562,7 @@ const ADMIN_PASSWORD = 'Sviket!@#'; // Change this!
 // ══════════════════════════════════════
 const WEB3FORMS_KEY = '0c8fef8c-8099-4d68-8dd7-118a824014f6';
 
-async function sendEmailNotification(subject, body, toEmail) {
+async function sendEmailNotification(subject, body, toEmail, ccEmail) {
   if (!WEB3FORMS_KEY || WEB3FORMS_KEY === 'YOUR_WEB3FORMS_ACCESS_KEY') return;
   try {
     const payload = {
@@ -1572,11 +1572,11 @@ async function sendEmailNotification(subject, body, toEmail) {
       from_name: 'Team Mitrawaas',
       botcheck: ''
     };
-    // If a recipient email is provided, send directly to them and BCC admin
+    // If a recipient email is provided, send directly to them and CC admin
     if (toEmail) {
       payload.to = toEmail;
       payload.replyto = toEmail;
-      payload.cc = 'crossteams@hotmail.com';
+      payload.cc = ccEmail || 'crossteams@mitrawaas.co.in';
     }
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
@@ -2072,7 +2072,8 @@ function submitRegister() {
     sendEmailNotification(
       'Thanks for registering with Mitrawaas!',
       `Dear ${name},\n\nThanks for registering with Mitrawaas!\n\nWe will respond to your request within 24 hours. The response email may land in your email's Junk folder, so please keep an eye on that.\n\nAs you know, this portal is in initial stages of launch, maybe due to some technical glitches, you might be asked for re-registering. Kindly cooperate with us, and re-register in that case.\n\nTill then, keep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`,
-      email
+      email,
+      'crossteams@mitrawaas.co.in'
     );
   }
   document.getElementById('reg-form').style.display = 'none';
@@ -2926,7 +2927,8 @@ async function approveUser(empId) {
       sendEmailNotification(
         'Congratulations and welcome to Mitrawaas!',
         `Dear ${u.name},\n\nCongratulations and welcome to Mitrawaas!\n\nYour request for registration has been approved. Keep posting your listings and search for others' listings.\n\nKeep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`,
-        u.email
+        u.email,
+        'crossteams@mitrawaas.co.in'
       );
     }
     // Admin approval log email removed per user preference
@@ -3374,7 +3376,7 @@ function sendApprovalEmail() {
   const title = document.getElementById('approval-modal-title').textContent;
   const subject = encodeURIComponent('MitrAwaas — ' + title.replace(/[✅❌🔑]/g, '').trim());
   const body = encodeURIComponent(msg);
-  // Opens system default email client pre-filled; if crossteams@hotmail.com
+  // Opens system default email client pre-filled; if crossteams@mitrawaas.co.in
   // is the default account in Outlook/Mail, it will send from that address
   const mailtoUrl = `mailto:${encodeURIComponent(toEmail)}?subject=${subject}&body=${body}`;
   window.open(mailtoUrl, '_blank');
@@ -3672,7 +3674,7 @@ function clearAllSuggestions() {
 function showEmailContact() {
   const reveal = document.getElementById('email-reveal');
   const link = document.getElementById('email-link');
-  const e = 'crossteams' + '@' + 'hotmail.com';
+  const e = 'crossteams' + '@' + 'mitrawaas.co.in';
   link.href = 'mailto:' + e;
   link.textContent = e;
   reveal.style.display = 'block';
