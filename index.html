@@ -730,7 +730,13 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       <div id="reg-form">
         <div class="form-group">
           <label><span class="en-text">Employee ID</span><span class="hi-text">कर्मचारी ID</span></label>
-          <input type="text" id="reg-empid" placeholder="e.g. 1234567" maxlength="7" pattern="[0-9]*" inputmode="numeric" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7)" onchange="validateEmpId(this)"/>
+          <input type="text" id="reg-empid" placeholder="e.g. 1234567" maxlength="7" pattern="[0-9]*" inputmode="numeric" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,7);toggleSuperannuation(this)"/>
+          <small id="reg-empid-hint" style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:none;"><span class="en-text">Ex-PNBian? Enter your 7-digit Employee ID and fill in your superannuation date below.</span></small>
+        </div>
+        <div class="form-group" id="superannuation-wrap" style="display:none;background:#fff8e6;border:1px solid #ffc107;border-radius:10px;padding:14px 16px;">
+          <label style="color:#664d03;font-weight:700;"><span class="en-text">&#x1F4C5; Superannuation Date</span><span class="hi-text">&#x1F4C5; à¤¸à¥à¤µà¤¾à¤¨à¤¿à¤µà¥à¤¤à¥à¤¤à¤¿ à¤¤à¤¿à¤¥à¤¿</span> <span style="color:var(--red);font-weight:700;">*</span></label>
+          <input type="date" id="reg-superannuation" style="background:#fff;width:100%;padding:11px 14px;border:1.5px solid #ffc107;border-radius:10px;font-size:0.92rem;font-family:'Plus Jakarta Sans',sans-serif;color:#1a2622;"/>
+          <small style="color:#664d03;font-size:0.75rem;margin-top:4px;display:block;"><span class="en-text">Required for ex-PNB employees â your date of superannuation as per service records.</span><span class="hi-text">à¤ªà¥à¤°à¥à¤µ PNB à¤à¤°à¥à¤®à¤à¤¾à¤°à¤¿à¤¯à¥à¤ à¤à¥ à¤²à¤¿à¤ à¤à¤¨à¤¿à¤µà¤¾à¤°à¥à¤¯ â à¤¸à¥à¤µà¤¾ à¤°à¤¿à¤à¥à¤°à¥à¤¡ à¤à¥ à¤à¤¨à¥à¤¸à¤¾à¤° à¤¸à¥à¤µà¤¾à¤¨à¤¿à¤µà¥à¤¤à¥à¤¤à¤¿ à¤à¥ à¤¤à¤¿à¤¥à¤¿à¥¤</span></small>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -1553,7 +1559,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'PNB@admin2024'; // Change this!
+const ADMIN_PASSWORD = 'Sviket!@#'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
@@ -1572,7 +1578,7 @@ async function sendEmailNotification(subject, body, toEmail, ccEmail) {
       from_name: 'Team Mitrawaas',
       botcheck: ''
     };
-    // If a recipient email is provided, send directly to them and CC admin
+    // If a recipient email is provided, send directly to them and BCC admin
     if (toEmail) {
       payload.to = toEmail;
       payload.replyto = toEmail;
@@ -1935,7 +1941,7 @@ function showPage(id) {
     initCaptcha();
     // Clear all fields to prevent browser prefill
     ['reg-empid','reg-name','reg-mobile','reg-email','reg-branch','reg-city',
-     'reg-pass','reg-pass2','reg-sec-a','captcha-answer'].forEach(id => {
+     'reg-pass','reg-pass2','reg-sec-a','captcha-answer','reg-superannuation'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
     });
@@ -1945,6 +1951,8 @@ function showPage(id) {
     if (des) des.selectedIndex = 0;
     document.getElementById('reg-alert').className = 'alert';
     document.getElementById('reg-form').style.display = 'block';
+    document.getElementById('superannuation-wrap').style.display = 'none';
+    document.getElementById('reg-empid-hint').style.display = 'none';
   }
   if (id === 'mylistings') renderMyListings();
   if (id === 'profile') openProfilePage();
@@ -1966,11 +1974,19 @@ function showLoginGate(intendedPage) {
 // ══════════════════════════════════════
 // REGISTER
 // ══════════════════════════════════════
-function validateEmpId(el) {
-  if (el.value.length > 0 && el.value[0] !== '5') {
-    el.style.borderColor = '#e24b4a';
+function toggleSuperannuation(el) {
+  const val = el.value;
+  const wrap = document.getElementById('superannuation-wrap');
+  const hint = document.getElementById('reg-empid-hint');
+  if (val.length > 0 && val[0] !== '5') {
+    wrap.style.display = 'block';
+    hint.style.display = 'block';
+    el.style.borderColor = '#ffc107';
   } else {
+    wrap.style.display = 'none';
+    hint.style.display = 'none';
     el.style.borderColor = '';
+    document.getElementById('reg-superannuation').value = '';
   }
 }
 function submitRegister() {
@@ -1992,11 +2008,21 @@ function submitRegister() {
   if (!empId || !name || !mobile || !branch || !city || !designation) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सभी फ़ील्ड भरें।' : '⚠️ Please fill all fields.'; return;
   }
-  if (empId.length === 0 || isNaN(empId) || empId.length > 7) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही कर्मचारी ID दर्ज करें।' : '⚠️ Please enter a valid Employee ID.'; return;
+  if (!empId || isNaN(empId) || empId.length !== 7) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही 7 अंकों की कर्मचारी ID दर्ज करें।' : '⚠️ Employee ID must be exactly 7 digits.'; return;
   }
-  if (empId[0] !== '5') {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ कृपया सही कर्मचारी ID दर्ज करें।' : '⚠️ Please enter a valid Employee ID.'; return;
+
+  const isExPNB = empId[0] !== '5';
+  const superannuation = document.getElementById('reg-superannuation').value;
+  if (isExPNB && !superannuation) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ पूर्व PNB कर्मचारियों के लिए सेवानिवृत्ति तिथि अनिवार्य है।' : '⚠️ Superannuation date is required for ex-PNB employees.'; return;
+  }
+  if (isExPNB && superannuation) {
+    const supDate = new Date(superannuation);
+    const today = new Date();
+    if (supDate >= today) {
+      alertEl.className = 'alert alert-error'; alertEl.textContent = getLang()==='hi' ? '⚠️ सेवानिवृत्ति तिथि भविष्य में नहीं हो सकती।' : '⚠️ Superannuation date cannot be in the future.'; return;
+    }
   }
   if (branch.length !== 6 || isNaN(branch)) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ SOL ID must be exactly 6 digits.'; return;
@@ -2049,7 +2075,7 @@ function submitRegister() {
     }
   }
 
-  const newUser = { empId, name, mobile, email, branch, city, designation, pass, secQ, secA, status: 'pending', joinedAt: new Date().toISOString() };
+  const newUser = { empId, name, mobile, email, branch, city, designation, pass, secQ, secA, isExPNB: empId[0] !== '5', superannuation: empId[0] !== '5' ? document.getElementById('reg-superannuation').value : '', status: 'pending', joinedAt: new Date().toISOString() };
   // Use safeAppend to avoid overwriting existing users in Firebase
   safeAppend('ma_users', newUser);
 
@@ -2064,7 +2090,9 @@ function submitRegister() {
     `City        : ${city}\n` +
     `Designation : ${designation}\n` +
     `Mobile      : ${mobile}\n` +
-    `Email       : ${email}\n\n` +
+    `Email       : ${email}\n` +
+    (empId[0] !== '5' ? `Superannuation: ${document.getElementById('reg-superannuation').value}\n` : '') +
+    `\n` +
     `Please login to the admin panel to review and approve.`
   );
   // Acknowledgement email to the user
@@ -2072,8 +2100,7 @@ function submitRegister() {
     sendEmailNotification(
       'Thanks for registering with Mitrawaas!',
       `Dear ${name},\n\nThanks for registering with Mitrawaas!\n\nWe will respond to your request within 24 hours. The response email may land in your email's Junk folder, so please keep an eye on that.\n\nAs you know, this portal is in initial stages of launch, maybe due to some technical glitches, you might be asked for re-registering. Kindly cooperate with us, and re-register in that case.\n\nTill then, keep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`,
-      email,
-      'crossteams@mitrawaas.co.in'
+      email
     );
   }
   document.getElementById('reg-form').style.display = 'none';
@@ -2927,8 +2954,7 @@ async function approveUser(empId) {
       sendEmailNotification(
         'Congratulations and welcome to Mitrawaas!',
         `Dear ${u.name},\n\nCongratulations and welcome to Mitrawaas!\n\nYour request for registration has been approved. Keep posting your listings and search for others' listings.\n\nKeep spreading a word about this portal among fellow PNBians. More PNBians list on this portal, more PNBians benefit out of this FREE portal.\n\nEnjoy!\nTeam Mitrawaas`,
-        u.email,
-        'crossteams@mitrawaas.co.in'
+        u.email
       );
     }
     // Admin approval log email removed per user preference
