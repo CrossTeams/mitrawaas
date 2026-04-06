@@ -227,6 +227,16 @@ nav {
 }
 .tab-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue); }
 .admin-table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-scroll-top { overflow-x: auto; height: 12px; margin-bottom: 0; }
+.table-scroll-top div { height: 1px; }
+.pagination-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8fafc; border-top:1px solid var(--border); flex-wrap:wrap; gap:8px; }
+.pagination-bar .pg-info { font-size:0.82rem; color:var(--gray); }
+.pagination-bar .pg-btns { display:flex; gap:6px; }
+.pagination-bar .pg-btn { background:#fff; border:1px solid var(--border); border-radius:6px; padding:4px 12px; font-size:0.82rem; cursor:pointer; color:var(--navy); }
+.pagination-bar .pg-btn:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+.pagination-bar .pg-btn:disabled { opacity:0.4; cursor:default; }
+.pagination-bar .pg-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
 table { width: 100%; border-collapse: collapse; }
 th { background: var(--navy); color: var(--white); padding: 12px 14px; text-align: left; font-size: 0.82rem; font-weight: 600; }
 td { padding: 12px 14px; border-bottom: 1px solid var(--border); font-size: 0.87rem; vertical-align: middle; }
@@ -1240,25 +1250,45 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
       </div>
 
       <!-- Pending Registrations -->
-      <div id="tab-registrations" class="admin-table-wrap">
+      <div id="tab-registrations" class="admin-table-wrap" style="overflow:visible;">
         <div style="display:flex;justify-content:flex-end;padding:10px 12px 8px;border-bottom:1px solid var(--border);background:#f8fafc;">
           <button class="btn btn-sm" style="background:#1a7a4a;color:#fff;font-size:0.8rem;" onclick="downloadUsersCSV('pending')">⬇️ Download as Excel / CSV</button>
         </div>
-        <table>
-          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Designation</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody id="pending-tbody"></tbody>
-        </table>
+        <!-- Top scrollbar mirror -->
+        <div id="pending-scroll-top" class="table-scroll-top" onscroll="document.getElementById('pending-scroll-body').scrollLeft=this.scrollLeft">
+          <div id="pending-scroll-top-inner"></div>
+        </div>
+        <div id="pending-scroll-body" class="table-scroll-wrap" onscroll="document.getElementById('pending-scroll-top').scrollLeft=this.scrollLeft">
+          <table id="pending-table">
+            <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Designation</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="pending-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-bar" id="pending-pagination" style="display:none;">
+          <span class="pg-info" id="pending-pg-info"></span>
+          <div class="pg-btns" id="pending-pg-btns"></div>
+        </div>
       </div>
 
       <!-- All Users -->
-      <div id="tab-all-users" class="admin-table-wrap" style="display:none;">
+      <div id="tab-all-users" class="admin-table-wrap" style="display:none;overflow:visible;">
         <div style="display:flex;justify-content:flex-end;padding:10px 12px 8px;border-bottom:1px solid var(--border);background:#f8fafc;">
           <button class="btn btn-sm" style="background:#1a7a4a;color:#fff;font-size:0.8rem;" onclick="downloadUsersCSV('all')">⬇️ Download All Users (Excel / CSV)</button>
         </div>
-        <table>
-          <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Approved on</th><th>Actions</th></tr></thead>
-          <tbody id="all-users-tbody"></tbody>
-        </table>
+        <!-- Top scrollbar mirror -->
+        <div id="allusers-scroll-top" class="table-scroll-top" onscroll="document.getElementById('allusers-scroll-body').scrollLeft=this.scrollLeft">
+          <div id="allusers-scroll-top-inner"></div>
+        </div>
+        <div id="allusers-scroll-body" class="table-scroll-wrap" onscroll="document.getElementById('allusers-scroll-top').scrollLeft=this.scrollLeft">
+          <table id="allusers-table">
+            <thead><tr><th>Emp ID</th><th>Name</th><th>SOL ID</th><th>City</th><th>Mobile</th><th>Email</th><th>Status</th><th>Joined</th><th>Approved on</th><th>Actions</th></tr></thead>
+            <tbody id="all-users-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination-bar" id="allusers-pagination" style="display:none;">
+          <span class="pg-info" id="allusers-pg-info"></span>
+          <div class="pg-btns" id="allusers-pg-btns"></div>
+        </div>
       </div>
 
       <!-- Listings -->
@@ -2860,6 +2890,11 @@ async function forceSyncToFirebase() {
     : `ℹ️ Nothing to sync — Firebase already has the latest data.`;
 }
 
+// ── Pagination state ──
+const PAGE_SIZE = 50;
+let _pendingPage = 1;
+let _allUsersPage = 1;
+
 async function renderAdmin() {
   // Always fetch fresh from Firebase before rendering
   if (_db && _fbOk) {
@@ -2886,43 +2921,107 @@ async function renderAdmin() {
   const sugBadge = document.getElementById('suggestions-count');
   if (sugBadge) { sugBadge.textContent = unreadSuggestions; sugBadge.style.display = unreadSuggestions > 0 ? 'inline' : 'none'; }
 
-  // Pending registrations
-  const pendingTbody = document.getElementById('pending-tbody');
-  pendingTbody.innerHTML = '';
+  // Pending registrations — paginated
+  renderPendingPage(pending, _pendingPage);
+
+  // All users — paginated
+  renderAllUsersPage(users, _allUsersPage);
+
+// ── Sync top scrollbar width to match table width ──
+function syncScrollTop(tableId, topInnerId) {
+  const table = document.getElementById(tableId);
+  const inner = document.getElementById(topInnerId);
+  if (table && inner) inner.style.width = table.scrollWidth + 'px';
+}
+
+// ── Render paginated pending table ──
+function renderPendingPage(pending, page) {
+  _pendingPage = page;
+  const tbody   = document.getElementById('pending-tbody');
+  const pgBar   = document.getElementById('pending-pagination');
+  const pgInfo  = document.getElementById('pending-pg-info');
+  const pgBtns  = document.getElementById('pending-pg-btns');
+  tbody.innerHTML = '';
+
   if (!pending.length) {
-    pendingTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--gray);padding:24px;">No pending registrations ✅</td></tr>';
-  } else {
-    pending.forEach(u => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td><td>${u.designation}</td>
-        <td><span class="status-badge status-pending">Pending</span></td>
-        <td style="min-width:160px;"><div class="action-btns" style="flex-direction:column;gap:5px;">
-          <button class="btn btn-green btn-sm" style="width:100%;" onclick="approveUser('${u.empId}')">✅ Approve</button>
-          <button class="btn btn-sm" style="background:var(--red);color:white;width:100%;" onclick="rejectUser('${u.empId}')">❌ Reject</button>
-        </div></td>`;
-      pendingTbody.appendChild(tr);
-    });
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--gray);padding:24px;">No pending registrations ✅</td></tr>';
+    pgBar.style.display = 'none';
+    return;
   }
 
-  // All users
-  const allTbody = document.getElementById('all-users-tbody');
-  allTbody.innerHTML = '';
-  if (!users.length) {
-    allTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:24px;">No users yet</td></tr>';
-  } else {
-    users.forEach(u => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td>
-        <td><span class="status-badge status-${u.status}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
-        <td style="font-size:0.78rem;color:var(--gray);">${new Date(u.joinedAt).toLocaleDateString('en-IN')}</td>
-        <td style="font-size:0.78rem;color:var(--gray);">${u.approvedAt ? new Date(u.approvedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
-        <td><div class="action-btns">
-          <button class="btn btn-sm" style="background:var(--blue);color:#fff;white-space:nowrap;min-width:90px;" onclick="openAdminReset('${u.empId}','${u.name}')">🔑 Reset pwd</button>
-          <button class="btn btn-sm" style="background:var(--red);color:#fff;white-space:nowrap;min-width:70px;" onclick="adminDeleteUser('${u.empId}','${u.name}')">🗑️ Delete</button>
-        </div></td>`;
-      allTbody.appendChild(tr);
-    });
+  const totalPages = Math.ceil(pending.length / PAGE_SIZE);
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = pending.slice(start, start + PAGE_SIZE);
+
+  slice.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td><td>${u.designation||'—'}</td>
+      <td><span class="status-badge status-pending">Pending</span></td>
+      <td style="min-width:160px;"><div class="action-btns" style="flex-direction:column;gap:5px;">
+        <button class="btn btn-green btn-sm" style="width:100%;" onclick="approveUser('${u.empId}')">✅ Approve</button>
+        <button class="btn btn-sm" style="background:var(--red);color:white;width:100%;" onclick="rejectUser('${u.empId}')">❌ Reject</button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Pagination bar
+  pgInfo.textContent = `Showing ${start+1}–${Math.min(start+PAGE_SIZE, pending.length)} of ${pending.length}`;
+  pgBtns.innerHTML = '';
+  for (let p = 1; p <= totalPages; p++) {
+    const btn = document.createElement('button');
+    btn.className = 'pg-btn' + (p === page ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => renderPendingPage(pending, p);
+    pgBtns.appendChild(btn);
   }
+  pgBar.style.display = 'flex';
+  setTimeout(() => syncScrollTop('pending-table', 'pending-scroll-top-inner'), 50);
+}
+
+// ── Render paginated all-users table ──
+function renderAllUsersPage(users, page) {
+  _allUsersPage = page;
+  const tbody   = document.getElementById('all-users-tbody');
+  const pgBar   = document.getElementById('allusers-pagination');
+  const pgInfo  = document.getElementById('allusers-pg-info');
+  const pgBtns  = document.getElementById('allusers-pg-btns');
+  tbody.innerHTML = '';
+
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--gray);padding:24px;">No users yet</td></tr>';
+    pgBar.style.display = 'none';
+    return;
+  }
+
+  const totalPages = Math.ceil(users.length / PAGE_SIZE);
+  const start = (page - 1) * PAGE_SIZE;
+  const slice = users.slice(start, start + PAGE_SIZE);
+
+  slice.forEach(u => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td><strong>${u.empId}</strong></td><td>${u.name}</td><td>${u.branch}</td><td>${u.city}</td><td>${u.mobile}</td><td style="font-size:0.78rem;">${u.email||'—'}</td>
+      <td><span class="status-badge status-${u.status}">${u.status.charAt(0).toUpperCase()+u.status.slice(1)}</span></td>
+      <td style="font-size:0.78rem;color:var(--gray);">${u.joinedAt ? new Date(u.joinedAt).toLocaleDateString('en-IN') : '—'}</td>
+      <td style="font-size:0.78rem;color:var(--gray);">${u.approvedAt ? new Date(u.approvedAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—'}</td>
+      <td><div class="action-btns">
+        <button class="btn btn-sm" style="background:var(--blue);color:#fff;white-space:nowrap;min-width:90px;" onclick="openAdminReset('${u.empId}','${u.name}')">🔑 Reset pwd</button>
+        <button class="btn btn-sm" style="background:var(--red);color:#fff;white-space:nowrap;min-width:70px;" onclick="adminDeleteUser('${u.empId}','${u.name}')">🗑️ Delete</button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+
+  pgInfo.textContent = `Showing ${start+1}–${Math.min(start+PAGE_SIZE, users.length)} of ${users.length}`;
+  pgBtns.innerHTML = '';
+  for (let p = 1; p <= totalPages; p++) {
+    const btn = document.createElement('button');
+    btn.className = 'pg-btn' + (p === page ? ' active' : '');
+    btn.textContent = p;
+    btn.onclick = () => renderAllUsersPage(users, p);
+    pgBtns.appendChild(btn);
+  }
+  pgBar.style.display = 'flex';
+  setTimeout(() => syncScrollTop('allusers-table', 'allusers-scroll-top-inner'), 50);
+}
 
   // Listings
   const listTbody = document.getElementById('listings-tbody');
