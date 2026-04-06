@@ -1443,20 +1443,6 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   </div>
 </div>
 
-<!-- ════ ACCOUNT LOCKED MODAL ════ -->
-<div class="cp-modal" id="lockout-modal">
-  <div class="cp-box" style="max-width:400px;text-align:center;">
-    <div style="font-size:2.5rem;margin-bottom:12px;">🔒</div>
-    <h3 style="font-size:1.1rem;color:var(--navy);margin-bottom:8px;">Account temporarily locked</h3>
-    <p style="font-size:0.88rem;color:var(--gray);line-height:1.6;margin-bottom:20px;">
-      Too many incorrect password attempts. Your account has been locked for security.<br/><br/>
-      To unlock, email us with your Employee ID and registered mobile number:
-    </p>
-    <a href="mailto:crossteams@mitrawaas.co.in?subject=Account%20Unlock%20Request&body=Employee%20ID%3A%20%0ARegistered%20Mobile%3A%20" style="display:block;background:var(--blue);color:#fff;font-weight:700;padding:12px;border-radius:10px;text-decoration:none;margin-bottom:12px;">✉️ Email crossteams@mitrawaas.co.in</a>
-    <button class="btn btn-outline" style="width:100%;color:var(--gray);border-color:var(--border);" onclick="document.getElementById('lockout-modal').classList.remove('open')">Close</button>
-  </div>
-</div>
-
 <!-- ════ CONTACT MODAL ════ -->
 <div class="modal-overlay" id="contact-modal">
   <div class="modal">
@@ -1956,7 +1942,6 @@ function showPage(id) {
   document.getElementById('page-' + id).classList.add('active');
   window.scrollTo(0, 0);
   if (id === 'login') {
-    initLoginCaptcha();
     document.getElementById('login-empid').value = '';
     document.getElementById('login-pass').value = '';
     document.getElementById('login-alert').className = 'alert';
@@ -2161,66 +2146,18 @@ function submitRegister() {
 // ══════════════════════════════════════
 // LOGIN
 // ══════════════════════════════════════
-// Login attempt tracking: { empId: { count, lockedUntil } }
-const _loginAttempts = {};
-const LOGIN_MAX = 3;
-let _loginCaptchaAnswer = 0;
-
-function initLoginCaptcha() {
-  const a = Math.floor(Math.random() * 15) + 1;
-  const b = Math.floor(Math.random() * 10) + 1;
-  _loginCaptchaAnswer = a + b;
-  const el = document.getElementById('login-captcha-q');
-  if (el) el.textContent = a + ' + ' + b + ' = ?';
-  const ans = document.getElementById('login-captcha-a');
-  if (ans) ans.value = '';
-}
-
 function submitLogin() {
   const empId = document.getElementById('login-empid').value.trim();
-  const pass  = document.getElementById('login-pass').value;
+  const pass = document.getElementById('login-pass').value;
   const alertEl = document.getElementById('login-alert');
   alertEl.className = 'alert';
 
-  // Captcha check
-  const captchaInput = parseInt(document.getElementById('login-captcha-a').value);
-  if (isNaN(captchaInput) || captchaInput !== _loginCaptchaAnswer) {
-    alertEl.className = 'alert alert-error';
-    alertEl.textContent = '⚠️ Incorrect security answer. Please solve the math problem correctly.';
-    initLoginCaptcha(); return;
-  }
-
-  // Check lockout
-  const rec = _loginAttempts[empId];
-  if (rec && rec.lockedUntil && Date.now() < rec.lockedUntil) {
-    document.getElementById('lockout-modal').classList.add('open');
-    initLoginCaptcha(); return;
-  }
-
   const users = getData('ma_users');
-  const byId  = users.find(u => u.empId === empId);
-  const user  = byId && byId.pass === pass ? byId : null;
+  const user = users.find(u => u.empId === empId && u.pass === pass);
 
-  if (!user) {
-    // Wrong credentials — track attempts
-    if (!_loginAttempts[empId]) _loginAttempts[empId] = { count: 0 };
-    _loginAttempts[empId].count++;
-    const remaining = LOGIN_MAX - _loginAttempts[empId].count;
-    if (remaining <= 0) {
-      _loginAttempts[empId].lockedUntil = Date.now() + 30 * 60 * 1000; // 30 min lockout
-      document.getElementById('lockout-modal').classList.add('open');
-    } else {
-      alertEl.className = 'alert alert-error';
-      alertEl.textContent = '⚠️ Invalid Employee ID or password. ' + remaining + ' attempt' + (remaining === 1 ? '' : 's') + ' remaining before lockout.';
-    }
-    initLoginCaptcha(); return;
-  }
-
-  // Correct password — clear attempts
-  delete _loginAttempts[empId];
-
-  if (user.status === 'pending') { alertEl.className = 'alert alert-error'; alertEl.textContent = '⏳ Your registration is still pending admin approval.'; initLoginCaptcha(); return; }
-  if (user.status === 'rejected') { alertEl.className = 'alert alert-error'; alertEl.textContent = '❌ Your registration was not approved. You may re-register or contact admin.'; initLoginCaptcha(); return; }
+  if (!user) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Invalid Employee ID or password.'; return; }
+  if (user.status === 'pending') { alertEl.className = 'alert alert-error'; alertEl.textContent = '⏳ Your registration is still pending admin approval.'; return; }
+  if (user.status === 'rejected') { alertEl.className = 'alert alert-error'; alertEl.textContent = '❌ Your registration was not approved. You may re-register with the same Employee ID or contact admin.'; return; }
 
   sessionStorage.setItem('ma_loggedIn', empId);
   updateNavAuth();
@@ -3327,7 +3264,6 @@ function submitChangePassword() {
 
 // Init auth state on page load
 updateNavAuth();
-initLoginCaptcha();
 
 // Connect to Firebase and sync data
 initFirebase();
@@ -3395,7 +3331,6 @@ function showForgotPassword() {
   document.getElementById('fp-answer').value = '';
   document.getElementById('fp-new').value = '';
   document.getElementById('fp-confirm').value = '';
-  _fpAttempts = 0;
   document.getElementById('fp-alert').className = 'alert';
   document.getElementById('fp-alert').textContent = '';
   document.getElementById('fp-step1').style.display = 'block';
@@ -3434,29 +3369,15 @@ function fpStep1() {
   document.getElementById('fp-step2').style.display = 'block';
 }
 
-const FP_MAX = 5;
-let _fpAttempts = 0;
-
 function fpStep2() {
-  const answer  = document.getElementById('fp-answer').value.trim().toLowerCase();
+  const answer = document.getElementById('fp-answer').value.trim().toLowerCase();
   const alertEl = document.getElementById('fp-alert');
-  const users   = getData('ma_users');
-  const user    = users.find(u => u.empId === _fpEmpId);
+  const users = getData('ma_users');
+  const user = users.find(u => u.empId === _fpEmpId);
   if (!user || user.secA.toLowerCase() !== answer) {
-    _fpAttempts++;
-    const remaining = FP_MAX - _fpAttempts;
-    if (remaining <= 0) {
-      alertEl.className = 'alert alert-error';
-      alertEl.textContent = '🔒 Too many incorrect attempts. Please contact admin at crossteams@mitrawaas.co.in to reset your password.';
-      document.getElementById('fp-answer').disabled = true;
-      document.querySelector('[onclick="fpStep2()"]').disabled = true;
-    } else {
-      alertEl.className = 'alert alert-error';
-      alertEl.textContent = '⚠️ Incorrect answer. ' + remaining + ' attempt' + (remaining === 1 ? '' : 's') + ' remaining.';
-    }
-    return;
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Incorrect answer. Please try again.'; return;
   }
-  _fpAttempts = 0;
   alertEl.className = 'alert';
   alertEl.textContent = '';
   document.getElementById('fp-step2').style.display = 'none';
