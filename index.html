@@ -491,6 +491,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 <!-- ══ Firebase SDK ══ -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 </head>
 <body>
 
@@ -1866,7 +1867,8 @@ const FB_CONFIG = {
 // These localStorage keys will be synced to Firebase
 const FB_KEYS = ['ma_users','ma_listings','ma_wishlists','ma_enquiries','ma_suggestions','ma_pwd_resets'];
 
-let _db      = null; // Firestore instance
+let _db        = null; // Firestore instance
+let _functions = null; // Cloud Functions instance
 let _fbOk = false; // true once data is loaded from Firebase
 let _writeLock = {}; // keys locked during pending Firebase writes
 
@@ -2071,6 +2073,7 @@ async function initFirebase() {
     if (msg) msg.textContent = 'Connecting...';
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
     _db = firebase.firestore();
+    _functions = firebase.app().functions('us-central1');
 
     // Force long polling — avoids WebChannel/WebSocket blocks on mobile networks
     _db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
@@ -2215,15 +2218,8 @@ function showLoginGate(intendedPage) {
 // ══════════════════════════════════════
 // REGISTER — OTP FLOW
 // ══════════════════════════════════════
-let _pendingRegData = null;
-let _regOtpCode = null;
-let _regOtpExpiry = null;
-let _regOtpWrongCount = 0;
-let _fpEmpId = null;
-
-function generateOtp() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
+let _pendingRegData   = null;
+let _fpEmpId          = null;
 
 function maskEmail(email) {
   const parts = email.split('@');
@@ -2241,14 +2237,14 @@ function chooseUserType(type) {
   }
 }
 
-function sendRegOtp() {
+async function sendRegOtp() {
   const name      = (document.getElementById('reg-name').value || '').trim();
   const mobile    = (document.getElementById('reg-mobile').value || '').trim();
   const corpEmail = (document.getElementById('reg-corp-email').value || '').trim().toLowerCase();
   const alertEl   = document.getElementById('reg-alert');
   alertEl.className = 'alert'; alertEl.textContent = '';
 
-  if (!name) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your full name.'; return; }
+  if (!name)   { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your full name.'; return; }
   if (!mobile || mobile.length !== 10 || isNaN(mobile)) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.'; return; }
   if (!corpEmail) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your corporate email.'; return; }
   if (!corpEmail.endsWith('@pnb.bank.in')) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Only @pnb.bank.in corporate email is accepted.'; return; }
@@ -2264,23 +2260,24 @@ function sendRegOtp() {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ This email is already registered. Please login.'; return;
   }
 
-  _regOtpCode       = generateOtp();
-  _regOtpExpiry     = Date.now() + 48 * 60 * 60 * 1000;
-  _regOtpWrongCount = 0;
-  _pendingRegData   = { name, mobile, corpEmail };
-
-  sendEmailNotification(
-    'MitrAwaas — Your Verification OTP: ' + _regOtpCode,
-    'Dear ' + name + ',\n\nThank you for registering on MitrAwaas!\n\nYour email verification OTP is:\n\n         ' + _regOtpCode + '\n\nThis OTP is valid for 48 hours.\n\nIf you do not see this email in your inbox, please check your Spam / Junk folder.\n\nTo complete registration, come back to the MitrAwaas site and go to:\nRegister → "Already requested OTP?" → enter your email and this OTP.\n\nDo not share this OTP with anyone.\n\n— MitrAwaas Team',
-    corpEmail
-  );
-
-  document.getElementById('reg-otp-email-display').textContent = maskEmail(corpEmail);
-  document.getElementById('reg-form').style.display = 'none';
-  document.getElementById('reg-otp-step').style.display = 'block';
-  document.getElementById('reg-otp-alert').className = 'alert';
-  document.getElementById('reg-otp-input').value = '';
-  document.getElementById('reg-otp-resend-wrap').style.display = 'none';
+  // Call Cloud Function to generate OTP and send email
+  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Sending OTP to your corporate email...';
+  try {
+    if (!_functions) throw new Error('Functions not initialised');
+    const sendOtp = _functions.httpsCallable('sendOtp');
+    await sendOtp({ email: corpEmail, name });
+    _pendingRegData = { name, mobile, corpEmail };
+    document.getElementById('reg-otp-email-display').textContent = maskEmail(corpEmail);
+    document.getElementById('reg-form').style.display = 'none';
+    document.getElementById('reg-otp-step').style.display = 'block';
+    document.getElementById('reg-otp-alert').className = 'alert';
+    document.getElementById('reg-otp-input').value = '';
+    document.getElementById('reg-otp-resend-wrap').style.display = 'none';
+    alertEl.className = 'alert'; alertEl.textContent = '';
+  } catch(e) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '❌ Failed to send OTP: ' + (e.message || 'Please try again.');
+  }
 }
 
 function cancelOtpStep() {
@@ -2290,55 +2287,58 @@ function cancelOtpStep() {
   document.getElementById('reg-otp-alert').textContent = '';
 }
 
-function resendRegOtp() {
+async function resendRegOtp() {
   if (!_pendingRegData) return;
-  _regOtpCode       = generateOtp();
-  _regOtpExpiry     = Date.now() + 48 * 60 * 60 * 1000;
-  _regOtpWrongCount = 0;
-  sendEmailNotification(
-    'MitrAwaas — New OTP: ' + _regOtpCode,
-    'Dear ' + _pendingRegData.name + ',\n\nYour new MitrAwaas verification OTP is:\n\n         ' + _regOtpCode + '\n\nValid for 48 hours. Check Spam / Junk if not in inbox.\n\n— MitrAwaas Team',
-    _pendingRegData.corpEmail
-  );
-  document.getElementById('reg-otp-alert').className = 'alert alert-success';
-  document.getElementById('reg-otp-alert').textContent = '✅ New OTP sent to your corporate email.';
-  document.getElementById('reg-otp-resend-wrap').style.display = 'none';
-  document.getElementById('reg-otp-input').value = '';
+  const alertEl = document.getElementById('reg-otp-alert');
+  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Sending new OTP...';
+  try {
+    const sendOtp = _functions.httpsCallable('sendOtp');
+    await sendOtp({ email: _pendingRegData.corpEmail, name: _pendingRegData.name });
+    alertEl.className = 'alert alert-success'; alertEl.textContent = '✅ New OTP sent to your corporate email.';
+    document.getElementById('reg-otp-resend-wrap').style.display = 'none';
+    document.getElementById('reg-otp-input').value = '';
+  } catch(e) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '❌ Failed to resend: ' + (e.message || 'Please try again.');
+  }
 }
 
-function verifyRegOtp() {
+async function verifyRegOtp() {
   const entered = (document.getElementById('reg-otp-input').value || '').trim();
   const alertEl = document.getElementById('reg-otp-alert');
   alertEl.className = 'alert';
 
-  if (!_pendingRegData || !_regOtpCode) {
+  if (!_pendingRegData) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Session expired. Please go back and start again.'; return;
   }
-  if (Date.now() > _regOtpExpiry) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '⏰ OTP has expired. Please request a new one.'; return;
+  if (!entered || entered.length !== 6) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter the 6-digit OTP.'; return;
   }
-  if (entered !== _regOtpCode) {
-    _regOtpWrongCount++;
-    if (_regOtpWrongCount >= 2) document.getElementById('reg-otp-resend-wrap').style.display = 'block';
-    const remaining = 3 - _regOtpWrongCount;
+
+  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Verifying...';
+  try {
+    const verifyOtp = _functions.httpsCallable('verifyOtp');
+    await verifyOtp({ email: _pendingRegData.corpEmail, otp: entered });
+    // OTP correct — move to credentials step
+    _pendingRegData.otpVerified = true;
+    document.getElementById('reg-otp-step').style.display = 'none';
+    document.getElementById('reg-credentials-step').style.display = 'block';
+    document.getElementById('reg-username').value = '';
+    document.getElementById('reg-pass').value = '';
+    document.getElementById('reg-pass2').value = '';
+    document.getElementById('reg-sec-q').selectedIndex = 0;
+    document.getElementById('reg-sec-a').value = '';
+    const terms = document.getElementById('reg-terms'); if (terms) terms.checked = false;
+    document.getElementById('reg-cred-alert').className = 'alert';
+    document.getElementById('reg-cred-alert').textContent = '';
+  } catch(e) {
     alertEl.className = 'alert alert-error';
-    alertEl.textContent = remaining > 0
-      ? '⚠️ Incorrect OTP. ' + remaining + ' attempt' + (remaining === 1 ? '' : 's') + ' remaining.'
-      : '🔒 Too many wrong attempts. Please use Resend OTP.';
-    return;
+    const msg = e.message || '';
+    // Show resend button after 2 wrong attempts
+    if (msg.includes('remaining') && (msg.includes('3') || msg.includes('2'))) {
+      document.getElementById('reg-otp-resend-wrap').style.display = 'block';
+    }
+    alertEl.textContent = '⚠️ ' + (msg || 'Verification failed. Please try again.');
   }
-  // OTP correct — move to credentials step
-  _pendingRegData.otpVerified = true;
-  document.getElementById('reg-otp-step').style.display = 'none';
-  document.getElementById('reg-credentials-step').style.display = 'block';
-  document.getElementById('reg-username').value = '';
-  document.getElementById('reg-pass').value = '';
-  document.getElementById('reg-pass2').value = '';
-  document.getElementById('reg-sec-q').selectedIndex = 0;
-  document.getElementById('reg-sec-a').value = '';
-  const terms = document.getElementById('reg-terms'); if (terms) terms.checked = false;
-  document.getElementById('reg-cred-alert').className = 'alert';
-  document.getElementById('reg-cred-alert').textContent = '';
 }
 
 function completeRegistration() {
@@ -2398,7 +2398,7 @@ function completeRegistration() {
     'New self-registered user:\n\nName     : ' + d.name + '\nUsername : ' + username + '\nMobile   : ' + d.mobile + '\nEmail    : ' + d.corpEmail
   );
 
-  _pendingRegData = null; _regOtpCode = null;
+  _pendingRegData = null;
   document.getElementById('reg-credentials-step').style.display = 'none';
   const modal = document.getElementById('reg-success-modal');
   if (modal) {
@@ -2500,6 +2500,18 @@ function showMigrationModal() {
 }
 function closeMigrationModal() {
   document.getElementById('migration-modal').classList.remove('open');
+  // Always return to the choice screen — never leave user on blank page
+  const userTypeEl = document.getElementById('reg-user-type');
+  const regFormEl  = document.getElementById('reg-form');
+  const otpEl      = document.getElementById('reg-otp-step');
+  const credEl     = document.getElementById('reg-credentials-step');
+  if (userTypeEl) userTypeEl.style.display = 'block';
+  if (regFormEl)  regFormEl.style.display  = 'none';
+  if (otpEl)      otpEl.style.display      = 'none';
+  if (credEl)     credEl.style.display     = 'none';
+  // Only do this if we're actually on the register page
+  const regPage = document.getElementById('page-register');
+  if (!regPage || !regPage.classList.contains('active')) return;
 }
 function migBack() {
   document.getElementById('mig-step1').style.display = 'block';
