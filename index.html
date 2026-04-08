@@ -2062,7 +2062,7 @@ async function initFirebase() {
   }
 
   // No config filled in yet
-  if (!FB_CONFIG.apiKey || FB_CONFIG.apiKey === 'AIzaSyCTZEd0g7jracvK9Qy7tnAE4NPLQitvfFE') {
+  if (!FB_CONFIG.apiKey || FB_CONFIG.apiKey === 'YOUR_API_KEY') {
     cleanup();
     if (msg) msg.textContent = 'Starting in offline mode...';
     setTimeout(() => dismissLoader(), 800);
@@ -2073,7 +2073,7 @@ async function initFirebase() {
     if (msg) msg.textContent = 'Connecting...';
     if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
     _db = firebase.firestore();
-    _functions = firebase.app().functions('us-central1');
+    _functions = firebase.app().functions('asia-southeast1');
 
     // Force long polling — avoids WebChannel/WebSocket blocks on mobile networks
     _db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
