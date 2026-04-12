@@ -2238,48 +2238,111 @@ function chooseUserType(type) {
 }
 
 async function sendRegOtp() {
+
   const name      = (document.getElementById('reg-name').value || '').trim();
   const mobile    = (document.getElementById('reg-mobile').value || '').trim();
   const corpEmail = (document.getElementById('reg-corp-email').value || '').trim().toLowerCase();
   const alertEl   = document.getElementById('reg-alert');
-  alertEl.className = 'alert'; alertEl.textContent = '';
 
-  if (!name)   { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your full name.'; return; }
-  if (!mobile || mobile.length !== 10 || isNaN(mobile)) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.'; return; }
-  if (!corpEmail) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your corporate email.'; return; }
-  if (!corpEmail.endsWith('@pnb.bank.in')) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Only @pnb.bank.in corporate email is accepted.'; return; }
+  alertEl.className = 'alert';
+  alertEl.textContent = '';
 
-  const captchaInput = parseInt(document.getElementById('captcha-answer').value);
-  if (isNaN(captchaInput) || captchaInput !== window._captchaAnswer) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Incorrect human verification answer. Please solve the sum.';
-    initCaptcha(); return;
+  /* ---------- VALIDATIONS (UNCHANGED) ---------- */
+
+  if (!name) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Please enter your full name.';
+    return;
+  }
+
+  if (!mobile || mobile.length !== 10 || isNaN(mobile)) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.';
+    return;
+  }
+
+  if (!corpEmail) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Please enter your corporate email.';
+    return;
+  }
+
+  if (!corpEmail.endsWith('@pnb.bank.in')) {
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent = '⚠️ Only @pnb.bank.in corporate email is accepted.';
+    return;
+  }
+
+  const captchaInput =
+    parseInt(document.getElementById('captcha-answer').value);
+
+  if (isNaN(captchaInput) ||
+      captchaInput !== window._captchaAnswer) {
+
+    alertEl.className = 'alert alert-error';
+    alertEl.textContent =
+      '⚠️ Incorrect human verification answer. Please solve the sum.';
+
+    initCaptcha();
+    return;
   }
 
   const users = getData('ma_users');
-  if (users.find(u => u.corpEmail === corpEmail && u.status === 'approved')) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ This email is already registered. Please login.'; return;
-  }
 
-  // Call Cloud Function to generate OTP and send email
-  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Sending OTP to your corporate email...';
-  try {
-    if (!_functions) throw new Error('Functions not initialised');
-    const sendOtp = _functions.httpsCallable('sendOtp');
-    await sendOtp({ email: corpEmail, name });
-    _pendingRegData = { name, mobile, corpEmail };
-    document.getElementById('reg-otp-email-display').textContent = maskEmail(corpEmail);
-    document.getElementById('reg-form').style.display = 'none';
-    document.getElementById('reg-otp-step').style.display = 'block';
-    document.getElementById('reg-otp-alert').className = 'alert';
-    document.getElementById('reg-otp-input').value = '';
-    document.getElementById('reg-otp-resend-wrap').style.display = 'none';
-    alertEl.className = 'alert'; alertEl.textContent = '';
-  } catch(e) {
+  if (users.find(u =>
+        u.corpEmail === corpEmail &&
+        u.status === 'approved')) {
+
     alertEl.className = 'alert alert-error';
-    alertEl.textContent = '❌ Failed to send OTP: ' + (e.message || 'Please try again.');
+    alertEl.textContent =
+      '⚠️ This email is already registered. Please login.';
+    return;
   }
-}
 
+  /* ---------- OTP CALL (NEW CORRECT PART) ---------- */
+
+  try {
+
+    alertEl.className = 'alert alert-info';
+    alertEl.textContent =
+      'Sending OTP... please wait';
+
+    console.log("Calling Firebase sendOtp...");
+
+    const sendOtpFunction =
+      firebase
+        .app()
+        .functions("asia-south1")
+        .httpsCallable("sendOtp");
+
+    await sendOtpFunction({
+
+      email: corpEmail,
+      name: name
+
+    });
+
+    alertEl.className = 'alert alert-success';
+    alertEl.textContent =
+      '✅ OTP sent to your corporate email.';
+
+    console.log("OTP sent successfully");
+
+  }
+
+  catch (error) {
+
+    console.error("OTP Error:", error);
+
+    alertEl.className = 'alert alert-error';
+
+    alertEl.textContent =
+      error.message ||
+      '❌ Failed to send OTP. Please try again.';
+
+  }
+
+}
 function cancelOtpStep() {
   document.getElementById('reg-otp-step').style.display = 'none';
   document.getElementById('reg-form').style.display = 'block';
