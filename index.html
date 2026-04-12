@@ -461,11 +461,8 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 
   /* ── Modals ── */
   .modal { padding: 22px 18px; border-radius: 16px; }
-  .cp-modal { padding: 10px; align-items: flex-end; }
-  .cp-box { padding: 20px 16px; border-radius: 16px; max-height: 90vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .cp-box { padding: 22px 18px; border-radius: 16px; }
   .cp-box h3 { font-size: 1rem; }
-  .cp-box .form-group input, .cp-box .form-group select { font-size: 0.88rem; padding: 10px 12px; }
-  .cp-box small { font-size: 0.72rem; }
 
   /* ── Footer ── */
   footer { padding: 22px 16px; font-size: 0.78rem; }
@@ -494,6 +491,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 <!-- ══ Firebase SDK ══ -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 </head>
 <body>
 
@@ -606,7 +604,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         We will be live very soon — thank you for your patience!
       </p>
       <p style="color:rgba(255,255,255,0.5);font-size:0.78rem;margin-top:16px;">
-        For queries: <a href="/cdn-cgi/l/email-protection#7d1e0f120e0e09181c100e3d1014090f1c0a1c1c0e531e12531413" style="color:#FFD700;text-decoration:none;"><span class="__cf_email__" data-cfemail="ccafbea3bfbfb8a9ada1bf8ca1a5b8beadbbadadbfe2afa3e2a5a2">[email&#160;protected]</span></a>
+        For queries: <a href="mailto:crossteams@mitrawaas.co.in" style="color:#FFD700;text-decoration:none;">crossteams@mitrawaas.co.in</a>
       </p>
     </div>
     <div id="maint-login-wrap" style="display:none;background:rgba(0,0,0,0.25);border-radius:14px;padding:20px 20px 16px;">
@@ -635,6 +633,25 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
 
 <!-- ════════════ HOME PAGE ════════════ -->
 <div id="page-home" class="page active">
+
+  <!-- ── Brand Banner ── -->
+  <div style="background:linear-gradient(135deg,#0B3A63 0%,#0F4C81 60%,#1A6BB5 100%);padding:14px 20px 16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:180px;">
+      <div style="width:52px;height:52px;background:rgba(255,255,255,0.12);border:1.5px solid rgba(255,255,255,0.25);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;">🏠</div>
+      <div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1.7rem;line-height:1;color:#ffffff;letter-spacing:-0.5px;">Mitr<span style="color:#FFD700;">Awaas</span></div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.75);margin-top:3px;">
+          <span class="en-text">Free · Trusted · Bank employees only</span>
+          <span class="hi-text">मुफ़्त · भरोसेमंद · Bank कर्मचारियों के लिए</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
+      <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;padding:4px 11px;border-radius:20px;font-size:0.72rem;font-weight:600;">🔒 <span class="en-text">Verified</span><span class="hi-text">सत्यापित</span></span>
+      <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;padding:4px 11px;border-radius:20px;font-size:0.72rem;font-weight:600;">🆓 <span class="en-text">Free</span><span class="hi-text">मुफ़्त</span></span>
+      <span style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);color:#fff;padding:4px 11px;border-radius:20px;font-size:0.72rem;font-weight:600;">🤝 <span class="en-text">No broker</span><span class="hi-text">दलाल नहीं</span></span>
+    </div>
+  </div>
 
   <div class="hero">
     <div class="hero-badge">🏦 <span class="en-text">Only for PNB employees — 100% free</span><span class="hi-text">केवल PNB कर्मचारियों के लिए - पूरी तरह मुफ़्त</span></div>
@@ -783,11 +800,11 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           <input type="tel" id="reg-mobile" placeholder="10-digit number" maxlength="10" inputmode="numeric" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"/>
         </div>
         <div class="form-group">
-          <label><span class="en-text">Bank Corporate Email</span><span class="hi-text">PNB कॉर्पोरेट ईमेल</span> <span style="color:var(--red);">*</span></label>
-          <input type="text" id="reg-corp-email" placeholder="yourname@pnb.bank.in" autocomplete="email" inputmode="email" oninput="this.value=this.value.toLowerCase().trim()" onblur="this.value=this.value.toLowerCase().trim()"/>
+          <label><span class="en-text">PNB Corporate Email</span><span class="hi-text">PNB कॉर्पोरेट ईमेल</span> <span style="color:var(--red);">*</span></label>
+          <input type="email" id="reg-corp-email" placeholder="yourname@pnb.bank.in" autocomplete="off" oninput="this.value=this.value.toLowerCase()"/>
           <small style="color:var(--gray);font-size:0.75rem;margin-top:3px;display:block;">
-            <span class="en-text">Only your <strong>bank corporate email</strong> is accepted. A 6-digit OTP valid for <strong>48 hours</strong> will be sent here — check on your office PC.</span>
-            <span class="hi-text">केवल आपका <strong>बैंक कॉर्पोरेट ईमेल</strong> स्वीकार्य है। 48 घंटे वैध OTP भेजा जाएगा।</span>
+            <span class="en-text">Only <strong>@pnb.bank.in</strong> email accepted. A 6-digit OTP valid for <strong>48 hours</strong> will be sent here — check your office PC.</span>
+            <span class="hi-text">केवल <strong>@pnb.bank.in</strong> ईमेल स्वीकार्य है। 48 घंटे वैध OTP भेजा जाएगा।</span>
           </small>
         </div>
         <!-- Spam folder warning -->
@@ -804,7 +821,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
             <input type="text" id="captcha-answer" inputmode="numeric" maxlength="3" placeholder="?" style="width:70px;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:1rem;font-family:'Plus Jakarta Sans',sans-serif;background:#fff;color:var(--navy);text-align:center;" oninput="this.value=this.value.replace(/\D/g,'')"/>
           </div>
         </div>
-        <button id="send-otp-btn" class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;" onclick="sendRegOtp()">
+        <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;" onclick="sendRegOtp()">
           <span class="en-text">Send OTP to corporate email →</span><span class="hi-text">OTP भेजें →</span>
         </button>
         <p style="text-align:center;margin-top:14px;font-size:0.85rem;color:var(--gray)">
@@ -821,8 +838,6 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
           📬 <span class="en-text">OTP sent to <strong id="reg-otp-email-display"></strong>. Valid for <strong>48 hours</strong>.<br/>Check your office PC. <strong>Also check Spam / Junk folder</strong> if not received.</span>
           <span class="hi-text">OTP भेजा गया। 48 घंटे वैध। <strong>Spam / Junk फोल्डर भी जांचें।</strong></span>
         </div>
-        <!-- On-screen OTP backup — shown if email delivery uncertain -->
-        <div style="font-size:0.75rem;color:#664d03;margin-top:4px;"><span class="en-text">Note it down — valid for 48 hours. Do not share with anyone.</span></div>
         <div id="reg-otp-alert"></div>
         <div class="form-group">
           <label style="font-weight:700;"><span class="en-text">Enter 6-digit OTP</span><span class="hi-text">6-अंकीय OTP दर्ज करें</span></label>
@@ -833,11 +848,11 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
         </div>
         <div id="reg-otp-resend-wrap" style="text-align:center;margin-bottom:16px;display:none;">
           <p style="font-size:0.83rem;color:var(--gray);margin-bottom:8px;"><span class="en-text">Entered wrong OTP twice — request a new one:</span></p>
-          <button id="resend-otp-btn" onclick="resendRegOtp()" class="btn btn-outline" style="font-size:0.85rem;padding:8px 20px;">
+          <button onclick="resendRegOtp()" class="btn btn-outline" style="font-size:0.85rem;padding:8px 20px;">
             🔄 <span class="en-text">Resend OTP</span><span class="hi-text">OTP पुनः भेजें</span>
           </button>
         </div>
-        <button id="verify-otp-btn" class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;margin-bottom:10px;" onclick="verifyRegOtp()">
+        <button class="btn btn-gold" style="width:100%;padding:13px;font-size:1rem;margin-bottom:10px;" onclick="verifyRegOtp()">
           <span class="en-text">Verify OTP →</span><span class="hi-text">OTP सत्यापित करें →</span>
         </button>
         <button onclick="cancelOtpStep()" style="background:none;border:none;color:var(--gray);font-size:0.85rem;cursor:pointer;width:100%;font-family:'Plus Jakarta Sans',sans-serif;">
@@ -1738,7 +1753,7 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
     <h3>📋 Terms &amp; Conditions</h3>
     <div style="font-size:0.85rem;color:var(--navy);line-height:1.7;margin-top:12px;">
       <p style="margin-bottom:10px;"><strong>1. Eligibility &amp; Consent</strong><br/>MitrAwaas is exclusively for current employees of Punjab National Bank (PNB). By registering, you voluntarily provide your information and give your explicit consent to its collection, storage, and use as described herein. You confirm you are an active PNB employee with a valid @pnb.bank.in corporate email.</p>
-      <p style="margin-bottom:10px;"><strong>2. Voluntary data sharing</strong><br/>Registration is entirely voluntary. You choose to share your name, mobile number, and corporate email solely to access this platform. You may request deletion of your account and all associated data at any time by writing to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c5a6b7aab6b6b1a0a4a8b685a8acb1b7a4b2a4a4b6eba6aaebacab">[email&#160;protected]</a>.</p>
+      <p style="margin-bottom:10px;"><strong>2. Voluntary data sharing</strong><br/>Registration is entirely voluntary. You choose to share your name, mobile number, and corporate email solely to access this platform. You may request deletion of your account and all associated data at any time by writing to crossteams@mitrawaas.co.in.</p>
       <p style="margin-bottom:10px;"><strong>3. Accuracy of information</strong><br/>You agree to provide accurate and truthful information. Providing false details — including impersonating another PNB employee — may result in immediate account suspension and may be reported to the bank.</p>
       <p style="margin-bottom:10px;"><strong>4. Use of platform</strong><br/>MitrAwaas is a peer-to-peer rental listing platform operated independently by PNB employees. It is not affiliated with, endorsed by, or connected to Punjab National Bank in any official capacity. The platform must not be used for commercial brokerage, spam, or listing properties you do not have authority to let.</p>
       <p style="margin-bottom:10px;"><strong>5. Account &amp; credential responsibility</strong><br/>You are solely responsible for maintaining the confidentiality of your username and password. Do not share your credentials with anyone. MitrAwaas will never ask for your password by email, phone, or any other channel.</p>
@@ -1756,14 +1771,14 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
     <h3>🔒 Privacy Policy</h3>
     <div style="font-size:0.85rem;color:var(--navy);line-height:1.7;margin-top:12px;">
       <p style="margin-bottom:10px;"><strong>1. What we collect and why</strong><br/>We collect only the minimum information necessary to operate the platform: your <strong>full name</strong> (to identify you to colleagues), <strong>mobile number</strong> (as a contact method for rental enquiries), and <strong>PNB corporate email</strong> (solely to verify your PNB employment via OTP). We also store your self-chosen <strong>username</strong> and security question answer. No salary, banking, or any other sensitive financial information is collected at any point.</p>
-      <p style="margin-bottom:10px;"><strong>2. Your consent</strong><br/>You register entirely voluntarily. By completing registration, you explicitly consent to the collection and storage of the above information for the purpose of accessing this platform. You may withdraw this consent and request deletion of your account at any time by writing to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1f7c6d706c6c6b7a7e726c5f72766b6d7e687e7e6c317c70317671">[email&#160;protected]</a>.</p>
+      <p style="margin-bottom:10px;"><strong>2. Your consent</strong><br/>You register entirely voluntarily. By completing registration, you explicitly consent to the collection and storage of the above information for the purpose of accessing this platform. You may withdraw this consent and request deletion of your account at any time by writing to crossteams@mitrawaas.co.in.</p>
       <p style="margin-bottom:10px;"><strong>3. How your corporate email is handled</strong><br/>Your @pnb.bank.in email is used only to send you a one-time verification OTP during registration. It is stored in our database purely to prevent duplicate accounts. It is never displayed to other users, never used for marketing, and never shared with any third party.</p>
       <p style="margin-bottom:10px;"><strong>4. Employee ID (migration users only)</strong><br/>If you previously registered with your Employee ID, it is used solely for a one-time identity check during account migration. Once migration is complete, the Employee ID is <strong>permanently and irrecoverably deleted</strong> from our system. It is never stored, displayed, or shared after that point.</p>
       <p style="margin-bottom:10px;"><strong>5. Password security</strong><br/>Your password is stored as-is in our database. <strong>We strongly recommend using a password that is unique to this platform</strong> and not shared with any other service. MitrAwaas will never ask you for your password by email, phone call, or any other means. If you believe your account is compromised, change your password immediately from the Profile section.</p>
       <p style="margin-bottom:10px;"><strong>6. What is visible to other users</strong><br/>When you post a listing, your <strong>name and mobile number</strong> are shown to verified members who contact you. Your username, email, and all other details remain private and are never displayed to other users.</p>
       <p style="margin-bottom:10px;"><strong>7. Data storage &amp; security</strong><br/>All data is stored on Google Firebase (Google Cloud Infrastructure), which employs industry-standard encryption in transit and at rest. MitrAwaas does not operate its own servers. No data is stored on any local machine or third-party service other than Firebase.</p>
       <p style="margin-bottom:10px;"><strong>8. No third-party sharing</strong><br/>We do not sell, rent, lease, or share your personal information with any third party, advertiser, or external organisation under any circumstances.</p>
-      <p style="margin-bottom:10px;"><strong>9. Data deletion</strong><br/>You have the right to request complete deletion of your account and all associated data at any time. Write to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7112031e02020514101c02311c18050310061010025f121e5f181f">[email&#160;protected]</a> with your username. All data will be permanently deleted within 7 working days.</p>
+      <p style="margin-bottom:10px;"><strong>9. Data deletion</strong><br/>You have the right to request complete deletion of your account and all associated data at any time. Write to crossteams@mitrawaas.co.in with your username. All data will be permanently deleted within 7 working days.</p>
     </div>
     <button class="btn btn-gold" style="width:100%;margin-top:16px;padding:11px;" onclick="document.getElementById('privacy-modal').classList.remove('open')">I understand — Close</button>
   </div>
@@ -1786,11 +1801,11 @@ footer .disclaimer { color: rgba(255,255,255,0.55); font-size: 0.75rem; margin-t
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ══════════════════════════════════════
 // DATA STORE (localStorage for persistence)
 // ══════════════════════════════════════
-const ADMIN_PASSWORD = 'Sviket!@#'; // Change this!
+const ADMIN_PASSWORD = 'Creations@123'; // Change this!
 
 // ══════════════════════════════════════
 // WEB3FORMS CONFIG
@@ -1841,7 +1856,7 @@ async function sendEmailNotification(subject, body, toEmail, ccEmail) {
 const FB_CONFIG = {
   apiKey: "AIzaSyCTZEd0g7jracvK9Qy7tnAE4NPLQitvfFE",
   authDomain: "mitrawaas.firebaseapp.com",
-  databaseURL: "https://mitrawaas-default-rtdb.asia-southeast1.firebasedatabase.app",
+  databaseURL: "https://mitrawaas-default-rtdb.asia-south1.firebasedatabase.app",
   projectId: "mitrawaas",
   storageBucket: "mitrawaas.firebasestorage.app",
   messagingSenderId: "252317610256",
@@ -1852,7 +1867,8 @@ const FB_CONFIG = {
 // These localStorage keys will be synced to Firebase
 const FB_KEYS = ['ma_users','ma_listings','ma_wishlists','ma_enquiries','ma_suggestions','ma_pwd_resets'];
 
-let _db      = null; // Firestore instance
+let _db        = null; // Firestore instance
+let _functions = null; // Cloud Functions instance
 let _fbOk = false; // true once data is loaded from Firebase
 let _writeLock = {}; // keys locked during pending Firebase writes
 
@@ -2028,39 +2044,39 @@ async function initFirebase() {
   const msg     = document.getElementById('fb-loader-msg');
   const skipBtn = document.getElementById('fb-skip-btn');
 
-  // ABSOLUTE SAFETY NET — fires after 5s no matter what, cannot be stopped
-  const absoluteKill = setTimeout(() => {
-    if (loader && loader.style.display !== 'none') dismissLoader();
-  }, 5000);
+  // Hard safety net: show skip button after 3s, force dismiss after 7s
+  const skipTimer  = setTimeout(() => { if (skipBtn) skipBtn.style.display = 'block'; }, 3000);
+  const killTimer  = setTimeout(() => dismissLoader(), 7000);
 
-  // Show skip button after 2s
-  const skipTimer = setTimeout(() => { if (skipBtn) skipBtn.style.display = 'block'; }, 2000);
-
-  function cleanup() { clearTimeout(skipTimer); }
-
-  // Check Firebase SDK loaded
-  if (typeof firebase === 'undefined') {
-    cleanup(); clearTimeout(absoluteKill);
-    if (msg) msg.textContent = 'Running offline — database unavailable';
-    dismissLoader(); return;
+  function cleanup() {
+    clearTimeout(skipTimer);
+    clearTimeout(killTimer);
   }
 
-  // No config
+  // Check Firebase SDK actually loaded (can fail on slow/blocked mobile networks)
+  if (typeof firebase === 'undefined') {
+    cleanup();
+    if (msg) msg.textContent = 'Running offline — database unavailable';
+    setTimeout(() => dismissLoader(), 1500);
+    return;
+  }
+
+  // No config filled in yet
   if (!FB_CONFIG.apiKey || FB_CONFIG.apiKey === 'YOUR_API_KEY') {
-    cleanup(); clearTimeout(absoluteKill);
+    cleanup();
     if (msg) msg.textContent = 'Starting in offline mode...';
-    dismissLoader(); return;
+    setTimeout(() => dismissLoader(), 800);
+    return;
   }
 
   try {
     if (msg) msg.textContent = 'Connecting...';
-    if (!firebase.apps.length) {
-      firebase.initializeApp(FB_CONFIG);
-      _db = firebase.firestore();
-      try { _db.settings({ experimentalForceLongPolling: true, merge: true }); } catch(e) { /* already started */ }
-    } else {
-      _db = firebase.firestore();
-    }
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    _db = firebase.firestore();
+    _functions = firebase.app().functions('asia-south1');
+
+    // Force long polling — avoids WebChannel/WebSocket blocks on mobile networks
+    _db.settings({ experimentalForceLongPolling: true, experimentalAutoDetectLongPolling: false, merge: true });
 
     // Persistence disabled — avoids cache/server conflicts
 
@@ -2070,7 +2086,7 @@ async function initFirebase() {
     // ── Initial load: get all docs once ──
     const snaps = await withTimeout(
       Promise.all(FB_KEYS.map(k => _db.collection('mitrawaas').doc(k).get())),
-      4000
+      6000
     );
 
     snaps.forEach((snap, i) => {
@@ -2101,8 +2117,7 @@ async function initFirebase() {
   }
 
   cleanup();
-  clearTimeout(absoluteKill);
-  dismissLoader();
+  setTimeout(() => dismissLoader(), 1200);
 }
 
 // Sample demo listings
@@ -2201,17 +2216,10 @@ function showLoginGate(intendedPage) {
 }
 
 // ══════════════════════════════════════
-// REGISTER — OTP FLOW (Trigger Email Extension)
-// OTP generated here, stored in Firestore ma_otps/{email}
-// Email sent via Trigger Email extension (watches 'mail' collection)
-// Verification: read ma_otps/{email}, compare, delete on success
+// REGISTER — OTP FLOW
 // ══════════════════════════════════════
-let _pendingRegData = null;
-let _fpEmpId        = null;
-
-function _genOtp() {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
+let _pendingRegData   = null;
+let _fpEmpId          = null;
 
 function maskEmail(email) {
   const parts = email.split('@');
@@ -2222,131 +2230,53 @@ function maskEmail(email) {
 function chooseUserType(type) {
   document.getElementById('reg-user-type').style.display = 'none';
   if (type === 'existing') {
-    window._migFromRegister = true;
     showMigrationModal();
+    // Reset to user-type screen after modal closes so back works
   } else {
     document.getElementById('reg-form').style.display = 'block';
   }
 }
 
 async function sendRegOtp() {
-  // Read field directly from DOM — belt AND suspenders
-  const nameEl  = document.getElementById('reg-name');
-  const mobEl   = document.getElementById('reg-mobile');
-  const emailEl = document.getElementById('reg-corp-email');
-  const alertEl = document.getElementById('reg-alert');
-
-  const name      = (nameEl  ? nameEl.value  : '').trim();
-  const mobile    = (mobEl   ? mobEl.value   : '').trim();
-  const corpEmail = (emailEl ? emailEl.value : '').trim().toLowerCase();
-
+  const name      = (document.getElementById('reg-name').value || '').trim();
+  const mobile    = (document.getElementById('reg-mobile').value || '').trim();
+  const corpEmail = (document.getElementById('reg-corp-email').value || '').trim().toLowerCase();
+  const alertEl   = document.getElementById('reg-alert');
   alertEl.className = 'alert'; alertEl.textContent = '';
 
-  // Validate
-  if (!name)   { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your full name.'; nameEl && nameEl.focus(); return; }
-  if (!mobile || mobile.length !== 10 || isNaN(mobile)) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.'; mobEl && mobEl.focus(); return; }
-  if (!corpEmail) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your bank corporate email.'; emailEl && emailEl.focus(); return; }
-  if (!corpEmail.endsWith('@pnb.bank.in')) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Only your bank corporate email (ending in @pnb.bank.in) is accepted.'; emailEl && emailEl.focus(); return; }
+  if (!name)   { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your full name.'; return; }
+  if (!mobile || mobile.length !== 10 || isNaN(mobile)) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter a valid 10-digit mobile number.'; return; }
+  if (!corpEmail) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter your corporate email.'; return; }
+  if (!corpEmail.endsWith('@pnb.bank.in')) { alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Only @pnb.bank.in corporate email is accepted.'; return; }
 
-  const captchaInput = parseInt((document.getElementById('captcha-answer') || {}).value || '');
+  const captchaInput = parseInt(document.getElementById('captcha-answer').value);
   if (isNaN(captchaInput) || captchaInput !== window._captchaAnswer) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Incorrect human verification answer.';
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Incorrect human verification answer. Please solve the sum.';
     initCaptcha(); return;
   }
 
-  // Check already registered
   const users = getData('ma_users');
-  if (users.find(u => u.corpEmail === corpEmail && (u.status === 'approved' || u.status === 'active'))) {
+  if (users.find(u => u.corpEmail === corpEmail && u.status === 'approved')) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ This email is already registered. Please login.'; return;
   }
 
-  if (!_db || !_fbOk) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Not connected to database yet. Please wait a moment and try again.'; return;
-  }
-
-  // Disable button while sending
-  const btn = document.getElementById('send-otp-btn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Sending OTP...'; }
-  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Sending OTP to your bank email...';
-
+  // Call Cloud Function to generate OTP and send email
+  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Sending OTP to your corporate email...';
   try {
-    const otp    = _genOtp();
-    const expiry = Date.now() + 48 * 60 * 60 * 1000; // 48 hours
-
-    // 1. Store OTP in Firestore (ma_otps collection, doc = email)
-    await _db.collection('ma_otps').doc(corpEmail).set({
-      otp, expiry, attempts: 0, name, createdAt: new Date().toISOString()
-    });
-
-    // 2. Write to 'mail' collection — Trigger Email extension picks this up
-    await _db.collection('mail').add({
-      to: corpEmail,
-      message: {
-        subject: 'MitrAwaas — Your Email Verification OTP',
-        text:
-          'Dear ' + name + ',
-
-' +
-          'Thank you for registering on MitrAwaas — the free housing platform for PNB employees.
-
-' +
-          'Your email verification OTP is:
-
-' +
-          '        ' + otp + '
-
-' +
-          'This OTP is valid for 48 hours.
-
-' +
-          'IMPORTANT: If you do not see this email in your Inbox, please check your Spam / Junk folder.
-
-' +
-          'To complete registration, visit MitrAwaas, click Register, and enter this OTP when prompted.
-
-' +
-          'Do NOT share this OTP with anyone.
-
-' +
-          '— MitrAwaas Team
-' +
-          'https://www.mitrawaas.co.in',
-        html:
-          '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;">' +
-          '<div style="background:#0F4C81;padding:20px;text-align:center;">' +
-          '<h1 style="color:#fff;margin:0;font-size:1.4rem;">🏠 MitrAwaas</h1></div>' +
-          '<div style="padding:28px 24px;background:#fff;">' +
-          '<p style="color:#333;">Dear <strong>' + name + '</strong>,</p>' +
-          '<p style="color:#333;">Thank you for registering on MitrAwaas — the free housing platform for PNB employees.</p>' +
-          '<p style="color:#333;">Your email verification OTP is:</p>' +
-          '<div style="background:#E8F0F9;border-radius:12px;padding:20px;text-align:center;margin:20px 0;">' +
-          '<div style="font-size:2.2rem;font-weight:900;letter-spacing:0.3em;color:#0B3A63;">' + otp + '</div>' +
-          '<div style="font-size:0.8rem;color:#666;margin-top:8px;">Valid for 48 hours</div></div>' +
-          '<p style="color:#c0392b;font-weight:600;">⚠️ If not in Inbox, check your Spam / Junk folder.</p>' +
-          '<p style="color:#333;">Do NOT share this OTP with anyone.</p>' +
-          '</div>' +
-          '<div style="background:#f5f5f5;padding:14px;text-align:center;font-size:0.8rem;color:#888;">' +
-          'MitrAwaas · Not affiliated with PNB · crossteams@mitrawaas.co.in</div></div>'
-      }
-    });
-
-    // 3. Save pending data and show OTP step
-    _pendingRegData = { name, mobile, corpEmail, otpSentAt: Date.now() };
+    if (!_functions) throw new Error('Functions not initialised');
+    const sendOtp = _functions.httpsCallable('sendOtp');
+    await sendOtp({ email: corpEmail, name });
+    _pendingRegData = { name, mobile, corpEmail };
     document.getElementById('reg-otp-email-display').textContent = maskEmail(corpEmail);
     document.getElementById('reg-form').style.display = 'none';
     document.getElementById('reg-otp-step').style.display = 'block';
     document.getElementById('reg-otp-alert').className = 'alert';
-    document.getElementById('reg-otp-alert').textContent = '';
     document.getElementById('reg-otp-input').value = '';
     document.getElementById('reg-otp-resend-wrap').style.display = 'none';
     alertEl.className = 'alert'; alertEl.textContent = '';
-
-  } catch (err) {
-    console.error('[OTP Send]', err);
+  } catch(e) {
     alertEl.className = 'alert alert-error';
-    alertEl.textContent = '❌ Failed to send OTP: ' + (err.message || 'Unknown error. Check your internet and try again.');
-  } finally {
-    if (btn) { btn.disabled = false; btn.innerHTML = '<span class="en-text">Send OTP to bank email →</span><span class="hi-text">OTP भेजें →</span>'; }
+    alertEl.textContent = '❌ Failed to send OTP: ' + (e.message || 'Please try again.');
   }
 }
 
@@ -2360,118 +2290,36 @@ function cancelOtpStep() {
 async function resendRegOtp() {
   if (!_pendingRegData) return;
   const alertEl = document.getElementById('reg-otp-alert');
-  const btn = document.getElementById('resend-otp-btn');
-  if (btn) btn.disabled = true;
   alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Sending new OTP...';
-
   try {
-    const otp    = _genOtp();
-    const expiry = Date.now() + 48 * 60 * 60 * 1000;
-
-    await _db.collection('ma_otps').doc(_pendingRegData.corpEmail).set({
-      otp, expiry, attempts: 0, name: _pendingRegData.name, createdAt: new Date().toISOString()
-    });
-
-    await _db.collection('mail').add({
-      to: _pendingRegData.corpEmail,
-      message: {
-        subject: 'MitrAwaas — New OTP (Resent)',
-        text:
-          'Dear ' + _pendingRegData.name + ',
-
-' +
-          'Your new MitrAwaas verification OTP is:
-
-' +
-          '        ' + otp + '
-
-' +
-          'Valid for 48 hours. Check Spam / Junk if not in Inbox.
-
-' +
-          'Do NOT share this OTP with anyone.
-
-— MitrAwaas Team',
-        html:
-          '<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:24px;">' +
-          '<h2 style="color:#0F4C81;">Your new OTP</h2>' +
-          '<div style="background:#E8F0F9;border-radius:12px;padding:20px;text-align:center;margin:20px 0;">' +
-          '<div style="font-size:2.2rem;font-weight:900;letter-spacing:0.3em;color:#0B3A63;">' + otp + '</div>' +
-          '<div style="font-size:0.8rem;color:#666;margin-top:8px;">Valid for 48 hours</div></div>' +
-          '<p style="color:#c0392b;">⚠️ Check Spam / Junk if not in Inbox.</p></div>'
-      }
-    });
-
-    alertEl.className = 'alert alert-success'; alertEl.textContent = '✅ New OTP sent. Check your bank email and Spam / Junk folder.';
+    const sendOtp = _functions.httpsCallable('sendOtp');
+    await sendOtp({ email: _pendingRegData.corpEmail, name: _pendingRegData.name });
+    alertEl.className = 'alert alert-success'; alertEl.textContent = '✅ New OTP sent to your corporate email.';
     document.getElementById('reg-otp-resend-wrap').style.display = 'none';
     document.getElementById('reg-otp-input').value = '';
-
-  } catch (err) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '❌ Failed to resend OTP. Please try again.';
-    console.error('[OTP Resend]', err);
-  } finally {
-    if (btn) btn.disabled = false;
+  } catch(e) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '❌ Failed to resend: ' + (e.message || 'Please try again.');
   }
 }
 
 async function verifyRegOtp() {
-  const entered  = (document.getElementById('reg-otp-input').value || '').trim();
-  const alertEl  = document.getElementById('reg-otp-alert');
-  alertEl.className = 'alert'; alertEl.textContent = '';
+  const entered = (document.getElementById('reg-otp-input').value || '').trim();
+  const alertEl = document.getElementById('reg-otp-alert');
+  alertEl.className = 'alert';
 
   if (!_pendingRegData) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Session expired. Please go back and start again.'; return;
   }
-  if (!entered || entered.length !== 6 || isNaN(entered)) {
-    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter the complete 6-digit OTP.'; return;
+  if (!entered || entered.length !== 6) {
+    alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please enter the 6-digit OTP.'; return;
   }
 
-  const verBtn = document.getElementById('verify-otp-btn');
-  if (verBtn) { verBtn.disabled = true; verBtn.textContent = '⏳ Verifying...'; }
-  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Verifying OTP...';
-
+  alertEl.className = 'alert alert-success'; alertEl.textContent = '⏳ Verifying...';
   try {
-    const doc = await _db.collection('ma_otps').doc(_pendingRegData.corpEmail).get();
-
-    if (!doc.exists) {
-      alertEl.className = 'alert alert-error';
-      alertEl.textContent = '⚠️ No OTP found for this email. Please go back and request a new one.';
-      document.getElementById('reg-otp-resend-wrap').style.display = 'block';
-      return;
-    }
-
-    const data = doc.data();
-
-    if (Date.now() > data.expiry) {
-      await _db.collection('ma_otps').doc(_pendingRegData.corpEmail).delete();
-      alertEl.className = 'alert alert-error';
-      alertEl.textContent = '⏰ OTP has expired. Please request a new one.';
-      document.getElementById('reg-otp-resend-wrap').style.display = 'block';
-      return;
-    }
-
-    const attempts = (data.attempts || 0) + 1;
-
-    if (entered !== data.otp) {
-      // Wrong — increment attempts
-      await _db.collection('ma_otps').doc(_pendingRegData.corpEmail).update({ attempts });
-      const remaining = Math.max(5 - attempts, 0);
-      if (attempts >= 2) document.getElementById('reg-otp-resend-wrap').style.display = 'block';
-      alertEl.className = 'alert alert-error';
-      if (remaining === 0) {
-        alertEl.textContent = '🔒 Too many wrong attempts. Please request a new OTP.';
-        document.getElementById('reg-otp-resend-wrap').style.display = 'block';
-      } else {
-        alertEl.textContent = '⚠️ Incorrect OTP. ' + remaining + ' attempt' + (remaining === 1 ? '' : 's') + ' remaining.';
-      }
-      return;
-    }
-
-    // ✅ OTP correct — delete it so it cannot be reused
-    await _db.collection('ma_otps').doc(_pendingRegData.corpEmail).delete();
+    const verifyOtp = _functions.httpsCallable('verifyOtp');
+    await verifyOtp({ email: _pendingRegData.corpEmail, otp: entered });
+    // OTP correct — move to credentials step
     _pendingRegData.otpVerified = true;
-
-    // Move to credentials step
     document.getElementById('reg-otp-step').style.display = 'none';
     document.getElementById('reg-credentials-step').style.display = 'block';
     document.getElementById('reg-username').value = '';
@@ -2482,13 +2330,14 @@ async function verifyRegOtp() {
     const terms = document.getElementById('reg-terms'); if (terms) terms.checked = false;
     document.getElementById('reg-cred-alert').className = 'alert';
     document.getElementById('reg-cred-alert').textContent = '';
-
-  } catch (err) {
+  } catch(e) {
     alertEl.className = 'alert alert-error';
-    alertEl.textContent = '❌ Verification error. Please check your connection and try again.';
-    console.error('[OTP Verify]', err);
-  } finally {
-    if (verBtn) { verBtn.disabled = false; verBtn.innerHTML = '<span class="en-text">Verify OTP →</span><span class="hi-text">OTP सत्यापित करें →</span>'; }
+    const msg = e.message || '';
+    // Show resend button after 2 wrong attempts
+    if (msg.includes('remaining') && (msg.includes('3') || msg.includes('2'))) {
+      document.getElementById('reg-otp-resend-wrap').style.display = 'block';
+    }
+    alertEl.textContent = '⚠️ ' + (msg || 'Verification failed. Please try again.');
   }
 }
 
@@ -2651,12 +2500,18 @@ function showMigrationModal() {
 }
 function closeMigrationModal() {
   document.getElementById('migration-modal').classList.remove('open');
-  // If user came from the register page choice screen, restore it
-  if (window._migFromRegister) {
-    window._migFromRegister = false;
-    document.getElementById('reg-user-type').style.display = 'block';
-    document.getElementById('reg-form').style.display = 'none';
-  }
+  // Always return to the choice screen — never leave user on blank page
+  const userTypeEl = document.getElementById('reg-user-type');
+  const regFormEl  = document.getElementById('reg-form');
+  const otpEl      = document.getElementById('reg-otp-step');
+  const credEl     = document.getElementById('reg-credentials-step');
+  if (userTypeEl) userTypeEl.style.display = 'block';
+  if (regFormEl)  regFormEl.style.display  = 'none';
+  if (otpEl)      otpEl.style.display      = 'none';
+  if (credEl)     credEl.style.display     = 'none';
+  // Only do this if we're actually on the register page
+  const regPage = document.getElementById('page-register');
+  if (!regPage || !regPage.classList.contains('active')) return;
 }
 function migBack() {
   document.getElementById('mig-step1').style.display = 'block';
@@ -2699,8 +2554,6 @@ function migStep3() {
   const username = (document.getElementById('mig-username').value || '').trim().toLowerCase();
   const pass     = document.getElementById('mig-pass').value;
   const pass2    = document.getElementById('mig-pass2').value;
-  const secQ     = document.getElementById('mig-sec-q').value;
-  const secA     = (document.getElementById('mig-sec-a').value || '').trim();
   const termsOk  = document.getElementById('mig-terms').checked;
   const alertEl  = document.getElementById('migration-alert');
   alertEl.className = 'alert'; alertEl.textContent = '';
@@ -2723,12 +2576,6 @@ function migStep3() {
   if (!termsOk) {
     alertEl.className = 'alert alert-error'; alertEl.textContent = '⚠️ Please agree to the Terms & Conditions and Privacy Policy.'; return;
   }
-  // Disable button to prevent double-click
-  const activateBtn = document.querySelector('#mig-step3 .btn-gold');
-  if (activateBtn) { activateBtn.disabled = true; activateBtn.textContent = '⏳ Activating...'; }
-  alertEl.className = 'alert alert-success';
-  alertEl.textContent = '⏳ Activating your account...';
-
   safeUpdate('ma_users', arr => {
     const u = arr.find(x => x.empId === _migEmpId);
     if (u) {
@@ -2742,16 +2589,10 @@ function migStep3() {
       delete u.email; // Remove personal email
     }
     return arr;
-  }).then(() => {
-    alertEl.className = 'alert alert-success';
-    alertEl.textContent = '✅ Account activated! Your Employee ID has been permanently deleted. Please login with your new username.';
-    setTimeout(() => { closeMigrationModal(); showPage('login'); }, 2200);
-  }).catch(err => {
-    alertEl.className = 'alert alert-error';
-    alertEl.textContent = '❌ Activation failed. Please check your connection and try again.';
-    console.error('[migStep3]', err);
-    if (activateBtn) { activateBtn.disabled = false; activateBtn.textContent = 'Activate Account →'; }
   });
+  alertEl.className = 'alert alert-success';
+  alertEl.textContent = '✅ Account migrated! Your Employee ID has been permanently deleted. Please login with your new username.';
+  setTimeout(() => { closeMigrationModal(); showPage('login'); }, 2200);
 }
 document.getElementById('migration-modal').addEventListener('click', function(e) { if (e.target === this) closeMigrationModal(); });
 
@@ -4462,4 +4303,23 @@ function downloadUsersCSV(filter) {
   const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   a.download = (filter === 'pending' ? 'MitrAwaas_Pending_' : 'MitrAwaas_AllUsers_') + dateStr + '.csv';
   document.body.appendChild(a);
- 
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════
+// EMAIL CONTACT REVEAL
+// ══════════════════════════════════════
+function showEmailContact() {
+  const reveal = document.getElementById('email-reveal');
+  const link = document.getElementById('email-link');
+  const e = 'crossteams' + '@' + 'mitrawaas.co.in';
+  link.href = 'mailto:' + e;
+  link.textContent = e;
+  reveal.style.display = 'block';
+}
+
+</script>
+</body>
+</html>
